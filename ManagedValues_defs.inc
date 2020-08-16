@@ -1,0 +1,32 @@
+{$IF Defined(WINDOWS) or Defined(MSWINDOWS)}
+  {$DEFINE Windows}
+{$ELSEIF Defined(LINUX) and Defined(FPC)}
+  {$DEFINE Linux}
+{$ELSE}
+  {$MESSAGE FATAL 'Unsupported operating system.'}
+{$IFEND}
+
+{$IFDEF FPC}
+  {$MODE ObjFPC}
+  {$INLINE ON}
+  {$DEFINE CanInline}
+  {$DEFINE FPC_DisableWarns}
+  {$MACRO ON}
+{$ELSE}
+  {$IF CompilerVersion >= 17 then}  // Delphi 2005+
+    {$DEFINE CanInline}
+  {$ELSE}
+    {$UNDEF CanInline}
+  {$IFEND}
+{$ENDIF}
+{$H+}
+
+{$UNDEF MV_ConstParams}
+{$UNDEF MV_AssignIsThreadSafe}
+{$UNDEF MV_StringLikeType}
+{$UNDEF MV_ComplexStreaming}
+
+{$UNDEF MV_ClassDeclaration}
+{$UNDEF MV_ClassImplementation}
+
+{$DEFINE MV_GlobalManager}
