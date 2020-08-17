@@ -1,4 +1,4 @@
-unit ManagedValues_CurrencyValue;
+unit ManagedValues_WideCharValue;
 
 {$INCLUDE './ManagedValues_defs.inc'}
 
@@ -11,46 +11,46 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TCurrencyValue
+                                 TWideCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVValueBaseType = Currency;
+  TMVValueBaseType = WideChar;
 
 {$UNDEF MV_ConstParams}
 {$DEFINE MV_AssignIsThreadSafe}
-{$UNDEF MV_StringLikeType}
+{$DEFINE MV_StringLikeType}
 {$UNDEF MV_ComplexStreaming}
 
 {===============================================================================
-    TCurrencyValue - class declaration
+    TWideCharValue - class declaration
 ===============================================================================}
 type
-  TMVCurrencyValue = class(TRealManagedValue)
+  TMVWideCharValue = class(TCharManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
 type
-  TMVValueClass = TMVCurrencyValue;
+  TMVValueClass = TMVWideCharValue;
 
 implementation
 
 uses
   SysUtils,
-  BinaryStreaming;
+  BinaryStreaming, StrRect;
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TCurrencyValue
+                                 TWideCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
-  MV_LOCAL_DEFAULT_VALUE = 0.0;
+  MV_LOCAL_DEFAULT_VALUE = WideChar(#0);
 
 {===============================================================================
-    TCurrencyValue - class implementation
+    TWideCharValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -61,26 +61,21 @@ const
 
 class Function TMVValueClass.GetValueType: TManagedValueType;
 begin
-Result := mvtCurrency;
+Result := mvtWideChar;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-If Currency(A) > Currency(B) then
-  Result := +1
-else If Currency(A) < Currency(B) then
-  Result := -1
-else
-  Result := 0;
+Result := WideStringCompare(WideChar(A),WideChar(B),Arg);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.SaveToStream(Stream: TStream);
 begin
-Stream_WriteCurrency(Stream,fCurrentValue);
+Stream_WriteWideChar(Stream,fCurrentValue);
 end;
 
 //------------------------------------------------------------------------------
@@ -88,24 +83,30 @@ end;
 procedure TMVValueClass.LoadFromStream(Stream: TStream; Init: Boolean = False);
 begin
 If Init then
-  Initialize(Stream_ReadCurrency(Stream),False)
+  Initialize(Stream_ReadWideChar(Stream),False)
 else
-  SetCurrentValue(Stream_ReadCurrency(Stream));
+  SetCurrentValue(Stream_ReadWideChar(Stream));
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ToString: String;
 begin
-Result := CurrToStr(fCurrentValue,fFormatSettings);
+Result := WideToStr(fCurrentValue);
 inherited ToString;
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.FromString(const Str: String);
+var
+  Temp: WideString;
 begin
-SetCurrentValue(StrToCurr(Str,fFormatSettings));
+Temp := StrToWide(Str);
+If Length(Temp) > 0 then
+  SetCurrentValue(Temp[1])
+else
+  SetCurrentValue(MV_LOCAL_DEFAULT_VALUE);
 inherited;
 end;
 

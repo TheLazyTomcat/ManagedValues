@@ -1,4 +1,4 @@
-unit ManagedValues_CurrencyValue;
+unit ManagedValues_ShortStringValue;
 
 {$INCLUDE './ManagedValues_defs.inc'}
 
@@ -11,46 +11,46 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TCurrencyValue
+                                TShortStringValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVValueBaseType = Currency;
+  TMVValueBaseType = ShortString;
 
-{$UNDEF MV_ConstParams}
+{$DEFINE MV_ConstParams}
 {$DEFINE MV_AssignIsThreadSafe}
-{$UNDEF MV_StringLikeType}
-{$UNDEF MV_ComplexStreaming}
+{$DEFINE MV_StringLikeType}
+{$DEFINE MV_ComplexStreaming}
 
 {===============================================================================
-    TCurrencyValue - class declaration
+    TShortStringValue - class declaration
 ===============================================================================}
 type
-  TMVCurrencyValue = class(TRealManagedValue)
+  TMVShortStringValue = class(TStringManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
 type
-  TMVValueClass = TMVCurrencyValue;
+  TMVValueClass = TMVShortStringValue;
 
 implementation
 
 uses
   SysUtils,
-  BinaryStreaming;
+  BinaryStreaming, StrRect;
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TCurrencyValue
+                                TShortStringValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
-  MV_LOCAL_DEFAULT_VALUE = 0.0;
+  MV_LOCAL_DEFAULT_VALUE = ShortString('');
 
 {===============================================================================
-    TCurrencyValue - class implementation
+    TShortStringValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -61,26 +61,28 @@ const
 
 class Function TMVValueClass.GetValueType: TManagedValueType;
 begin
-Result := mvtCurrency;
+Result := mvtShortString;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-If Currency(A) > Currency(B) then
-  Result := +1
-else If Currency(A) < Currency(B) then
-  Result := -1
-else
-  Result := 0;
+Result := ShortStringCompare(ShortString(A),ShortString(B),Arg);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.SavedSize: TMemSize;
+begin
+Result := 1 + Length(fCurrentValue);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.SaveToStream(Stream: TStream);
 begin
-Stream_WriteCurrency(Stream,fCurrentValue);
+Stream_WriteShortString(Stream,fCurrentValue);
 end;
 
 //------------------------------------------------------------------------------
@@ -88,16 +90,16 @@ end;
 procedure TMVValueClass.LoadFromStream(Stream: TStream; Init: Boolean = False);
 begin
 If Init then
-  Initialize(Stream_ReadCurrency(Stream),False)
+  Initialize(Stream_ReadShortString(Stream),False)
 else
-  SetCurrentValue(Stream_ReadCurrency(Stream));
+  SetCurrentValue(Stream_ReadShortString(Stream));
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ToString: String;
 begin
-Result := CurrToStr(fCurrentValue,fFormatSettings);
+Result := ShortToStr(fCurrentValue);
 inherited ToString;
 end;
 
@@ -105,7 +107,7 @@ end;
 
 procedure TMVValueClass.FromString(const Str: String);
 begin
-SetCurrentValue(StrToCurr(Str,fFormatSettings));
+SetCurrentValue(StrToShort(Str));
 inherited;
 end;
 

@@ -10,6 +10,9 @@
     class Function GetValueType: TManagedValueType; override;
     procedure Initialize; override;
     Function CompareBaseValues(const A,B; Arg: Boolean): Integer; override;
+  {$IFNDEF MV_AssignIsThreadSafe}
+    Function ThreadSafeAssign({$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType): TMVValueBaseType; reintroduce;
+  {$ENDIF}
     procedure CheckAndSetEquality; override;
   public
     constructor CreateAndInit({$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType); overload;

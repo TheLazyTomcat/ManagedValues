@@ -24,10 +24,17 @@ type
 ===============================================================================}
 type
   TManagedValueType = (
+    // primitives
     mvtBool,mvtInt8,mvtUInt8,mvtInt16,mvtUInt16,mvtInt32,mvtUInt32,mvtInt64,
     mvtUInt64,mvtFloat32,mvtFloat64,mvtDateTime,mvtCurrency,mvtAnsiChar,
-    mvtWideChar,mvtUTF8Char,mvtUnicodeChar,mvtShortString,mvtAnsiString,
-    mvtWideString,mvtUTF8String,mvtUnicodeString,mvtPointer,mvtObject);
+    mvtWideChar,mvtUTF8Char,mvtUnicodeChar,mvtChar,mvtShortString,mvtAnsiString,
+    mvtUTF8String,mvtWideString,mvtUnicodeString,mvtString,mvtPointer,mvtObject);
+    // arrays - implement later
+  (*mvtAoBool,mvtAoInt8,mvtAoUInt8,mvtAoInt16,mvtAoUInt16,mvtAoInt32,mvtAoUInt32,
+    mvtAoInt64,mvtAoUInt64,mvtAoFloat32,mvtAoFloat64,mvtAoDateTime,mvtAoCurrency,
+    mvtAoAnsiChar,mvtAoWideChar,mvtAoUTF8Char,mvtAoUnicodeChar,mvtAoChar,
+    mvtAoShortString,mvtAoAnsiString,mvtAoUTF8String,mvtAoWideString,
+    mvtAoUnicodeString,mvtAoString,mvtAoPointer,mvtAoObject);*)
 
 {===============================================================================
     TManagedValueBase - class declaration
@@ -114,8 +121,7 @@ type
   TRealManagedValue    = class(TManagedValueBase);
   TCharManagedValue    = class(TManagedValueBase);
   TStringManagedValue  = class(TManagedValueBase);
-  TOtherManagedValue   = class(TManagedValueBase);
-  
+  TOtherManagedValue   = class(TManagedValueBase);         
 
 {===============================================================================
 --------------------------------------------------------------------------------

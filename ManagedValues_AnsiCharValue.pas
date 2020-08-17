@@ -1,4 +1,4 @@
-unit ManagedValues_CurrencyValue;
+unit ManagedValues_AnsiCharValue;
 
 {$INCLUDE './ManagedValues_defs.inc'}
 
@@ -11,46 +11,46 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TCurrencyValue
+                                 TAnsiCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVValueBaseType = Currency;
+  TMVValueBaseType = AnsiChar;
 
 {$UNDEF MV_ConstParams}
 {$DEFINE MV_AssignIsThreadSafe}
-{$UNDEF MV_StringLikeType}
+{$DEFINE MV_StringLikeType}
 {$UNDEF MV_ComplexStreaming}
 
 {===============================================================================
-    TCurrencyValue - class declaration
+    TAnsiCharValue - class declaration
 ===============================================================================}
 type
-  TMVCurrencyValue = class(TRealManagedValue)
+  TMVAnsiCharValue = class(TCharManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
 type
-  TMVValueClass = TMVCurrencyValue;
+  TMVValueClass = TMVAnsiCharValue;
 
 implementation
 
 uses
   SysUtils,
-  BinaryStreaming;
+  BinaryStreaming, StrRect;
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TCurrencyValue
+                                 TAnsiCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
-  MV_LOCAL_DEFAULT_VALUE = 0.0;
+  MV_LOCAL_DEFAULT_VALUE = AnsiChar(#0);
 
 {===============================================================================
-    TCurrencyValue - class implementation
+    TAnsiCharValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -61,26 +61,21 @@ const
 
 class Function TMVValueClass.GetValueType: TManagedValueType;
 begin
-Result := mvtCurrency;
+Result := mvtAnsiChar;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-If Currency(A) > Currency(B) then
-  Result := +1
-else If Currency(A) < Currency(B) then
-  Result := -1
-else
-  Result := 0;
+Result := AnsiStringCompare(AnsiChar(A),AnsiChar(B),Arg);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.SaveToStream(Stream: TStream);
 begin
-Stream_WriteCurrency(Stream,fCurrentValue);
+Stream_WriteAnsiChar(Stream,fCurrentValue);
 end;
 
 //------------------------------------------------------------------------------
@@ -88,24 +83,30 @@ end;
 procedure TMVValueClass.LoadFromStream(Stream: TStream; Init: Boolean = False);
 begin
 If Init then
-  Initialize(Stream_ReadCurrency(Stream),False)
+  Initialize(Stream_ReadAnsiChar(Stream),False)
 else
-  SetCurrentValue(Stream_ReadCurrency(Stream));
+  SetCurrentValue(Stream_ReadAnsiChar(Stream));
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ToString: String;
 begin
-Result := CurrToStr(fCurrentValue,fFormatSettings);
+Result := AnsiToStr(fCurrentValue);
 inherited ToString;
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.FromString(const Str: String);
+var
+  Temp: AnsiString;
 begin
-SetCurrentValue(StrToCurr(Str,fFormatSettings));
+Temp := StrToAnsi(Str);
+If Length(Temp) > 0 then
+  SetCurrentValue(Temp[1])
+else
+  SetCurrentValue(MV_LOCAL_DEFAULT_VALUE);  
 inherited;
 end;
 

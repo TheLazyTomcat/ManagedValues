@@ -68,14 +68,12 @@ end;
 
 Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-begin
 If TDateTime(A) > TDateTime(B) then
   Result := +1
 else If TDateTime(A) < TDateTime(B) then
   Result := -1
 else
   Result := 0;
-end;
 end;
 
 //------------------------------------------------------------------------------

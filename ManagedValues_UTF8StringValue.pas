@@ -1,4 +1,4 @@
-unit ManagedValues_CurrencyValue;
+unit ManagedValues_UTF8StringValue;
 
 {$INCLUDE './ManagedValues_defs.inc'}
 
@@ -11,46 +11,46 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TCurrencyValue
+                                TUTF8StringValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVValueBaseType = Currency;
+  TMVValueBaseType = UTF8String;
 
-{$UNDEF MV_ConstParams}
-{$DEFINE MV_AssignIsThreadSafe}
-{$UNDEF MV_StringLikeType}
-{$UNDEF MV_ComplexStreaming}
+{$DEFINE MV_ConstParams}
+{$UNDEF MV_AssignIsThreadSafe}
+{$DEFINE MV_StringLikeType}
+{$DEFINE MV_ComplexStreaming}
 
 {===============================================================================
-    TCurrencyValue - class declaration
+    TUTF8StringValue - class declaration
 ===============================================================================}
 type
-  TMVCurrencyValue = class(TRealManagedValue)
+  TMVUTF8StringValue = class(TStringManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
 type
-  TMVValueClass = TMVCurrencyValue;
+  TMVValueClass = TMVUTF8StringValue;
 
 implementation
 
 uses
   SysUtils,
-  BinaryStreaming;
+  BinaryStreaming, StrRect;
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TCurrencyValue
+                                TUTF8StringValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
-  MV_LOCAL_DEFAULT_VALUE = 0.0;
+  MV_LOCAL_DEFAULT_VALUE = UTF8String('');
 
 {===============================================================================
-    TCurrencyValue - class implementation
+    TUTF8StringValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -61,26 +61,36 @@ const
 
 class Function TMVValueClass.GetValueType: TManagedValueType;
 begin
-Result := mvtCurrency;
+Result := mvtUTF8String;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-If Currency(A) > Currency(B) then
-  Result := +1
-else If Currency(A) < Currency(B) then
-  Result := -1
-else
-  Result := 0;
+Result := UTF8StringCompare(UTF8String(A),UTF8String(B),Arg);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.ThreadSafeAssign(const Value: TMVValueBaseType): TMVValueBaseType;
+begin
+Result := Value;
+UniqueString(AnsiString(Result));
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.SavedSize: TMemSize;
+begin
+Result := 4 + Length(fCurrentValue);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.SaveToStream(Stream: TStream);
 begin
-Stream_WriteCurrency(Stream,fCurrentValue);
+Stream_WriteUTF8String(Stream,fCurrentValue);
 end;
 
 //------------------------------------------------------------------------------
@@ -88,16 +98,16 @@ end;
 procedure TMVValueClass.LoadFromStream(Stream: TStream; Init: Boolean = False);
 begin
 If Init then
-  Initialize(Stream_ReadCurrency(Stream),False)
+  Initialize(Stream_ReadUTF8String(Stream),False)
 else
-  SetCurrentValue(Stream_ReadCurrency(Stream));
+  SetCurrentValue(Stream_ReadUTF8String(Stream));
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ToString: String;
 begin
-Result := CurrToStr(fCurrentValue,fFormatSettings);
+Result := UTF8ToStr(ThreadSafeAssign(fCurrentValue));
 inherited ToString;
 end;
 
@@ -105,7 +115,7 @@ end;
 
 procedure TMVValueClass.FromString(const Str: String);
 begin
-SetCurrentValue(StrToCurr(Str,fFormatSettings));
+SetCurrentValue(ThreadSafeAssign(StrToUTF8(Str)));
 inherited;
 end;
 

@@ -19,7 +19,20 @@ uses
   ManagedValues_Float32Value,
   ManagedValues_Float64Value,
   ManagedValues_DateTimeValue,
-  ManagedValues_CurrencyValue;
+  ManagedValues_CurrencyValue,
+  ManagedValues_AnsiCharValue,
+  ManagedValues_UTF8CharValue,
+  ManagedValues_WideCharValue,
+  ManagedValues_UnicodeCharValue,
+  ManagedValues_CharValue,
+  ManagedValues_ShortStringValue,
+  ManagedValues_AnsiStringValue,
+  ManagedValues_UTF8StringValue,
+  ManagedValues_WideStringValue,
+  ManagedValues_UnicodeStringValue,
+  ManagedValues_StringValue,
+  ManagedValues_PointerValue,
+  ManagedValues_ObjectValue;
 
 {===============================================================================
     TManagedValue
@@ -27,6 +40,8 @@ uses
 
 type
   TManagedValue = TManagedValueBase;
+
+  TManagedValueClass = class of TManagedValue;
 
 {===============================================================================
     TBooleanValue
@@ -202,7 +217,122 @@ type
 procedure InitValue(out Value: TCurrencyValue; const Name: String = ''; InitializeTo: Currency = 0.0); overload;
 procedure FinalValue(var Value: TCurrencyValue); overload;
 
-{$message 'add some aliasses (integer, longword, ...)'}
+{===============================================================================
+    TAnsiCharValue
+===============================================================================}
+type
+  TAnsiCharValue = class(TMVAnsiCharValue);
+
+procedure InitValue(out Value: TAnsiCharValue; const Name: String = ''; InitializeTo: AnsiChar = #0); overload;
+procedure FinalValue(var Value: TAnsiCharValue); overload;
+
+{===============================================================================
+    TUTF8CharValue
+===============================================================================}
+type
+  TUTF8CharValue = class(TMVUTF8CharValue);
+
+procedure InitValue(out Value: TUTF8CharValue; const Name: String = ''; InitializeTo: UTF8Char = #0); overload;
+procedure FinalValue(var Value: TUTF8CharValue); overload;
+
+{===============================================================================
+    TWideCharValue
+===============================================================================}
+type
+  TWideCharValue = class(TMVWideCharValue);
+
+procedure InitValue(out Value: TWideCharValue; const Name: String = ''; InitializeTo: WideChar = #0); overload;
+procedure FinalValue(var Value: TWideCharValue); overload;
+
+{===============================================================================
+    TUnicodeCharValue
+===============================================================================}
+type
+  TUnicodeCharValue = class(TMVUnicodeCharValue);
+
+procedure InitValue(out Value: TUnicodeCharValue; const Name: String = ''; InitializeTo: UnicodeChar = #0); overload;
+procedure FinalValue(var Value: TUnicodeCharValue); overload;
+
+{===============================================================================
+    TCharValue
+===============================================================================}
+type
+  TCharValue = class(TMVCharValue);
+
+procedure InitValue(out Value: TCharValue; const Name: String = ''; InitializeTo: Char = #0); overload;
+procedure FinalValue(var Value: TCharValue); overload;
+
+{===============================================================================
+    TShortStringValue
+===============================================================================}
+type
+  TShortStringValue = class(TMVShortStringValue);
+
+procedure InitValue(out Value: TShortStringValue; const Name: String = ''; InitializeTo: ShortString = ''); overload;
+procedure FinalValue(var Value: TShortStringValue); overload;
+
+{===============================================================================
+    TAnsiStringValue
+===============================================================================}
+type
+  TAnsiStringValue = class(TMVAnsiStringValue);
+
+procedure InitValue(out Value: TAnsiStringValue; const Name: String = ''; InitializeTo: AnsiString = ''); overload;
+procedure FinalValue(var Value: TAnsiStringValue); overload;
+
+{===============================================================================
+    TUTF8StringValue
+===============================================================================}
+type
+  TUTF8StringValue = class(TMVUTF8StringValue);
+
+procedure InitValue(out Value: TUTF8StringValue; const Name: String = ''; InitializeTo: UTF8String = ''); overload;
+procedure FinalValue(var Value: TUTF8StringValue); overload;
+
+{===============================================================================
+    TWideStringValue
+===============================================================================}
+type
+  TWideStringValue = class(TMVWideStringValue);
+
+procedure InitValue(out Value: TWideStringValue; const Name: String = ''; InitializeTo: WideString = ''); overload;
+procedure FinalValue(var Value: TWideStringValue); overload;
+
+{===============================================================================
+    TUnicodeStringValue
+===============================================================================}
+type
+  TUnicodeStringValue = class(TMVUnicodeStringValue);
+
+procedure InitValue(out Value: TUnicodeStringValue; const Name: String = ''; InitializeTo: UnicodeString = ''); overload;
+procedure FinalValue(var Value: TUnicodeStringValue); overload;
+
+{===============================================================================
+    TStringValue
+===============================================================================}
+type
+  TStringValue = class(TMVStringValue);
+
+procedure InitValue(out Value: TStringValue; const Name: String = ''; InitializeTo: String = ''); overload;
+procedure FinalValue(var Value: TStringValue); overload;
+
+{===============================================================================
+    TPointerValue
+===============================================================================}
+type
+  TPointerValue = class(TMVPointerValue);
+
+procedure InitValue(out Value: TPointerValue; const Name: String = ''; InitializeTo: Pointer = nil); overload;
+procedure FinalValue(var Value: TPointerValue); overload;
+
+{===============================================================================
+    TObjectValue
+===============================================================================}
+type
+  TObjectValue = class(TMVObjectValue);
+
+procedure InitValue(out Value: TObjectValue; const Name: String = ''; InitializeTo: TObject = nil); overload;
+procedure FinalValue(var Value: TObjectValue); overload;
 
 {===============================================================================
 --------------------------------------------------------------------------------
@@ -229,6 +359,19 @@ type
     Function NewFloat64Value(const Name: String = ''; InitTo: Float64 = 0.0): TFloat64Value; virtual;
     Function NewDateTimeValue(const Name: String = ''; InitTo: TDateTime = 0.0): TDateTimeValue; virtual;
     Function NewCurrencyValue(const Name: String = ''; InitTo: Currency = 0.0): TCurrencyValue; virtual;
+    Function NewAnsiCharValue(const Name: String = ''; InitTo: AnsiChar = #0): TAnsiCharValue; virtual;
+    Function NewUTF8CharValue(const Name: String = ''; InitTo: UTF8Char = #0): TUTF8CharValue; virtual;
+    Function NewWideCharValue(const Name: String = ''; InitTo: WideChar = #0): TWideCharValue; virtual;
+    Function NewUnicodeCharValue(const Name: String = ''; InitTo: UnicodeChar = #0): TUnicodeCharValue; virtual;
+    Function NewCharValue(const Name: String = ''; InitTo: Char = #0): TCharValue; virtual;
+    Function NewShortStringValue(const Name: String = ''; InitTo: ShortString = ''): TShortStringValue; virtual;
+    Function NewAnsiStringValue(const Name: String = ''; InitTo: AnsiString = ''): TAnsiStringValue; virtual;
+    Function NewUTF8StringValue(const Name: String = ''; InitTo: UTF8String = ''): TUTF8StringValue; virtual;
+    Function NewWideStringValue(const Name: String = ''; InitTo: WideString = ''): TWideStringValue; virtual;
+    Function NewUnicodeStringValue(const Name: String = ''; InitTo: UnicodeString = ''): TUnicodeStringValue; virtual;
+    Function NewStringValue(const Name: String = ''; InitTo: String = ''): TStringValue; virtual;
+    Function NewPointerValue(const Name: String = ''; InitTo: Pointer = nil): TPointerValue; virtual;
+    Function NewObjectValue(const Name: String = ''; InitTo: TObject = nil): TObjectValue; virtual;
   end;
 
 {===============================================================================
@@ -471,6 +614,228 @@ If Assigned(Value) then
 end;
 
 {===============================================================================
+    TAnsiCharValue
+===============================================================================}
+
+procedure InitValue(out Value: TAnsiCharValue; const Name: String = ''; InitializeTo: AnsiChar = #0);
+begin
+Value := TAnsiCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAnsiCharValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TUTF8CharValue
+===============================================================================}
+
+procedure InitValue(out Value: TUTF8CharValue; const Name: String = ''; InitializeTo: UTF8Char = #0);
+begin
+Value := TUTF8CharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TUTF8CharValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TWideCharValue
+===============================================================================}
+
+procedure InitValue(out Value: TWideCharValue; const Name: String = ''; InitializeTo: WideChar = #0);
+begin
+Value := TWideCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TWideCharValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TUnicodeCharValue
+===============================================================================}
+
+procedure InitValue(out Value: TUnicodeCharValue; const Name: String = ''; InitializeTo: UnicodeChar = #0);
+begin
+Value := TUnicodeCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TUnicodeCharValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TCharValue
+===============================================================================}
+
+procedure InitValue(out Value: TCharValue; const Name: String = ''; InitializeTo: Char = #0);
+begin
+Value := TCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TCharValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TShortStringValue
+===============================================================================}
+
+procedure InitValue(out Value: TShortStringValue; const Name: String = ''; InitializeTo: ShortString = '');
+begin
+Value := TShortStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TShortStringValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAnsiStringValue
+===============================================================================}
+
+procedure InitValue(out Value: TAnsiStringValue; const Name: String = ''; InitializeTo: AnsiString = '');
+begin
+Value := TAnsiStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAnsiStringValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TUTF8StringValue
+===============================================================================}
+
+procedure InitValue(out Value: TUTF8StringValue; const Name: String = ''; InitializeTo: UTF8String = '');
+begin
+Value := TUTF8StringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TUTF8StringValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TWideStringValue
+===============================================================================}
+
+procedure InitValue(out Value: TWideStringValue; const Name: String = ''; InitializeTo: WideString = '');
+begin
+Value := TWideStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TWideStringValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TUnicodeStringValue
+===============================================================================}
+
+procedure InitValue(out Value: TUnicodeStringValue; const Name: String = ''; InitializeTo: UnicodeString = '');
+begin
+Value := TUnicodeStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TUnicodeStringValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TStringValue
+===============================================================================}
+
+procedure InitValue(out Value: TStringValue; const Name: String = ''; InitializeTo: String = '');
+begin
+Value := TStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TStringValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TPointerValue
+===============================================================================}
+
+procedure InitValue(out Value: TPointerValue; const Name: String = ''; InitializeTo: Pointer = nil);
+begin
+Value := TPointerValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TPointerValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TObjectValue
+===============================================================================}
+
+procedure InitValue(out Value: TObjectValue; const Name: String = ''; InitializeTo: TObject = nil);
+begin
+Value := TObjectValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TObjectValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+
+{===============================================================================
 --------------------------------------------------------------------------------
                                  TValuesManager
 --------------------------------------------------------------------------------
@@ -498,17 +863,19 @@ case ValueType of
   mvtFloat64:       Result := TFloat64Value.Create(Name);
   mvtDateTime:      Result := TDateTimeValue.Create(Name);
   mvtCurrency:      Result := TCurrencyValue.Create(Name);
-//  mvtAnsiChar:
-//  mvtWideChar:
-//  mvtUTF8Char:
-//  mvtUnicodeChar:
-//  mvtShortString:
-//  mvtAnsiString:
-//  mvtWideString:
-//  mvtUTF8String:
-//  mvtUnicodeString:
-//  mvtPointer:
-//  mvtObject:
+  mvtAnsiChar:      Result := TAnsiCharValue.Create(Name);
+  mvtWideChar:      Result := TWideCharValue.Create(Name);
+  mvtUTF8Char:      Result := TUTF8CharValue.Create(Name);
+  mvtUnicodeChar:   Result := TUnicodeCharValue.Create(Name);
+  mvtChar:          Result := TCharValue.Create(Name);
+  mvtShortString:   Result := TShortStringValue.Create(Name);
+  mvtAnsiString:    Result := TAnsiStringValue.Create(Name);
+  mvtUTF8String:    Result := TUTF8StringValue.Create(Name);
+  mvtWideString:    Result := TWideStringValue.Create(Name);
+  mvtUnicodeString: Result := TUnicodeStringValue.Create(Name);
+  mvtString:        Result := TStringValue.Create(Name);
+  mvtPointer:       Result := TPointerValue.Create(Name);
+  mvtObject:        Result := TObjectValue.Create(Name);
 else
   raise EMVInvalidValue.CreateFmt('TValuesManager.NewValue: Unknown value type (%d).',[Ord(ValueType)]);
 end;
@@ -616,6 +983,110 @@ end;
 Function TValuesManager.NewCurrencyValue(const Name: String = ''; InitTo: Currency = 0.0): TCurrencyValue;
 begin
 Result := TCurrencyValue(NewValue(mvtCurrency,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAnsiCharValue(const Name: String = ''; InitTo: AnsiChar = #0): TAnsiCharValue;
+begin
+Result := TAnsiCharValue(NewValue(mvtAnsiChar,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewUTF8CharValue(const Name: String = ''; InitTo: UTF8Char = #0): TUTF8CharValue;
+begin
+Result := TUTF8CharValue(NewValue(mvtUTF8Char,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewWideCharValue(const Name: String = ''; InitTo: WideChar = #0): TWideCharValue;
+begin
+Result := TWideCharValue(NewValue(mvtWideChar,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewUnicodeCharValue(const Name: String = ''; InitTo: UnicodeChar = #0): TUnicodeCharValue;
+begin
+Result := TUnicodeCharValue(NewValue(mvtUnicodeChar,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewCharValue(const Name: String = ''; InitTo: Char = #0): TCharValue;
+begin
+Result := TCharValue(NewValue(mvtChar,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewShortStringValue(const Name: String = ''; InitTo: ShortString = ''): TShortStringValue;
+begin
+Result := TShortStringValue(NewValue(mvtShortString,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAnsiStringValue(const Name: String = ''; InitTo: AnsiString = ''): TAnsiStringValue;
+begin
+Result := TAnsiStringValue(NewValue(mvtAnsiString,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewUTF8StringValue(const Name: String = ''; InitTo: UTF8String = ''): TUTF8StringValue;
+begin
+Result := TUTF8StringValue(NewValue(mvtUTF8String,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewWideStringValue(const Name: String = ''; InitTo: WideString = ''): TWideStringValue;
+begin
+Result := TWideStringValue(NewValue(mvtWideString,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewUnicodeStringValue(const Name: String = ''; InitTo: UnicodeString = ''): TUnicodeStringValue;
+begin
+Result := TUnicodeStringValue(NewValue(mvtUnicodeString,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewStringValue(const Name: String = ''; InitTo: String = ''): TStringValue;
+begin
+Result := TStringValue(NewValue(mvtString,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewPointerValue(const Name: String = ''; InitTo: Pointer = nil): TPointerValue;
+begin
+Result := TPointerValue(NewValue(mvtPointer,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewObjectValue(const Name: String = ''; InitTo: TObject = nil): TObjectValue;
+begin
+Result := TObjectValue(NewValue(mvtObject,Name));
 Result.Initialize(InitTo,False);
 end;
 

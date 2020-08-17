@@ -1,4 +1,4 @@
-unit ManagedValues_CurrencyValue;
+unit ManagedValues_ObjectValue;
 
 {$INCLUDE './ManagedValues_defs.inc'}
 
@@ -11,11 +11,11 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TCurrencyValue
+                                  TObjectValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVValueBaseType = Currency;
+  TMVValueBaseType = TObject;
 
 {$UNDEF MV_ConstParams}
 {$DEFINE MV_AssignIsThreadSafe}
@@ -23,17 +23,17 @@ type
 {$UNDEF MV_ComplexStreaming}
 
 {===============================================================================
-    TCurrencyValue - class declaration
+    TObjectValue - class declaration
 ===============================================================================}
 type
-  TMVCurrencyValue = class(TRealManagedValue)
+  TMVObjectValue = class(TOtherManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
 type
-  TMVValueClass = TMVCurrencyValue;
+  TMVValueClass = TMVObjectValue;
 
 implementation
 
@@ -43,14 +43,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TCurrencyValue
+                                  TObjectValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
-  MV_LOCAL_DEFAULT_VALUE = 0.0;
+  MV_LOCAL_DEFAULT_VALUE = nil;
 
 {===============================================================================
-    TCurrencyValue - class implementation
+    TObjectValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -61,16 +61,16 @@ const
 
 class Function TMVValueClass.GetValueType: TManagedValueType;
 begin
-Result := mvtCurrency;
+Result := mvtObject;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-If Currency(A) > Currency(B) then
+If PtrUInt(Pointer(TObject(A))) > PtrUInt(Pointer(TObject(B))) then
   Result := +1
-else If Currency(A) < Currency(B) then
+else If PtrUInt(Pointer(TObject(A))) < PtrUInt(Pointer(TObject(B))) then
   Result := -1
 else
   Result := 0;
@@ -80,7 +80,7 @@ end;
 
 procedure TMVValueClass.SaveToStream(Stream: TStream);
 begin
-Stream_WriteCurrency(Stream,fCurrentValue);
+Stream_WriteUInt64(Stream,UInt64(Pointer(fCurrentValue)));
 end;
 
 //------------------------------------------------------------------------------
@@ -88,16 +88,16 @@ end;
 procedure TMVValueClass.LoadFromStream(Stream: TStream; Init: Boolean = False);
 begin
 If Init then
-  Initialize(Stream_ReadCurrency(Stream),False)
+  Initialize(TObject(Pointer(Stream_ReadUInt64(Stream))),False)
 else
-  SetCurrentValue(Stream_ReadCurrency(Stream));
+  SetCurrentValue(TObject(Pointer(Stream_ReadUInt64(Stream))));
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ToString: String;
 begin
-Result := CurrToStr(fCurrentValue,fFormatSettings);
+Result := Format('0x%p',[Pointer(fCurrentValue)]);
 inherited ToString;
 end;
 
@@ -105,7 +105,7 @@ end;
 
 procedure TMVValueClass.FromString(const Str: String);
 begin
-SetCurrentValue(StrToCurr(Str,fFormatSettings));
+SetCurrentValue(TObject(Pointer(StrToInt64(Str))));
 inherited;
 end;
 

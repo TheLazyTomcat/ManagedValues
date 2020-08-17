@@ -68,14 +68,12 @@ end;
 
 Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-begin
 If Float64(A) > Float64(B) then
   Result := +1
 else If Float64(A) < Float64(B) then
   Result := -1
 else
   Result := 0;
-end;
 end;
 
 //------------------------------------------------------------------------------
