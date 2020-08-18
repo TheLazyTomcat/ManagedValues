@@ -30,10 +30,10 @@ type
     mvtWideChar,mvtUTF8Char,mvtUnicodeChar,mvtChar,mvtShortString,mvtAnsiString,
     mvtUTF8String,mvtWideString,mvtUnicodeString,mvtString,mvtPointer,mvtObject);
     // arrays - implement later
-  (*mvtAoBoolean,mvtAoInt8,mvtAoUInt8,mvtAoInt16,mvtAoUInt16,mvtAoInt32,mvtAoUInt32,
-    mvtAoInt64,mvtAoUInt64,mvtAoFloat32,mvtAoFloat64,mvtAoDateTime,mvtAoCurrency,
-    mvtAoAnsiChar,mvtAoWideChar,mvtAoUTF8Char,mvtAoUnicodeChar,mvtAoChar,
-    mvtAoShortString,mvtAoAnsiString,mvtAoUTF8String,mvtAoWideString,
+  (*mvtAoBoolean,mvtAoInt8,mvtAoUInt8,mvtAoInt16,mvtAoUInt16,mvtAoInt32,
+    mvtAoUInt32,mvtAoInt64,mvtAoUInt64,mvtAoFloat32,mvtAoFloat64,mvtAoDateTime,
+    mvtAoCurrency,mvtAoAnsiChar,mvtAoWideChar,mvtAoUTF8Char,mvtAoUnicodeChar,
+    mvtAoChar,mvtAoShortString,mvtAoAnsiString,mvtAoUTF8String,mvtAoWideString,
     mvtAoUnicodeString,mvtAoString,mvtAoPointer,mvtAoObject);*)
 
 {===============================================================================
@@ -123,6 +123,14 @@ type
 
   TComplexManagedValue = class(TManagedValueBase);
 
+{===============================================================================
+--------------------------------------------------------------------------------
+                               TArrayManagedValue
+--------------------------------------------------------------------------------
+===============================================================================}
+{===============================================================================
+    TArrayManagedValue - class declaration
+===============================================================================}
 type
   TArrayManagedValue = class(TComplexManagedValue)
   protected
@@ -222,7 +230,7 @@ type
     procedure CheckAndSetEquality; virtual;
     procedure ProcessAddedValue(var Value: TManagedValueBase); virtual;
     procedure ProcessDeletedValue(var Value: TManagedValueBase; CanBeFreed: Boolean); virtual;
-    Function GetSortedAdditionIndex: Integer; virtual;
+    Function GetSortedAdditionIndex(Addition: TManagedValueBase): Integer; virtual;
     procedure DeleteInternal(Index: Integer; CanFree: Boolean = True); virtual;
   public
     constructor Create;
@@ -278,17 +286,20 @@ type
     property OnStreaming: TValueManagerStreamingEvent read fOnStreamingEvent write fOnStreamingEvent;
   end;
 
+{===============================================================================
+    Public auxiliary functions - declaration
+===============================================================================}
+
 Function GetGlobalValuesManager: TValuesManagerBase;
 
 implementation
 
-{$IFDEF Windows}
 uses
-  Windows;
-{$ENDIF}
+  {$IFDEF Windows}Windows,{$ENDIF} Math;
 
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
+  {$DEFINE W4055:={$WARN 4055 OFF}} // Conversion between ordinals and pointers is not portable
   {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
 {$ENDIF}
 
@@ -306,12 +317,12 @@ type
     fSynchronizer:  TRTLCriticalSection;
     procedure Initialize; override;
     procedure Finalize; override;
-    {$message 'impl. ordered list with binary searching'}
-//    Function GetSortedAdditionIndex: Integer; override;
+    class Function CompareObjects(A,B: TManagedValueBase): Integer; virtual;
+    Function GetSortedAdditionIndex(Addition: TManagedValueBase): Integer; override;
   public
     procedure Lock; override;
     procedure Unlock; override;
-    //Function IndexOf(Value: TManagedValueBase): Integer; overload; override;    
+    Function IndexOf(Value: TManagedValueBase): Integer; override;
   end;
 
 {===============================================================================
@@ -319,13 +330,6 @@ type
 ===============================================================================}
 var
   MV_GlobalManager: TValuesManagerGlobal = nil;
-
-//------------------------------------------------------------------------------
-
-Function GetGlobalValuesManager: TValuesManagerBase;
-begin
-Result := MV_GlobalManager;
-end;
 
 {===============================================================================
     TValuesManagerGlobal - class implementation
@@ -356,6 +360,48 @@ DeleteCriticalSection(fSynchronizer);
 {$IFEND}
 end;
 
+//------------------------------------------------------------------------------
+
+{$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
+class Function TValuesManagerGlobal.CompareObjects(A,B: TManagedValueBase): Integer;
+begin
+If PtrUInt(Pointer(A)) > PtrUInt(Pointer(B)) then
+  Result := +1
+else If PtrUInt(Pointer(A)) < PtrUInt(Pointer(B)) then
+  Result := -1
+else
+  Result := 0;
+end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
+
+//------------------------------------------------------------------------------
+
+Function TValuesManagerGlobal.GetSortedAdditionIndex(Addition: TManagedValueBase): Integer;
+var
+  L,C,R:  Integer;  // left, center, right
+begin
+If fCount > 0 then
+  begin
+    L := LowIndex;
+    R := HighIndex;
+    while L <= R do   // this must be true at least once when count > 0
+      begin
+        C := (L + R) shr 1;
+        case Sign(CompareObjects(fValues[C],Addition)) of
+          -1: L := Succ(C); // center is "smaller" than addition
+          +1: begin         // center is "bigger" than addition
+                R := Pred(C);
+                Dec(C);
+              end;
+        else
+          Break{while};
+        end;
+      end;
+    Result := Succ(C);  
+  end
+else Result := 0;
+end;
+
 {-------------------------------------------------------------------------------
     TValuesManagerGlobal - public methods
 -------------------------------------------------------------------------------}
@@ -370,6 +416,46 @@ end;
 procedure TValuesManagerGlobal.Unlock;
 begin
 LeaveCriticalSection(fSynchronizer);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManagerGlobal.IndexOf(Value: TManagedValueBase): Integer;
+var
+  L,C,R:  Integer;
+begin
+Lock;
+try
+  If fCount > 25 then   // use binary searching only on larger lists
+    begin
+      Result := -1;
+      L := LowIndex;
+      R := HighIndex;
+      while L <= R do
+        begin
+          C := (L + R) shr 1;
+          case Sign(CompareObjects(fValues[C],Value)) of
+            -1: L := Succ(C);
+            +1: R := Pred(C);
+          else
+            Result := C;
+            Break{while};
+          end;
+        end;
+    end
+  else Result := inherited IndexOf(Value);
+finally
+  Unlock;
+end;
+end;
+
+{===============================================================================
+    Public auxiliary functions - implementation
+===============================================================================}
+
+Function GetGlobalValuesManager: TValuesManagerBase;
+begin
+Result := MV_GlobalManager;
 end;
 
 
@@ -756,10 +842,12 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerBase.GetSortedAdditionIndex: Integer;
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
+Function TValuesManagerBase.GetSortedAdditionIndex(Addition: TManagedValueBase): Integer;
 begin
 Result := fCount;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -1036,7 +1124,7 @@ try
       If not Value.LocallyManaged or (Self is TValuesManagerGlobal) then
         begin
           Grow;
-          Result := GetSortedAdditionIndex;
+          Result := GetSortedAdditionIndex(Value);
           For i := HighIndex downto Result do
             fValues[i + 1] := fValues[i];
           fValues[Result] := Value;
