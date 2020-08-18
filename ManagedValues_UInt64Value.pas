@@ -28,7 +28,7 @@ type
 type
   TMVUInt64Value = class(TIntegerManagedValue)
   {$DEFINE MV_ClassDeclaration}
-    {$INCLUDE './ManagedValues.inc'}
+    {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
@@ -60,7 +60,7 @@ const
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
-  {$INCLUDE './ManagedValues.inc'}
+  {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
 {$UNDEF MV_ClassImplementation}
 
 //------------------------------------------------------------------------------

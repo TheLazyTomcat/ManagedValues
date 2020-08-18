@@ -124,7 +124,43 @@ type
   TComplexManagedValue = class(TManagedValueBase);
 
 type
-  TArrayManagedValue = class(TComplexManagedValue);
+  TArrayManagedValue = class(TComplexManagedValue)
+  protected
+    //fListDelegate:  TCustomListObject;
+    // getters, setters
+    //class Function GetArrayItemType: TArrayItemType; virtual; abstract;
+    // array management methods
+    //proceure GetCapacity: Integer; virtual; abstract;
+    //proceure SetCapacity(Value: Integer): Integer; virtual; abstract;
+    //proceure GetCount: Integer; virtual; abstract;
+    //proceure SetCount(Value: Integer): Integer; virtual; abstract;
+    // utility methods
+    //Function CompareArrayItemValues(const A,B; Arg: Boolean): Integer; virtual; abstract;
+    //Function SameArrayItemValues(const A,B; Arg: Boolean): Boolean; virtual;
+    //procedure ArrayItemThreadSafeAssign; virtual;
+  public
+  (*
+    * - must work with specific type
+
+    LowIndex
+    HighIndex
+    CheckIndex
+    *First
+    *Last
+
+    *IndexOf
+    *Add
+    *Insert
+    Exchange
+    Move
+    *Remove
+    Delete
+    Clear
+
+    Count
+    *Items
+  *)
+  end;
 
 type
   TAoIntegerManagedValue = class(TArrayManagedValue);
@@ -139,7 +175,7 @@ type
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TValueManagerUpdated = (vmuValue,vmuEquals,vmuList);
+  TValueManagerUpdated = (vmuValue,vmuEquals,vmuList);  // only used internally
 
   TValueManagerUpdatedSet = set of TValueManagerUpdated;
 
