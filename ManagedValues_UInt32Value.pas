@@ -41,6 +41,11 @@ uses
   SysUtils,
   BinaryStreaming;
 
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
+{$ENDIF}
+
 {===============================================================================
 --------------------------------------------------------------------------------
                                   TUInt32Value                                  
@@ -66,6 +71,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFNDEF MV_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
 Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If UInt32(A) > UInt32(B) then
@@ -74,7 +80,8 @@ else If UInt32(A) < UInt32(B) then
   Result := -1
 else
   Result := 0;
-end;
+end; 
+{$IFNDEF MV_StringLikeType}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -95,10 +102,10 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.ToString: String;
+Function TMVValueClass.AsString: String;
 begin
 Result := IntToStr(Int64(fCurrentValue));
-inherited ToString;
+inherited AsString;
 end;
 
 //------------------------------------------------------------------------------

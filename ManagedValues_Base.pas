@@ -25,12 +25,12 @@ type
 type
   TManagedValueType = (
     // primitives
-    mvtBool,mvtInt8,mvtUInt8,mvtInt16,mvtUInt16,mvtInt32,mvtUInt32,mvtInt64,
+    mvtBoolean,mvtInt8,mvtUInt8,mvtInt16,mvtUInt16,mvtInt32,mvtUInt32,mvtInt64,
     mvtUInt64,mvtFloat32,mvtFloat64,mvtDateTime,mvtCurrency,mvtAnsiChar,
     mvtWideChar,mvtUTF8Char,mvtUnicodeChar,mvtChar,mvtShortString,mvtAnsiString,
     mvtUTF8String,mvtWideString,mvtUnicodeString,mvtString,mvtPointer,mvtObject);
     // arrays - implement later
-  (*mvtAoBool,mvtAoInt8,mvtAoUInt8,mvtAoInt16,mvtAoUInt16,mvtAoInt32,mvtAoUInt32,
+  (*mvtAoBoolean,mvtAoInt8,mvtAoUInt8,mvtAoInt16,mvtAoUInt16,mvtAoInt32,mvtAoUInt32,
     mvtAoInt64,mvtAoUInt64,mvtAoFloat32,mvtAoFloat64,mvtAoDateTime,mvtAoCurrency,
     mvtAoAnsiChar,mvtAoWideChar,mvtAoUTF8Char,mvtAoUnicodeChar,mvtAoChar,
     mvtAoShortString,mvtAoAnsiString,mvtAoUTF8String,mvtAoWideString,
@@ -79,8 +79,6 @@ type
     constructor CreateAndLoad(Stream: TStream); overload;    
     constructor CreateAndLoad(const Name: String; Stream: TStream); overload;
     destructor Destroy; override;
-    Function Compare: Integer; virtual; abstract;
-    Function Same: Boolean; virtual; abstract;
     procedure Initialize(OnlyValues: Boolean); overload; virtual;
     procedure InitialToCurrent; virtual; abstract;
     procedure CurrentToInitial; virtual; abstract;
@@ -90,7 +88,7 @@ type
     procedure AssignTo(Value: TManagedValueBase); virtual; abstract;
     procedure SaveToStream(Stream: TStream); virtual; abstract;
     procedure LoadFromStream(Stream: TStream; Init: Boolean = False); virtual; abstract;
-    Function ToString: String; virtual;
+    Function AsString: String; virtual;
     procedure FromString(const Str: String); virtual;
     property ValueType: TManagedValueType read GetValueType;
     property GloballyManaged: Boolean read GetGloballyManaged;
@@ -113,15 +111,27 @@ type
 ===============================================================================}
 {
   This exists pretty much only to split large number of classes to smaller
-  groups. There may be some implementation differences in the future, but right
-  now all groups are the same. 
+  groups and give it some order. There may be some implementation differences
+  in the future, but right now all groups are the same.
 }
 type
   TIntegerManagedValue = class(TManagedValueBase);
   TRealManagedValue    = class(TManagedValueBase);
   TCharManagedValue    = class(TManagedValueBase);
   TStringManagedValue  = class(TManagedValueBase);
-  TOtherManagedValue   = class(TManagedValueBase);         
+  TOtherManagedValue   = class(TManagedValueBase);
+
+  TComplexManagedValue = class(TManagedValueBase);
+
+type
+  TArrayManagedValue = class(TComplexManagedValue);
+
+type
+  TAoIntegerManagedValue = class(TArrayManagedValue);
+  TAoRealManagedValue    = class(TArrayManagedValue);
+  TAoCharManagedValue    = class(TArrayManagedValue);
+  TAoStringManagedValue  = class(TArrayManagedValue);
+  TAoOtherManagedValue   = class(TArrayManagedValue);
 
 {===============================================================================
 --------------------------------------------------------------------------------
@@ -175,8 +185,9 @@ type
     // utility
     procedure CheckAndSetEquality; virtual;
     procedure ProcessAddedValue(var Value: TManagedValueBase); virtual;
-    procedure ProcessDeletedValue(var Value: TManagedValueBase); virtual;
+    procedure ProcessDeletedValue(var Value: TManagedValueBase; CanBeFreed: Boolean); virtual;
     Function GetSortedAdditionIndex: Integer; virtual;
+    procedure DeleteInternal(Index: Integer; CanFree: Boolean = True); virtual;
   public
     constructor Create;
     destructor Destroy; override;
@@ -200,6 +211,8 @@ type
     procedure Insert(Index: Integer; Value: TManagedValueBase); virtual;
     procedure Exchange(Idx1,Idx2: Integer); virtual;
     procedure Move(SrcIdx,DstIdx: Integer); virtual;
+    Function Extract(const Name: String): TManagedValueBase; overload; virtual;
+    Function Extract(Value: TManagedValueBase): TManagedValueBase; overload; virtual;
     Function Remove(const Name: String): Integer; overload; virtual;
     Function Remove(Value: TManagedValueBase): Integer; overload; virtual;
     procedure Delete(Index: Integer); virtual;
@@ -236,6 +249,11 @@ implementation
 {$IFDEF Windows}
 uses
   Windows;
+{$ENDIF}
+
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
 {$ENDIF}
 
 {===============================================================================
@@ -398,8 +416,10 @@ end;
 
 procedure TManagedValueBase.Finalize;
 begin
+If Assigned(fLocalManager) then
+  TValuesManagerBase(fLocalManager).Remove(Self);
 If Assigned(fGlobalManager) then
-  TValuesManagerBase(fGlobalManager).Remove(Self);
+  TValuesManagerBase(fGlobalManager).Extract(Self);
 end;
 
 //------------------------------------------------------------------------------
@@ -497,17 +517,20 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TManagedValueBase.ToString: String;
+Function TManagedValueBase.AsString: String;
 begin
 Inc(fReadCount);
+Result := '';
 end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TManagedValueBase.FromString(const Str: String);
 begin
 Inc(fWriteCount);
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 
 {===============================================================================
@@ -562,10 +585,12 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TValuesManagerBase.SetCount(Value: Integer);
 begin
 // do nothing
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -684,12 +709,12 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.ProcessDeletedValue(var Value: TManagedValueBase);
+procedure TValuesManagerBase.ProcessDeletedValue(var Value: TManagedValueBase; CanBeFreed: Boolean);
 begin
 Value.LocalManager := nil;
 Value.OnValueChangeInternal := nil;
 Value.OnEqualsChangeInternal := nil;
-If Self is TValuesManagerGlobal then
+If (Self is TValuesManagerGlobal) and CanBeFreed then
   FreeAndNil(Value);
 end;
 
@@ -698,6 +723,26 @@ end;
 Function TValuesManagerBase.GetSortedAdditionIndex: Integer;
 begin
 Result := fCount;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TValuesManagerBase.DeleteInternal(Index: Integer; CanFree: Boolean = True);
+var
+  i:  Integer;
+begin
+If CheckIndex(Index) then
+  begin
+    ProcessDeletedValue(fValues[Index],CanFree);
+    For i := Index to Pred(HighIndex) do
+      fValues[i] := fValues[i + 1];
+    fValues[HighIndex] := nil;
+    Dec(fCount);
+    CheckAndSetEquality;
+    Shrink;
+    DoChange;
+  end
+else raise EMVIndexOutOfBounds.CreateFmt('TValuesManagerBase.DeleteInternal: Index (%d) out of bounds.',[Index]);
 end;
 
 {-------------------------------------------------------------------------------
@@ -1075,6 +1120,46 @@ end;
 
 //------------------------------------------------------------------------------
 
+Function TValuesManagerBase.Extract(const Name: String): TManagedValueBase;
+var
+  Index: Integer;
+begin
+Lock;
+try
+  Index := IndexOf(Name);
+  If CheckIndex(Index) then
+    begin
+      Result := fValues[Index];
+      DeleteInternal(Index,False);
+    end
+  else Result := nil;
+finally
+  Unlock;
+end;
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Function TValuesManagerBase.Extract(Value: TManagedValueBase): TManagedValueBase;
+var
+  Index: Integer;
+begin
+Lock;
+try
+  Index := IndexOf(Value);
+  If CheckIndex(Index) then
+    begin
+      Result := fValues[Index];
+      DeleteInternal(Index,False);
+    end
+  else Result := nil;
+finally
+  Unlock;
+end;
+end;
+
+//------------------------------------------------------------------------------
+
 Function TValuesManagerBase.Remove(const Name: String): Integer;
 begin
 Lock;
@@ -1104,23 +1189,10 @@ end;
 //------------------------------------------------------------------------------
 
 procedure TValuesManagerBase.Delete(Index: Integer);
-var
-  i:  Integer;
 begin
 Lock;
 try
-  If CheckIndex(Index) then
-    begin
-      ProcessDeletedValue(fValues[Index]);
-      For i := Index to Pred(HighIndex) do
-        fValues[i] := fValues[i + 1];
-      fValues[HighIndex] := nil;
-      Dec(fCount);
-      CheckAndSetEquality;
-      Shrink;
-      DoChange;
-    end
-  else raise EMVIndexOutOfBounds.CreateFmt('TValuesManagerBase.Delete: Index (%d) out of bounds.',[Index]);
+  DeleteInternal(Index,True);
 finally
   Unlock;
 end;
@@ -1135,7 +1207,7 @@ begin
 Lock;
 try
   For i := LowIndex to HighIndex do
-    ProcessDeletedValue(fValues[i]);
+    ProcessDeletedValue(fValues[i],True);
   SetLength(fValues,0);
   fCount := 0;
   fEqualsToInit := True;
@@ -1155,7 +1227,7 @@ Lock;
 try
   For i := LowIndex to HighIndex do
     begin
-      ProcessDeletedValue(fValues[i]);
+      ProcessDeletedValue(fValues[i],True);
       If not(Self is TValuesManagerGlobal) then
         FreeandNil(fValues[i]);
     end;

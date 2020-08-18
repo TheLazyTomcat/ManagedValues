@@ -41,6 +41,11 @@ uses
   SysUtils,
   BinaryStreaming;
 
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
+{$ENDIF}
+
 {===============================================================================
 --------------------------------------------------------------------------------
                                   TBooleanValue
@@ -61,11 +66,12 @@ const
 
 class Function TMVValueClass.GetValueType: TManagedValueType;
 begin
-Result := mvtBool;
+Result := mvtBoolean;
 end;
 
 //------------------------------------------------------------------------------
 
+{$IFNDEF MV_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
 Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If Boolean(A) and not Boolean(B) then
@@ -74,7 +80,8 @@ else If not Boolean(A) and Boolean(B) then
   Result := -1
 else
   Result := 0;
-end;
+end; 
+{$IFNDEF MV_StringLikeType}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -102,10 +109,10 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.ToString: String;
+Function TMVValueClass.AsString: String;
 begin
 Result := BoolToStr(fCurrentValue,True);
-inherited ToString;
+inherited AsString;
 end;
 
 //------------------------------------------------------------------------------

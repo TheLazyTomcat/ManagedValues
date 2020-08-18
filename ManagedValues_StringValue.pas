@@ -106,10 +106,10 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.ToString: String;
+Function TMVValueClass.AsString: String;
 begin
 Result := ThreadSafeAssign(fCurrentValue);
-inherited ToString;
+inherited AsString;
 end;
 
 //------------------------------------------------------------------------------

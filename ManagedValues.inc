@@ -11,15 +11,15 @@
     procedure Initialize; override;
     Function CompareBaseValues(const A,B; Arg: Boolean): Integer; override;
   {$IFNDEF MV_AssignIsThreadSafe}
-    Function ThreadSafeAssign({$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType): TMVValueBaseType; reintroduce;
+    Function ThreadSafeAssign({$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType): TMVValueBaseType; reintroduce; virtual;
   {$ENDIF}
     procedure CheckAndSetEquality; override;
   public
     constructor CreateAndInit({$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType); overload;
     constructor CreateAndInit(const Name: String; {$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType); overload;
-    Function Compare(Value: TManagedValueBase{$IFDEF MV_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer; reintroduce;
-    Function Same(Value: TManagedValueBase{$IFDEF MV_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean; reintroduce;
-    procedure Initialize({$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType; OnlyValues: Boolean); reintroduce; overload;
+    Function Compare(Value: TManagedValueBase{$IFDEF MV_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
+    Function Same(Value: TManagedValueBase{$IFDEF MV_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean; virtual;
+    procedure Initialize({$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType; OnlyValues: Boolean); reintroduce; overload; virtual;
     procedure InitialToCurrent; override;
     procedure CurrentToInitial; override;
     procedure SwapInitialAndCurrent; override;
@@ -28,7 +28,7 @@
     procedure AssignTo(Value: TManagedValueBase); override;
     procedure SaveToStream(Stream: TStream); override;    
     procedure LoadFromStream(Stream: TStream; Init: Boolean = False); override;
-    Function ToString: String; override;
+    Function AsString: String; override;
     procedure FromString(const Str: String); override;
     property CurrentValue: TMVValueBaseType read GetCurrentValue write SetCurrentValue;
     property InitialValue: TMVValueBaseType read fInitialValue write SetInitialValue;
@@ -133,7 +133,7 @@ end;
 
 Function TMVValueClass.Same(Value: TManagedValueBase{$IFDEF MV_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean;
 begin
-Result := Compare(Value,{$IFDEF MV_StringLikeType}CaseSensitive{$ENDIF}) = 0;
+Result := Compare(Value{$IFDEF MV_StringLikeType},CaseSensitive{$ENDIF}) = 0;
 end;
 
 //------------------------------------------------------------------------------

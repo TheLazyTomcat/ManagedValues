@@ -105,10 +105,10 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.ToString: String;
+Function TMVValueClass.AsString: String;
 begin
 Result := WideToStr(ThreadSafeAssign(fCurrentValue));
-inherited ToString;
+inherited AsString;
 end;
 
 //------------------------------------------------------------------------------

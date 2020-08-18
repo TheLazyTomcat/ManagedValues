@@ -54,10 +54,6 @@ type
 procedure InitValue(out Value: TBooleanValue; const Name: String = ''; InitializeTo: Boolean = False); overload;
 procedure FinalValue(var Value: TBooleanValue); overload;
 
-{$IFDEF FPC}
-{$message 'operator overload'}
-{$ENDIF}
-
 {===============================================================================
     TInt8Value
 ===============================================================================}
@@ -346,7 +342,7 @@ type
   TValuesManager = class(TValuesManagerBase)
   public
     Function NewValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValueBase; virtual;
-    Function NewBoolValue(const Name: String = ''; InitTo: Boolean = False): TBooleanValue; virtual;
+    Function NewBooleanValue(const Name: String = ''; InitTo: Boolean = False): TBooleanValue; virtual;
     Function NewInt8Value(const Name: String = ''; InitTo: Int8 = 0): TInt8Value; virtual;
     Function NewUInt8Value(const Name: String = ''; InitTo: UInt8 = 0): TUInt8Value; virtual;
     Function NewInt16Value(const Name: String = ''; InitTo: Int16 = 0): TInt16Value; virtual;
@@ -850,7 +846,7 @@ end;
 Function TValuesManager.NewValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValueBase;
 begin
 case ValueType of
-  mvtBool:          Result := TBooleanValue.Create(Name);
+  mvtBoolean:       Result := TBooleanValue.Create(Name);
   mvtInt8:          Result := TInt8Value.Create(Name);
   mvtUInt8:         Result := TUInt8Value.Create(Name);
   mvtInt16:         Result := TInt16Value.Create(Name);
@@ -884,9 +880,9 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManager.NewBoolValue(const Name: String = ''; InitTo: Boolean = False): TBooleanValue;
+Function TValuesManager.NewBooleanValue(const Name: String = ''; InitTo: Boolean = False): TBooleanValue;
 begin
-Result := TBooleanValue(NewValue(mvtBool,Name));
+Result := TBooleanValue(NewValue(mvtBoolean,Name));
 Result.Initialize(InitTo,False);
 end;
 

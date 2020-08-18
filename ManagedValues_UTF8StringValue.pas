@@ -76,7 +76,7 @@ end;
 Function TMVValueClass.ThreadSafeAssign(const Value: TMVValueBaseType): TMVValueBaseType;
 begin
 Result := Value;
-UniqueString(AnsiString(Result));
+UniqueString({$IFNDEF FPC}AnsiString{$ENDIF}(Result));
 end;
 
 //------------------------------------------------------------------------------
@@ -105,10 +105,10 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.ToString: String;
+Function TMVValueClass.AsString: String;
 begin
 Result := UTF8ToStr(ThreadSafeAssign(fCurrentValue));
-inherited ToString;
+inherited AsString;
 end;
 
 //------------------------------------------------------------------------------

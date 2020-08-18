@@ -90,10 +90,10 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.ToString: String;
+Function TMVValueClass.AsString: String;
 begin
 Result := UTF8ToStr(fCurrentValue);
-inherited ToString;
+inherited AsString;
 end;
 
 //------------------------------------------------------------------------------

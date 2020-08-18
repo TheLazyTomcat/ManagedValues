@@ -97,10 +97,10 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.ToString: String;
+Function TMVValueClass.AsString: String;
 begin
 Result := ShortToStr(fCurrentValue);
-inherited ToString;
+inherited AsString;
 end;
 
 //------------------------------------------------------------------------------
