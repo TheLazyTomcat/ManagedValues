@@ -27,9 +27,9 @@ type
 ===============================================================================}
 type
   TMVAoBooleanValue = class(TMVAoOtherManagedValue)
-  //{$DEFINE MV_ClassDeclaration}
-  //  {$INCLUDE './ManagedValues_ArrayValues.inc'}
-  //{$UNDEF MV_ClassDeclaration}
+  {$DEFINE MV_ClassDeclaration}
+    {$INCLUDE './ManagedValues_ArrayValues.inc'}
+  {$UNDEF MV_ClassDeclaration}
   (*
   private
     fCurrentValue:  TMVValueArrayTypeInternal;

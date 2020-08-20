@@ -17,10 +17,10 @@ uses
 type
   TMVValueBaseType = Boolean;
 
-{$UNDEF MV_ConstParams}
-{$DEFINE MV_AssignIsThreadSafe}
-{$UNDEF MV_StringLikeType}
-{$DEFINE MV_ComplexStreaming}
+{$UNDEF MV_Value_ConstParams}
+{$DEFINE MV_Value_AssignIsThreadSafe}
+{$UNDEF MV_Value_StringLikeType}
+{$DEFINE MV_Value_ComplexStreaming}
 
 {===============================================================================
     TMVBooleanValue - class declaration
@@ -71,7 +71,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFNDEF MV_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
+{$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If Boolean(A) and not Boolean(B) then
@@ -81,7 +81,7 @@ else If not Boolean(A) and Boolean(B) then
 else
   Result := 0;
 end; 
-{$IFNDEF MV_StringLikeType}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
+{$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
 
 //------------------------------------------------------------------------------
 

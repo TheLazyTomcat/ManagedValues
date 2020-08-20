@@ -17,10 +17,10 @@ uses
 type
   TMVValueBaseType = ShortString;
 
-{$DEFINE MV_ConstParams}
-{$DEFINE MV_AssignIsThreadSafe}
-{$DEFINE MV_StringLikeType}
-{$DEFINE MV_ComplexStreaming}
+{$DEFINE MV_Value_ConstParams}
+{$DEFINE MV_Value_AssignIsThreadSafe}
+{$DEFINE MV_Value_StringLikeType}
+{$DEFINE MV_Value_ComplexStreaming}
 
 {===============================================================================
     TMVShortStringValue - class declaration

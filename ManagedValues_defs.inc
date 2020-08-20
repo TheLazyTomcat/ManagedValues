@@ -23,15 +23,14 @@
 {$ENDIF}
 {$H+}
 
-{$UNDEF MV_ConstParams}
-{$UNDEF MV_AssignIsThreadSafe}
-{$UNDEF MV_StringLikeType}
-{$UNDEF MV_ComplexStreaming}
+{$UNDEF MV_Value_ConstParams}
+{$UNDEF MV_Value_AssignIsThreadSafe}
+{$UNDEF MV_Value_StringLikeType}
+{$UNDEF MV_Value_ComplexStreaming}
 
-{$UNDEF MV_ItemConstParams}
-{$UNDEF MV_ItemAssignIsThreadSafe}
-{$UNDEF MV_ItemStringLikeType}
-
+{$UNDEF MV_ArrayItem_ConstParams}
+{$UNDEF MV_ArrayItem_ItemAssignIsThreadSafe}
+{$UNDEF MV_ArrayItem_ItemStringLikeType}
 
 {$UNDEF MV_ClassDeclaration}
 {$UNDEF MV_ClassImplementation}

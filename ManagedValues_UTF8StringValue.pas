@@ -17,10 +17,10 @@ uses
 type
   TMVValueBaseType = UTF8String;
 
-{$DEFINE MV_ConstParams}
-{$UNDEF MV_AssignIsThreadSafe}
-{$DEFINE MV_StringLikeType}
-{$DEFINE MV_ComplexStreaming}
+{$DEFINE MV_Value_ConstParams}
+{$UNDEF MV_Value_AssignIsThreadSafe}
+{$DEFINE MV_Value_StringLikeType}
+{$DEFINE MV_Value_ComplexStreaming}
 
 {===============================================================================
     TMVUTF8StringValue - class declaration

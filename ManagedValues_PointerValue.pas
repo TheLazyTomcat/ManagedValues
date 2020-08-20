@@ -17,10 +17,10 @@ uses
 type
   TMVValueBaseType = Pointer;
 
-{$UNDEF MV_ConstParams}
-{$DEFINE MV_AssignIsThreadSafe}
-{$UNDEF MV_StringLikeType}
-{$UNDEF MV_ComplexStreaming}
+{$UNDEF MV_Value_ConstParams}
+{$DEFINE MV_Value_AssignIsThreadSafe}
+{$UNDEF MV_Value_StringLikeType}
+{$UNDEF MV_Value_ComplexStreaming}
 
 {===============================================================================
     TMVPointerValue - class declaration
@@ -73,7 +73,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFDEF FPCDWM}{$PUSH}W4055 {$IFNDEF MV_StringLikeType}W5024{$ENDIF}{$ENDIF}
+{$IFDEF FPCDWM}{$PUSH}W4055 {$IFNDEF MV_Value_StringLikeType}W5024{$ENDIF}{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If PtrUInt(Pointer(A)) > PtrUInt(Pointer(B)) then
