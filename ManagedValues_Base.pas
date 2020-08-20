@@ -340,14 +340,25 @@ type
   TMVValuesManagerGlobal = class(TMVValuesManagerBase)
   protected
     fSynchronizer:  TRTLCriticalSection;
+    procedure ValueChangeHandler(Sender: TObject); override;
+    procedure EqualsChangeHandler(Sender: TObject); override;
+    procedure DoChange; override;
     procedure Initialize; override;
     procedure Finalize; override;
+    procedure CheckAndSetEquality; override;
+    procedure ProcessAddedValue(var Value: TMVManagedValueBase); override;
+    procedure ProcessDeletedValue(var Value: TMVManagedValueBase; CanBeFreed: Boolean); override;
     class Function CompareObjects(A,B: TMVManagedValueBase): Integer; virtual;
     Function GetSortedAdditionIndex(Addition: TMVManagedValueBase): Integer; override;
   public
     procedure Lock; override;
     procedure Unlock; override;
+    procedure BeginUpdate; override;
+    procedure EndUpdate; override;
     Function IndexOf(Value: TMVManagedValueBase): Integer; override;
+    procedure Insert(Index: Integer; Value: TMVManagedValueBase); override;
+    procedure Exchange(Idx1,Idx2: Integer); override;
+    procedure Move(SrcIdx,DstIdx: Integer); override;
   end;
 
 {===============================================================================
@@ -362,6 +373,27 @@ var
 {-------------------------------------------------------------------------------
     TMVValuesManagerGlobal - protected methods
 -------------------------------------------------------------------------------}
+
+procedure TMVValuesManagerGlobal.ValueChangeHandler(Sender: TObject);
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValuesManagerGlobal.EqualsChangeHandler(Sender: TObject);
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValuesManagerGlobal.DoChange;
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
 
 procedure TMVValuesManagerGlobal.Initialize;
 begin
@@ -383,6 +415,29 @@ DoneCriticalSection(fSynchronizer);
 {$ELSE}
 DeleteCriticalSection(fSynchronizer);
 {$IFEND}
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValuesManagerGlobal.CheckAndSetEquality;
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValuesManagerGlobal.ProcessAddedValue(var Value: TMVManagedValueBase);
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValuesManagerGlobal.ProcessDeletedValue(var Value: TMVManagedValueBase; CanBeFreed: Boolean);
+begin
+inherited ProcessDeletedValue(Value,CanBeFreed);
+If CanBeFreed then
+  FreeAndNil(Value);
 end;
 
 //------------------------------------------------------------------------------
@@ -445,6 +500,20 @@ end;
 
 //------------------------------------------------------------------------------
 
+procedure TMVValuesManagerGlobal.BeginUpdate;
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValuesManagerGlobal.EndUpdate;
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
 Function TMVValuesManagerGlobal.IndexOf(Value: TMVManagedValueBase): Integer;
 var
   L,C,R:  Integer;
@@ -472,6 +541,27 @@ try
 finally
   Unlock;
 end;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValuesManagerGlobal.Insert(Index: Integer; Value: TMVManagedValueBase);
+begin
+raise EMVInvalidOperation.Create('TMVValuesManagerGlobal.Insert: Invalid operation.');
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValuesManagerGlobal.Exchange(Idx1,Idx2: Integer);
+begin
+raise EMVInvalidOperation.Create('TMVValuesManagerGlobal.Exchange: Invalid operation.');
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValuesManagerGlobal.Move(SrcIdx,DstIdx: Integer);
+begin
+raise EMVInvalidOperation.Create('TMVValuesManagerGlobal.Move: Invalid operation.');
 end;
 
 {===============================================================================
@@ -870,14 +960,20 @@ end;
 //------------------------------------------------------------------------------
 
 procedure TMVValuesManagerBase.SetCapacity(Value: Integer);
+var
+  i:  Integer;
 begin
 If Value >= 0 then
   begin
     If Value <> Length(fValues) then
       begin
-        SetLength(fValues,Value);
         If Value < fCount then
-          fCount := Value;
+          begin
+            For i := Value to HighIndex do
+              ProcessDeletedValue(fValues[i],True);
+            fCount := Value;
+          end;
+        SetLength(fValues,Value);
       end;
   end
 else raise EMVInvalidValue.CreateFmt('TMVValuesManagerBase.SetCapacity: Invalid capacity (%d).',[Value]);
@@ -903,46 +999,43 @@ end;
 
 procedure TMVValuesManagerBase.ValueChangeHandler(Sender: TObject);
 begin
-If not(Self is TMVValuesManagerGlobal) then
-  If fUpdateCounter <= 0 then
-    begin
-      Include(fUpdated,vmuValue);
-      If Assigned(fOnValueChangeEvent) then
-        fOnValueChangeEvent(Self,Sender);
-      If Assigned(fOnValueChangeCallback) then
-        fOnValueChangeCallback(Self,Sender);
-    end;
+If fUpdateCounter <= 0 then
+  begin
+    Include(fUpdated,vmuValue);
+    If Assigned(fOnValueChangeEvent) then
+      fOnValueChangeEvent(Self,Sender);
+    If Assigned(fOnValueChangeCallback) then
+      fOnValueChangeCallback(Self,Sender);
+  end;
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValuesManagerBase.EqualsChangeHandler(Sender: TObject);
 begin
-If not(Self is TMVValuesManagerGlobal) then
-  If fUpdateCounter <= 0 then
-    begin
-      CheckAndSetEquality;
-      Include(fUpdated,vmuEquals);
-      If Assigned(fOnEqualsChangeEvent) then
-        fOnEqualsChangeEvent(Self,Sender);
-      If Assigned(fOnEqualsChangeCallback) then
-        fOnEqualsChangeCallback(Self,Sender);
-    end;
+If fUpdateCounter <= 0 then
+  begin
+    CheckAndSetEquality;
+    Include(fUpdated,vmuEquals);
+    If Assigned(fOnEqualsChangeEvent) then
+      fOnEqualsChangeEvent(Self,Sender);
+    If Assigned(fOnEqualsChangeCallback) then
+      fOnEqualsChangeCallback(Self,Sender);
+  end;
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValuesManagerBase.DoChange;
 begin
-If not(Self is TMVValuesManagerGlobal) then
-  If fUpdateCounter <= 0 then
-    begin
-      Include(fUpdated,vmuList);
-      If Assigned(fOnChangeEvent) then
-        fOnChangeEvent(Self);
-      If Assigned(fOnChangeCallback) then
-        fOnChangeCallback(Self);
-    end;
+If fUpdateCounter <= 0 then
+  begin
+    Include(fUpdated,vmuList);
+    If Assigned(fOnChangeEvent) then
+      fOnChangeEvent(Self);
+    If Assigned(fOnChangeCallback) then
+      fOnChangeCallback(Self);
+  end;
 end;
 
 //------------------------------------------------------------------------------
@@ -990,28 +1083,22 @@ procedure TMVValuesManagerBase.CheckAndSetEquality;
 var
   i:  Integer;
 begin
-If not (Self is TMVValuesManagerGlobal) then
-  begin
-    fEqualsToInit := True;
-    For i := LowIndex to HighIndex do
-      If not fValues[i].EqualsToInitial then
-        begin
-          fEqualsToInit := False;
-          Break{For i};
-        end;
-  end;
+fEqualsToInit := True;
+For i := LowIndex to HighIndex do
+  If not fValues[i].EqualsToInitial then
+    begin
+      fEqualsToInit := False;
+      Break{For i};
+    end;
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValuesManagerBase.ProcessAddedValue(var Value: TMVManagedValueBase);
 begin
-If not (Self is TMVValuesManagerGlobal) then
-  begin
-    Value.LocalManager := Self;
-    Value.OnValueChangeInternal := ValueChangeHandler;
-    Value.OnEqualsChangeInternal := EqualsChangeHandler;
-  end;
+Value.LocalManager := Self;
+Value.OnValueChangeInternal := ValueChangeHandler;
+Value.OnEqualsChangeInternal := EqualsChangeHandler;
 end;
 
 //------------------------------------------------------------------------------
@@ -1021,8 +1108,6 @@ begin
 Value.LocalManager := nil;
 Value.OnValueChangeInternal := nil;
 Value.OnEqualsChangeInternal := nil;
-If (Self is TMVValuesManagerGlobal) and CanBeFreed then
-  FreeAndNil(Value);
 end;
 
 //------------------------------------------------------------------------------
@@ -1114,32 +1199,26 @@ end;
 
 procedure TMVValuesManagerBase.BeginUpdate;
 begin
-If not (Self is TMVValuesManagerGlobal) then
-  begin
-    If fUpdateCounter <= 0 then
-      fUpdated := [];
-    Inc(fUpdateCounter);
-  end;
+If fUpdateCounter <= 0 then
+  fUpdated := [];
+Inc(fUpdateCounter);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValuesManagerBase.EndUpdate;
 begin
-If not (Self is TMVValuesManagerGlobal) then
+Dec(fUpdateCounter);
+If fUpdateCounter <= 0 then
   begin
-    Dec(fUpdateCounter);
-    If fUpdateCounter <= 0 then
-      begin
-        fUpdateCounter := 0;
-        If vmuValue in fUpdated then
-          ValueChangeHandler(nil);
-        If vmuEquals in fUpdated then
-          EqualsChangeHandler(nil);
-        If vmuList in fUpdated then
-          DoChange;
-        fUpdated := [];
-      end;
+    fUpdateCounter := 0;
+    If vmuValue in fUpdated then
+      ValueChangeHandler(nil);
+    If vmuEquals in fUpdated then
+      EqualsChangeHandler(nil);
+    If vmuList in fUpdated then
+      DoChange;
+    fUpdated := [];
   end;
 end;
 
@@ -1333,33 +1412,29 @@ var
 begin
 Lock;
 try
-  If not(Self is TMVValuesManagerGlobal) then
+  Idx := IndexOf(Value);
+  If not CheckIndex(Idx) then
     begin
-      Idx := IndexOf(Value);
-      If not CheckIndex(Idx) then
+      If not Value.LocallyManaged then
         begin
-          If not Value.LocallyManaged then
+          If CheckIndex(Index) then
             begin
-              If CheckIndex(Index) then
-                begin
-                  Grow;
-                  For i := HighIndex downto Index do
-                    fValues[i + 1] := fValues[i];
-                  fValues[Index] := Value;
-                  ProcessAddedValue(Value);
-                  Inc(fCount);
-                  CheckAndSetEquality;
-                  DoChange;
-                end
-              else If Index = fCount then
-                Add(Value)
-              else
-                raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Insert: Index (%d) out of bounds.',[Index]);
+              Grow;
+              For i := HighIndex downto Index do
+                fValues[i + 1] := fValues[i];
+              fValues[Index] := Value;
+              ProcessAddedValue(Value);
+              Inc(fCount);
+              CheckAndSetEquality;
+              DoChange;
             end
-          else raise EMVAlreadyManaged.CreateFmt('TMVValuesManagerBase.Insert: Value %s is already managed.',[Value.InstanceString]);
-        end;
-    end
-  else raise EMVInvalidOperation.Create('TMVValuesManagerBase.Insert: Invalid operation.');
+          else If Index = fCount then
+            Add(Value)
+          else
+            raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Insert: Index (%d) out of bounds.',[Index]);
+        end
+      else raise EMVAlreadyManaged.CreateFmt('TMVValuesManagerBase.Insert: Value %s is already managed.',[Value.InstanceString]);
+    end;
 finally
   Unlock;
 end;
@@ -1373,21 +1448,17 @@ var
 begin
 Lock;
 try
-  If not(Self is TMVValuesManagerGlobal) then
+  If Idx1 <> Idx2 then
     begin
-      If Idx1 <> Idx2 then
-        begin
-          If not CheckIndex(Idx1) then
-            raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Exchange: Index 1 (%d) out of bounds.',[Idx1]);
-          If not CheckIndex(Idx2) then
-            raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Exchange: Index 2 (%d) out of bounds.',[Idx2]);
-          Temp := fValues[Idx1];
-          fValues[Idx1] := fValues[Idx2];
-          fValues[Idx2] := Temp;
-          DoChange;
-        end
-    end
-  else raise EMVInvalidOperation.Create('TMVValuesManagerBase.Exchange: Invalid operation.');
+      If not CheckIndex(Idx1) then
+        raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Exchange: Index 1 (%d) out of bounds.',[Idx1]);
+      If not CheckIndex(Idx2) then
+        raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Exchange: Index 2 (%d) out of bounds.',[Idx2]);
+      Temp := fValues[Idx1];
+      fValues[Idx1] := fValues[Idx2];
+      fValues[Idx2] := Temp;
+      DoChange;
+    end;
 finally
   Unlock;
 end;    
@@ -1402,26 +1473,22 @@ var
 begin
 Lock;
 try
-  If not(Self is TMVValuesManagerGlobal) then
+  If SrcIdx <> DstIdx then
     begin
-      If SrcIdx <> DstIdx then
-        begin
-          If not CheckIndex(SrcIdx) then
-            raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Move: Source index (%d) out of bounds.',[SrcIdx]);
-          If not CheckIndex(DstIdx) then
-            raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Move: Destination index (%d) out of bounds.',[DstIdx]);
-          Temp := fValues[SrcIdx];
-          If SrcIdx < DstIdx then
-            For i := SrcIdx to Pred(DstIdx) do
-              fValues[i] := fValues[i + 1]
-          else
-            For i := SrcIdx downto Succ(DstIdx) do
-              fValues[i] := fValues[i - 1];
-          fValues[DstIdx] := Temp;
-          DoChange;
-        end
-    end
-  else raise EMVInvalidOperation.Create('TMVValuesManagerBase.Move: Invalid operation.');
+      If not CheckIndex(SrcIdx) then
+        raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Move: Source index (%d) out of bounds.',[SrcIdx]);
+      If not CheckIndex(DstIdx) then
+        raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Move: Destination index (%d) out of bounds.',[DstIdx]);
+      Temp := fValues[SrcIdx];
+      If SrcIdx < DstIdx then
+        For i := SrcIdx to Pred(DstIdx) do
+          fValues[i] := fValues[i + 1]
+      else
+        For i := SrcIdx downto Succ(DstIdx) do
+          fValues[i] := fValues[i - 1];
+      fValues[DstIdx] := Temp;
+      DoChange;
+    end;
 finally
   Unlock;
 end;    

@@ -1,3 +1,6 @@
+{===============================================================================
+    TMVValueClass - class declaration
+===============================================================================}
 {$IFDEF MV_ClassDeclaration}
   private
     fCurrentValue:  TMVValueBaseType;
@@ -35,8 +38,9 @@
     property Value: TMVValueBaseType read GetCurrentValue write SetCurrentValue;
 {$ENDIF MV_ClassDeclaration}
 
-//==============================================================================
-
+{===============================================================================
+    TMVValueClass - class implementation
+===============================================================================}
 {$IFDEF MV_ClassImplementation}
 {-------------------------------------------------------------------------------
     TMVValueClass - private methods

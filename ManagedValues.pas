@@ -334,6 +334,14 @@ procedure InitValue(out Value: TObjectValue; const Name: String = ''; Initialize
 procedure FinalValue(var Value: TObjectValue); overload;
 
 {===============================================================================
+    Auxiliary funtions
+===============================================================================}
+
+Function ClassByValueType(ValueType: TMVManagedValueType): TManagedValueClass;
+
+Function CreateByValueType(ValueType: TMVManagedValueType; const Name: String = ''): TManagedValue;
+
+{===============================================================================
 --------------------------------------------------------------------------------
                                  TValuesManager
 --------------------------------------------------------------------------------
@@ -852,6 +860,82 @@ end;
 
 
 {===============================================================================
+    Auxiliary funtions
+===============================================================================}
+
+Function ClassByValueType(ValueType: TMVManagedValueType): TManagedValueClass;
+begin
+case ValueType of
+  // primitive values
+  mvtBoolean:         Result := TBooleanValue;
+  mvtInt8:            Result := TInt8Value;
+  mvtUInt8:           Result := TUInt8Value;
+  mvtInt16:           Result := TInt16Value;
+  mvtUInt16:          Result := TUInt16Value;
+  mvtInt32:           Result := TInt32Value;
+  mvtUInt32:          Result := TUInt32Value;
+  mvtInt64:           Result := TInt64Value;
+  mvtUInt64:          Result := TUInt64Value;
+  mvtFloat32:         Result := TFloat32Value;
+  mvtFloat64:         Result := TFloat64Value;
+  mvtDateTime:        Result := TDateTimeValue;
+  mvtCurrency:        Result := TCurrencyValue;
+  mvtAnsiChar:        Result := TAnsiCharValue;
+  mvtWideChar:        Result := TWideCharValue;
+  mvtUTF8Char:        Result := TUTF8CharValue;
+  mvtUnicodeChar:     Result := TUnicodeCharValue;
+  mvtChar:            Result := TCharValue;
+  mvtShortString:     Result := TShortStringValue;
+  mvtAnsiString:      Result := TAnsiStringValue;
+  mvtUTF8String:      Result := TUTF8StringValue;
+  mvtWideString:      Result := TWideStringValue;
+  mvtUnicodeString:   Result := TUnicodeStringValue;
+  mvtString:          Result := TStringValue;
+  mvtPointer:         Result := TPointerValue;
+  mvtObject:          Result := TObjectValue;
+  // array values
+(*
+  mvtAoBoolean:       Result := TAoBooleanValue;
+  mvtAoInt8:          Result := TAoInt8Value;
+  mvtAoUInt8:         Result := TAoUInt8Value;
+  mvtAoInt16:         Result := TAoInt16Value;
+  mvtAoUInt16:        Result := TAoUInt16Value;
+  mvtAoInt32:         Result := TAoInt32Value;
+  mvtAoUInt32:        Result := TAoUInt32Value;
+  mvtAoInt64:         Result := TAoInt64Value;
+  mvtAoUInt64:        Result := TAoUInt64Value;
+  mvtAoFloat32:       Result := TAoFloat32Value;
+  mvtAoFloat64:       Result := TAoFloat64Value;
+  mvtAoDateTime:      Result := TAoDateTimeValue;
+  mvtAoCurrency:      Result := TAoCurrencyValue;
+  mvtAoAnsiChar:      Result := TAoAnsiCharValue;
+  mvtAoWideChar:      Result := TAoWideCharValue;
+  mvtAoUTF8Char:      Result := TAoUTF8CharValue;
+  mvtAoUnicodeChar:   Result := TAoUnicodeCharValue;
+  mvtAoChar:          Result := TAoCharValue;
+  mvtAoShortString:   Result := TAoShortStringValue;
+  mvtAoAnsiString:    Result := TAoAnsiStringValue;
+  mvtAoUTF8String:    Result := TAoUTF8StringValue;
+  mvtAoWideString:    Result := TAoWideStringValue;
+  mvtAoUnicodeString: Result := TAoUnicodeStringValue;
+  mvtAoString:        Result := TAoStringValue;
+  mvtAoPointer:       Result := TAoPointerValue;
+  mvtAoObject:        Result := TAoObjectValue;
+*)
+else
+  raise EMVInvalidValue.CreateFmt('ClassByValueType: Unknown value type (%d).',[Ord(ValueType)]);
+end;
+end;
+
+//------------------------------------------------------------------------------
+
+Function CreateByValueType(ValueType: TMVManagedValueType; const Name: String = ''): TManagedValue;
+begin
+Result := ClassByValueType(ValueType).Create(Name);
+end;
+
+
+{===============================================================================
 --------------------------------------------------------------------------------
                                  TValuesManager
 --------------------------------------------------------------------------------
@@ -865,36 +949,7 @@ end;
 
 Function TValuesManager.NewValue(ValueType: TMVManagedValueType; const Name: String = ''): TMVManagedValueBase;
 begin
-case ValueType of
-  mvtBoolean:       Result := TBooleanValue.Create(Name);
-  mvtInt8:          Result := TInt8Value.Create(Name);
-  mvtUInt8:         Result := TUInt8Value.Create(Name);
-  mvtInt16:         Result := TInt16Value.Create(Name);
-  mvtUInt16:        Result := TUInt16Value.Create(Name);
-  mvtInt32:         Result := TInt32Value.Create(Name);
-  mvtUInt32:        Result := TUInt32Value.Create(Name);
-  mvtInt64:         Result := TInt64Value.Create(Name);
-  mvtUInt64:        Result := TUInt64Value.Create(Name);
-  mvtFloat32:       Result := TFloat32Value.Create(Name);
-  mvtFloat64:       Result := TFloat64Value.Create(Name);
-  mvtDateTime:      Result := TDateTimeValue.Create(Name);
-  mvtCurrency:      Result := TCurrencyValue.Create(Name);
-  mvtAnsiChar:      Result := TAnsiCharValue.Create(Name);
-  mvtWideChar:      Result := TWideCharValue.Create(Name);
-  mvtUTF8Char:      Result := TUTF8CharValue.Create(Name);
-  mvtUnicodeChar:   Result := TUnicodeCharValue.Create(Name);
-  mvtChar:          Result := TCharValue.Create(Name);
-  mvtShortString:   Result := TShortStringValue.Create(Name);
-  mvtAnsiString:    Result := TAnsiStringValue.Create(Name);
-  mvtUTF8String:    Result := TUTF8StringValue.Create(Name);
-  mvtWideString:    Result := TWideStringValue.Create(Name);
-  mvtUnicodeString: Result := TUnicodeStringValue.Create(Name);
-  mvtString:        Result := TStringValue.Create(Name);
-  mvtPointer:       Result := TPointerValue.Create(Name);
-  mvtObject:        Result := TObjectValue.Create(Name);
-else
-  raise EMVInvalidValue.CreateFmt('TValuesManager.NewValue: Unknown value type (%d).',[Ord(ValueType)]);
-end;
+Result := CreateByValueType(ValueType,Name);
 Add(Result);
 end;
 
