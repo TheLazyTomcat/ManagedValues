@@ -19,28 +19,28 @@ type
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                               TManagedValueBase
+                              TMVManagedValueBase
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TManagedValueType = (
+  TMVManagedValueType = (
     // primitives
     mvtBoolean,mvtInt8,mvtUInt8,mvtInt16,mvtUInt16,mvtInt32,mvtUInt32,mvtInt64,
     mvtUInt64,mvtFloat32,mvtFloat64,mvtDateTime,mvtCurrency,mvtAnsiChar,
     mvtWideChar,mvtUTF8Char,mvtUnicodeChar,mvtChar,mvtShortString,mvtAnsiString,
-    mvtUTF8String,mvtWideString,mvtUnicodeString,mvtString,mvtPointer,mvtObject);
+    mvtUTF8String,mvtWideString,mvtUnicodeString,mvtString,mvtPointer,mvtObject,
     // arrays - implement later
-  (*mvtAoBoolean,mvtAoInt8,mvtAoUInt8,mvtAoInt16,mvtAoUInt16,mvtAoInt32,
+    mvtAoBoolean,mvtAoInt8,mvtAoUInt8,mvtAoInt16,mvtAoUInt16,mvtAoInt32,
     mvtAoUInt32,mvtAoInt64,mvtAoUInt64,mvtAoFloat32,mvtAoFloat64,mvtAoDateTime,
     mvtAoCurrency,mvtAoAnsiChar,mvtAoWideChar,mvtAoUTF8Char,mvtAoUnicodeChar,
     mvtAoChar,mvtAoShortString,mvtAoAnsiString,mvtAoUTF8String,mvtAoWideString,
-    mvtAoUnicodeString,mvtAoString,mvtAoPointer,mvtAoObject);*)
+    mvtAoUnicodeString,mvtAoString,mvtAoPointer,mvtAoObject);
 
 {===============================================================================
-    TManagedValueBase - class declaration
+    TMVManagedValueBase - class declaration
 ===============================================================================}
 type
-  TManagedValueBase = class(TCustomObject)
+  TMVManagedValueBase = class(TCustomObject)
   protected
     fGlobalManager:           TObject;
     fLocalManager:            TObject;
@@ -57,18 +57,19 @@ type
     fOnEqualsChangeEvent:     TNotifyEvent;
     fOnEqualsChangeCallback:  TNotifyCallback;
     // getters, setters
-    class Function GetValueType: TManagedValueType; virtual; abstract;
+    class Function GetValueType: TMVManagedValueType; virtual; abstract;
     Function GetGloballyManaged: Boolean; virtual;
     Function GetLocallyManaged: Boolean; virtual;
+    // init/final
     procedure Initialize; overload; virtual;
     procedure Finalize; virtual;
+    // events
     procedure DoCurrentChange; virtual;
     procedure DoEqualChange; virtual;
     // utility methods
-    Function CompareBaseValues(const A,B; Arg: Boolean): Integer; virtual; abstract;  // override or reintroduce for specific type
-    Function SameBaseValues(const A,B; Arg: Boolean): Boolean; virtual;               // calls CompareBaseValues
-    procedure ThreadSafeAssign; virtual;                                              // reintroduce is necessary if used
-    procedure CheckAndSetEquality; virtual; abstract;                                 // must be overridden
+    class Function CompareBaseValues(const A,B; Arg: Boolean): Integer; virtual; abstract;  // override or reintroduce for specific type
+    class Function SameBaseValues(const A,B; Arg: Boolean): Boolean; virtual;               // calls CompareBaseValues
+    procedure CheckAndSetEquality; virtual; abstract;                                       // must be overridden
     // protected properties (used by managers)
     property LocalManager: TObject read fLocalManager write fLocalManager;
     property OnValueChangeInternal: TNotifyEvent read fOnValueChangeInternal write fOnValueChangeInternal;
@@ -84,13 +85,13 @@ type
     procedure CurrentToInitial; virtual; abstract;
     procedure SwapInitialAndCurrent; virtual; abstract;
     Function SavedSize: TMemSize; virtual; abstract;
-    procedure AssignFrom(Value: TManagedValueBase); virtual; abstract;
-    procedure AssignTo(Value: TManagedValueBase); virtual; abstract;
+    procedure AssignFrom(Value: TMVManagedValueBase); virtual; abstract;
+    procedure AssignTo(Value: TMVManagedValueBase); virtual; abstract;
     procedure SaveToStream(Stream: TStream); virtual; abstract;
     procedure LoadFromStream(Stream: TStream; Init: Boolean = False); virtual; abstract;
     Function AsString: String; virtual;
     procedure FromString(const Str: String); virtual;
-    property ValueType: TManagedValueType read GetValueType;
+    property ValueType: TMVManagedValueType read GetValueType;
     property GloballyManaged: Boolean read GetGloballyManaged;
     property LocallyManaged: Boolean read GetLocallyManaged;
     property Name: String read fName;
@@ -107,7 +108,7 @@ type
   end;
 
 {===============================================================================
-    TManagedValueBase - derived classes groups
+    TMVManagedValueBase - derived classes groups
 ===============================================================================}
 {
   This exists pretty much only to split large number of classes to smaller
@@ -115,93 +116,117 @@ type
   in the future, but right now all groups are the same.
 }
 type
-  TIntegerManagedValue = class(TManagedValueBase);
-  TRealManagedValue    = class(TManagedValueBase);
-  TCharManagedValue    = class(TManagedValueBase);
-  TStringManagedValue  = class(TManagedValueBase);
-  TOtherManagedValue   = class(TManagedValueBase);
+  TMVIntegerManagedValue = class(TMVManagedValueBase);
+  TMVRealManagedValue    = class(TMVManagedValueBase);
+  TMVCharManagedValue    = class(TMVManagedValueBase);
+  TMVStringManagedValue  = class(TMVManagedValueBase);
+  TMVOtherManagedValue   = class(TMVManagedValueBase);
 
-  TComplexManagedValue = class(TManagedValueBase);
+  TMVComplexManagedValue = class(TMVManagedValueBase);
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                               TArrayManagedValue
+                              TMVArrayManagedValue
 --------------------------------------------------------------------------------
-===============================================================================}
-{===============================================================================
-    TArrayManagedValue - class declaration
 ===============================================================================}
 type
-  TArrayManagedValue = class(TComplexManagedValue)
+  TMVArrayItemType = (aitBoolean,aitInt8,aitUInt8,aitInt16,aitUInt16,aitInt32,
+    aitUInt32,aitInt64,aitUInt64,aitFloat32,aitFloat64,aitDateTime,aitCurrency,
+    aitAnsiChar,aitWideChar,aitUTF8Char,aitUnicodeChar,aitChar,aitShortString,
+    aitAnsiString,aitUTF8String,aitWideString,aitUnicodeString,aitString,
+    aitPointer,aitObject);
+
+{===============================================================================
+    TMVArrayManagedValue - class declaration
+===============================================================================}
+type
+  TMVArrayManagedValue = class(TMVComplexManagedValue)
   protected
-    //fListDelegate:  TCustomListObject;
+    // initial array has capacity equal to count, current array is counted
+    fListDelegate:  TCustomListObject;
+    fCurrentCount:  Integer;
     // getters, setters
-    //class Function GetArrayItemType: TArrayItemType; virtual; abstract;
-    // array management methods
-    //proceure GetCapacity: Integer; virtual; abstract;
-    //proceure SetCapacity(Value: Integer): Integer; virtual; abstract;
-    //proceure GetCount: Integer; virtual; abstract;
-    //proceure SetCount(Value: Integer): Integer; virtual; abstract;
+    class Function GetArrayItemType: TMVArrayItemType; virtual; abstract;       // <<<
+    // list management
+    Function GetCapacity: Integer; virtual; abstract;                           // <<<
+    procedure SetCapacity(Value: Integer); virtual; abstract;                   // <<<
+    Function GetCount: Integer; virtual;
+    procedure SetCount(Value: Integer); virtual; abstract;                      // <<<
+    Function GerInitialCount: Integer; virtual; abstract;                       // <<<
+    procedure Grow; virtual;
+    procedure Shrink; virtual;
+    // init/final
+    procedure Initialize; overload; override;
+    procedure Finalize; override;
     // utility methods
-    //Function CompareArrayItemValues(const A,B; Arg: Boolean): Integer; virtual; abstract;
-    //Function SameArrayItemValues(const A,B; Arg: Boolean): Boolean; virtual;
-    //procedure ArrayItemThreadSafeAssign; virtual;
+    class Function CompareBaseValuesCnt(const A,B; CntA,CntB: Integer; Arg: Boolean): Integer; virtual; abstract;
+    class Function CompareArrayItemValues(const A,B; Arg: Boolean): Integer; virtual; abstract;
+    class Function SameArrayItemValues(const A,B; Arg: Boolean): Boolean; virtual;
   public
+    Function LowIndex: Integer; virtual; abstract;                              // <<<
+    Function HighIndex: Integer; virtual;
+    Function CheckIndex(Index: Integer): Boolean; virtual;
+
+    //procedure Exchange(Idx1,Idx2: Integer); virtual; abstract;
+    //procedure Move(SrcIdx,DstIdx: Integer); virtual; abstract;
+    //procedure Delete(Index: Integer); virtual; abstract;
+    //procedure Clear; virtual; abstract;
+    //procedure Sort(Reversed: Boolean = False); virtual; abstract;
   (*
     * - must work with specific type
 
-    LowIndex
-    HighIndex
-    CheckIndex
     *First
     *Last
 
     *IndexOf
     *Add
     *Insert
-    Exchange
-    Move
-    *Remove
-    Delete
-    Clear
 
-    Count
-    *Items
+    *Remove
+
   *)
+    property CurrentCount: Integer read GetCount write SetCount;
+    property InitialCount: Integer read GerInitialCount;
+    property Count: Integer read GetCount write SetCount;
+  //*Items
   end;
 
+{===============================================================================
+    TMVArrayManagedValue - derived classes groups
+===============================================================================}
+
 type
-  TAoIntegerManagedValue = class(TArrayManagedValue);
-  TAoRealManagedValue    = class(TArrayManagedValue);
-  TAoCharManagedValue    = class(TArrayManagedValue);
-  TAoStringManagedValue  = class(TArrayManagedValue);
-  TAoOtherManagedValue   = class(TArrayManagedValue);
+  TMVAoIntegerManagedValue = class(TMVArrayManagedValue);
+  TMVAoRealManagedValue    = class(TMVArrayManagedValue);
+  TMVAoCharManagedValue    = class(TMVArrayManagedValue);
+  TMVAoStringManagedValue  = class(TMVArrayManagedValue);
+  TMVAoOtherManagedValue   = class(TMVArrayManagedValue);
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                              TValuesManagerBase
+                              TMVValuesManagerBase                              
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TValueManagerUpdated = (vmuValue,vmuEquals,vmuList);  // only used internally
+  TMVValueManagerUpdated = (vmuValue,vmuEquals,vmuList);  // only used internally
 
-  TValueManagerUpdatedSet = set of TValueManagerUpdated;
+  TMVValueManagerUpdatedSet = set of TMVValueManagerUpdated;
 
-  TValueManagerStreamingEvent    = procedure(Sender: TObject; Index: Integer; var CanStream: Boolean) of object;
-  TValueManagerStreamingCallback = procedure(Sender: TObject; Index: Integer; var CanStream: Boolean);
+  TMVStreamingEvent    = procedure(Sender: TObject; Index: Integer; var CanStream: Boolean) of object;
+  TMVStreamingCallback = procedure(Sender: TObject; Index: Integer; var CanStream: Boolean);
 
 {===============================================================================
-    TValuesManagerBase - class declaration
+    TMVValuesManagerBase - class declaration
 ===============================================================================}
 type
-  TValuesManagerBase = class(TCustomListObject)
+  TMVValuesManagerBase = class(TCustomListObject)
   protected
-    fValues:                  array of TManagedValueBase;
+    fValues:                  array of TMVManagedValueBase;
     fCount:                   Integer;
     fEqualsToInit:            Boolean;
     fSearchIndex:             Integer;
     fUpdateCounter:           Integer;
-    fUpdated:                 TValueManagerUpdatedSet;
+    fUpdated:                 TMVValueManagerUpdatedSet;
     // events
     fOnValueChangeEvent:      TObjectEvent;
     fOnValueChangeCallback:   TObjectCallback;
@@ -209,10 +234,10 @@ type
     fOnEqualsChangeCallback:  TObjectCallback;
     fOnChangeEvent:           TNotifyEvent;
     fOnChangeCallback:        TNotifyCallback;
-    fOnStreamingEvent:        TValueManagerStreamingEvent;
-    fOnStreamingCallback:     TValueManagerStreamingCallback;
+    fOnStreamingEvent:        TMVStreamingEvent;
+    fOnStreamingCallback:     TMVStreamingCallback;
     // getters, setters
-    Function GetValue(Index: Integer): TManagedValueBase; virtual;
+    Function GetValue(Index: Integer): TMVManagedValueBase; virtual;
     // list management
     Function GetCapacity: Integer; override;
     procedure SetCapacity(Value: Integer); override;
@@ -228,9 +253,9 @@ type
     procedure Finalize; virtual;
     // utility
     procedure CheckAndSetEquality; virtual;
-    procedure ProcessAddedValue(var Value: TManagedValueBase); virtual;
-    procedure ProcessDeletedValue(var Value: TManagedValueBase; CanBeFreed: Boolean); virtual;
-    Function GetSortedAdditionIndex(Addition: TManagedValueBase): Integer; virtual;
+    procedure ProcessAddedValue(var Value: TMVManagedValueBase); virtual;
+    procedure ProcessDeletedValue(var Value: TMVManagedValueBase; CanBeFreed: Boolean); virtual;
+    Function GetSortedAdditionIndex(Addition: TMVManagedValueBase): Integer; virtual;
     procedure DeleteInternal(Index: Integer; CanFree: Boolean = True); virtual;
   public
     constructor Create;
@@ -243,22 +268,22 @@ type
     procedure EndUpdate; virtual;
     // list methods
     Function IndexOf(const Name: String): Integer; overload; virtual;
-    Function IndexOf(Value: TManagedValueBase): Integer; overload; virtual;
+    Function IndexOf(Value: TMVManagedValueBase): Integer; overload; virtual;
     Function FindFirst(const Name: String; out Index: Integer): Boolean; overload; virtual;
-    Function FindFirst(const Name: String; out Value: TManagedValueBase): Boolean; overload; virtual;
+    Function FindFirst(const Name: String; out Value: TMVManagedValueBase): Boolean; overload; virtual;
     Function FindNext(const Name: String; out Index: Integer): Boolean; overload; virtual;
-    Function FindNext(const Name: String; out Value: TManagedValueBase): Boolean; overload; virtual;
+    Function FindNext(const Name: String; out Value: TMVManagedValueBase): Boolean; overload; virtual;
     Function Find(const Name: String; out Index: Integer): Boolean; overload; virtual;
-    Function Find(const Name: String; out Value: TManagedValueBase): Boolean; overload; virtual;
-    Function Find(Value: TManagedValueBase; out Index: Integer): Boolean; overload; virtual;
-    Function Add(Value: TManagedValueBase): Integer; virtual;
-    procedure Insert(Index: Integer; Value: TManagedValueBase); virtual;
+    Function Find(const Name: String; out Value: TMVManagedValueBase): Boolean; overload; virtual;
+    Function Find(Value: TMVManagedValueBase; out Index: Integer): Boolean; overload; virtual;
+    Function Add(Value: TMVManagedValueBase): Integer; virtual;
+    procedure Insert(Index: Integer; Value: TMVManagedValueBase); virtual;
     procedure Exchange(Idx1,Idx2: Integer); virtual;
     procedure Move(SrcIdx,DstIdx: Integer); virtual;
-    Function Extract(const Name: String): TManagedValueBase; overload; virtual;
-    Function Extract(Value: TManagedValueBase): TManagedValueBase; overload; virtual;
+    Function Extract(const Name: String): TMVManagedValueBase; overload; virtual;
+    Function Extract(Value: TMVManagedValueBase): TMVManagedValueBase; overload; virtual;
     Function Remove(const Name: String): Integer; overload; virtual;
-    Function Remove(Value: TManagedValueBase): Integer; overload; virtual;
+    Function Remove(Value: TMVManagedValueBase): Integer; overload; virtual;
     procedure Delete(Index: Integer); virtual;
     procedure Clear; virtual;
     procedure FreeValuesAndClear; virtual;
@@ -266,7 +291,7 @@ type
     procedure SaveToStream(Stream: TStream; StreamingEvents: Boolean = False); virtual;
     procedure LoadFromStream(Stream: TStream; Init: Boolean = False; StreamingEvents: Boolean = False); virtual;
     // properties
-    property Values[Index: Integer]: TManagedValueBase read GetValue; default;
+    property Values[Index: Integer]: TMVManagedValueBase read GetValue; default;
     property EqualsToInitial: Boolean read fEqualsToInit;
     property OnValueChangeEvent: TObjectEvent read fOnValueChangeEvent write fOnValueChangeEvent;
     property OnValueChangeCallback: TObjectCallback read fOnValueChangeCallback write fOnValueChangeCallback;
@@ -281,16 +306,16 @@ type
     Following are called for each streamed item (value) when StreamingEvents
     parameter is set to true in streaming functions.
   }
-    property OnStreamingEvent: TValueManagerStreamingEvent read fOnStreamingEvent write fOnStreamingEvent;
-    property OnStreamingCallback: TValueManagerStreamingCallback read fOnStreamingCallback write fOnStreamingCallback;
-    property OnStreaming: TValueManagerStreamingEvent read fOnStreamingEvent write fOnStreamingEvent;
+    property OnStreamingEvent: TMVStreamingEvent read fOnStreamingEvent write fOnStreamingEvent;
+    property OnStreamingCallback: TMVStreamingCallback read fOnStreamingCallback write fOnStreamingCallback;
+    property OnStreaming: TMVStreamingEvent read fOnStreamingEvent write fOnStreamingEvent;
   end;
 
 {===============================================================================
     Public auxiliary functions - declaration
 ===============================================================================}
 
-Function GetGlobalValuesManager: TValuesManagerBase;
+Function GetGlobalValuesManager: TMVValuesManagerBase;
 
 implementation
 
@@ -305,40 +330,40 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                              TValuesManagerGlobal
+                             TMVValuesManagerGlobal
 --------------------------------------------------------------------------------
 ===============================================================================}
 {===============================================================================
-    TValuesManagerGlobal - class declaration
+    TMVValuesManagerGlobal - class declaration
 ===============================================================================}
 type
-  TValuesManagerGlobal = class(TValuesManagerBase)
+  TMVValuesManagerGlobal = class(TMVValuesManagerBase)
   protected
     fSynchronizer:  TRTLCriticalSection;
     procedure Initialize; override;
     procedure Finalize; override;
-    class Function CompareObjects(A,B: TManagedValueBase): Integer; virtual;
-    Function GetSortedAdditionIndex(Addition: TManagedValueBase): Integer; override;
+    class Function CompareObjects(A,B: TMVManagedValueBase): Integer; virtual;
+    Function GetSortedAdditionIndex(Addition: TMVManagedValueBase): Integer; override;
   public
     procedure Lock; override;
     procedure Unlock; override;
-    Function IndexOf(Value: TManagedValueBase): Integer; override;
+    Function IndexOf(Value: TMVManagedValueBase): Integer; override;
   end;
 
 {===============================================================================
-    TValuesManagerGlobal - global variable
+    TMVValuesManagerGlobal - global variable
 ===============================================================================}
 var
-  MV_GlobalManager: TValuesManagerGlobal = nil;
+  MVGlobalManager: TMVValuesManagerGlobal = nil;
 
 {===============================================================================
-    TValuesManagerGlobal - class implementation
+    TMVValuesManagerGlobal - class implementation
 ===============================================================================}
 {-------------------------------------------------------------------------------
-    TValuesManagerGlobal - protected methods
+    TMVValuesManagerGlobal - protected methods
 -------------------------------------------------------------------------------}
 
-procedure TValuesManagerGlobal.Initialize;
+procedure TMVValuesManagerGlobal.Initialize;
 begin
 {$IF Defined(FPC) and not Defined(Windows)}
 InitCriticalSection(fSynchronizer);
@@ -350,7 +375,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerGlobal.Finalize;
+procedure TMVValuesManagerGlobal.Finalize;
 begin
 inherited;
 {$IF Defined(FPC) and not Defined(Windows)}
@@ -363,7 +388,7 @@ end;
 //------------------------------------------------------------------------------
 
 {$IFDEF FPCDWM}{$PUSH}W4055{$ENDIF}
-class Function TValuesManagerGlobal.CompareObjects(A,B: TManagedValueBase): Integer;
+class Function TMVValuesManagerGlobal.CompareObjects(A,B: TMVManagedValueBase): Integer;
 begin
 If PtrUInt(Pointer(A)) > PtrUInt(Pointer(B)) then
   Result := +1
@@ -376,7 +401,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerGlobal.GetSortedAdditionIndex(Addition: TManagedValueBase): Integer;
+Function TMVValuesManagerGlobal.GetSortedAdditionIndex(Addition: TMVManagedValueBase): Integer;
 var
   L,C,R:  Integer;  // left, center, right
 begin
@@ -403,24 +428,24 @@ else Result := 0;
 end;
 
 {-------------------------------------------------------------------------------
-    TValuesManagerGlobal - public methods
+    TMVValuesManagerGlobal - public methods
 -------------------------------------------------------------------------------}
 
-procedure TValuesManagerGlobal.Lock;
+procedure TMVValuesManagerGlobal.Lock;
 begin
 EnterCriticalSection(fSynchronizer);
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerGlobal.Unlock;
+procedure TMVValuesManagerGlobal.Unlock;
 begin
 LeaveCriticalSection(fSynchronizer);
 end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerGlobal.IndexOf(Value: TManagedValueBase): Integer;
+Function TMVValuesManagerGlobal.IndexOf(Value: TMVManagedValueBase): Integer;
 var
   L,C,R:  Integer;
 begin
@@ -453,53 +478,53 @@ end;
     Public auxiliary functions - implementation
 ===============================================================================}
 
-Function GetGlobalValuesManager: TValuesManagerBase;
+Function GetGlobalValuesManager: TMVValuesManagerBase;
 begin
-Result := MV_GlobalManager;
+Result := MVGlobalManager;
 end;
 
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                               TManagedValueBase
+                               TMVManagedValueBase
 --------------------------------------------------------------------------------
 ===============================================================================}
 {===============================================================================
-    TManagedValueBase - class implementation
+    TMVManagedValueBase - class implementation
 ===============================================================================}
 {-------------------------------------------------------------------------------
-    TManagedValueBase - protected methods
+    TMVManagedValueBase - protected methods
 -------------------------------------------------------------------------------}
 
-Function TManagedValueBase.GetGloballyManaged: Boolean;
+Function TMVManagedValueBase.GetGloballyManaged: Boolean;
 var
   Index:  Integer;
 begin
 If Assigned(fGlobalManager) then
-  Result := TValuesManagerBase(fGlobalManager).Find(Self,Index)
+  Result := TMVValuesManagerBase(fGlobalManager).Find(Self,Index)
 else
   Result := False;
 end;
 
 //------------------------------------------------------------------------------
 
-Function TManagedValueBase.GetLocallyManaged: Boolean;
+Function TMVManagedValueBase.GetLocallyManaged: Boolean;
 var
   Index:  Integer;
 begin
 If Assigned(fLocalManager) then
-  Result := TValuesManagerBase(fLocalManager).Find(Self,Index)
+  Result := TMVValuesManagerBase(fLocalManager).Find(Self,Index)
 else
   Result := False;
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TManagedValueBase.Initialize;
+procedure TMVManagedValueBase.Initialize;
 begin
-fGlobalManager := MV_GlobalManager;
+fGlobalManager := MVGlobalManager;
 If Assigned(fGlobalManager) then
-  TValuesManagerBase(fGlobalManager).Add(Self);
+  TMVValuesManagerBase(fGlobalManager).Add(Self);
 fLocalManager := nil;
 // fields init
 {
@@ -536,17 +561,17 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TManagedValueBase.Finalize;
+procedure TMVManagedValueBase.Finalize;
 begin
 If Assigned(fLocalManager) then
-  TValuesManagerBase(fLocalManager).Remove(Self);
+  TMVValuesManagerBase(fLocalManager).Remove(Self);
 If Assigned(fGlobalManager) then
-  TValuesManagerBase(fGlobalManager).Extract(Self);
+  TMVValuesManagerBase(fGlobalManager).Extract(Self);
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TManagedValueBase.DoCurrentChange;
+procedure TMVManagedValueBase.DoCurrentChange;
 begin
 If Assigned(fOnValueChangeInternal) then
   fOnValueChangeInternal(Self);
@@ -558,7 +583,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TManagedValueBase.DoEqualChange;
+procedure TMVManagedValueBase.DoEqualChange;
 begin
 If Assigned(fOnEqualsChangeInternal) then
   fOnEqualsChangeInternal(Self);
@@ -570,30 +595,23 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TManagedValueBase.SameBaseValues(const A,B; Arg: Boolean): Boolean;
+class Function TMVManagedValueBase.SameBaseValues(const A,B; Arg: Boolean): Boolean;
 begin
 Result := CompareBaseValues(A,B,Arg) = 0;
 end;
 
-//------------------------------------------------------------------------------
-
-procedure TManagedValueBase.ThreadSafeAssign;
-begin
-// do nothing in here
-end;
-
 {-------------------------------------------------------------------------------
-    TManagedValueBase - public methods
+    TMVManagedValueBase - public methods
 -------------------------------------------------------------------------------}
 
-constructor TManagedValueBase.Create;
+constructor TMVManagedValueBase.Create;
 begin
 Create('');
 end;
 
 //------------------------------------------------------------------------------
 
-constructor TManagedValueBase.Create(const Name: String);
+constructor TMVManagedValueBase.Create(const Name: String);
 begin
 inherited Create;
 If Length(Name) > 0 then
@@ -605,14 +623,14 @@ end;
 
 //------------------------------------------------------------------------------
 
-constructor TManagedValueBase.CreateAndLoad(Stream: TStream);
+constructor TMVManagedValueBase.CreateAndLoad(Stream: TStream);
 begin
 CreateAndLoad('',Stream);
 end;
 
 //------------------------------------------------------------------------------
 
-constructor TManagedValueBase.CreateAndLoad(const Name: String; Stream: TStream);
+constructor TMVManagedValueBase.CreateAndLoad(const Name: String; Stream: TStream);
 begin
 Create(Name);
 LoadFromStream(Stream,True);
@@ -620,7 +638,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-destructor TManagedValueBase.Destroy;
+destructor TMVManagedValueBase.Destroy;
 begin
 Finalize;
 inherited;
@@ -628,7 +646,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TManagedValueBase.Initialize(OnlyValues: Boolean);
+procedure TMVManagedValueBase.Initialize(OnlyValues: Boolean);
 begin
 If not OnlyValues then
   begin
@@ -639,7 +657,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TManagedValueBase.AsString: String;
+Function TMVManagedValueBase.AsString: String;
 begin
 Inc(fReadCount);
 Result := '';
@@ -648,7 +666,7 @@ end;
 //------------------------------------------------------------------------------
 
 {$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
-procedure TManagedValueBase.FromString(const Str: String);
+procedure TMVManagedValueBase.FromString(const Str: String);
 begin
 Inc(fWriteCount);
 end;
@@ -657,34 +675,201 @@ end;
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                              TValuesManagerBase
+                              TMVArrayListDelegate
 --------------------------------------------------------------------------------
 ===============================================================================}
 {===============================================================================
-    TValuesManagerBase - class implementation
+    TMVArrayListDelegate - class declaration
+===============================================================================}
+type
+  TMVArrayListDelegate = class(TCustomListObject)
+  protected
+    fArrayValue:  TMVArrayManagedValue;
+    Function GetCapacity: Integer; override;
+    procedure SetCapacity(Value: Integer); override;
+    Function GetCount: Integer; override;
+    procedure SetCount(Value: Integer); override;
+  public
+    constructor Create(ArrayValue: TMVArrayManagedValue);
+    Function LowIndex: Integer; override;
+    Function HighIndex: Integer; override;
+    procedure Grow(MinDelta: Integer = 1); override;  // only to heighten visibility
+    procedure Shrink; override;
+  end;
+
+{===============================================================================
+    TMVArrayListDelegate - class implementation
 ===============================================================================}
 {-------------------------------------------------------------------------------
-    TValuesManagerBase - protected methods
+    TMVArrayListDelegate - protected methods
 -------------------------------------------------------------------------------}
 
-Function TValuesManagerBase.GetValue(Index: Integer): TManagedValueBase;
+Function TMVArrayListDelegate.GetCapacity: Integer;
 begin
-If CheckIndex(Index) then
-  Result := fValues[Index]
-else
-  raise EMVIndexOutOfBounds.CreateFmt('TValuesManagerBase.GetValue: Index (%d) out of bounds.',[Index]);
+Result := fArrayValue.GetCapacity;
 end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerBase.GetCapacity: Integer;
+procedure TMVArrayListDelegate.SetCapacity(Value: Integer);
+begin
+fArrayValue.SetCapacity(Value);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVArrayListDelegate.GetCount: Integer;
+begin
+Result := fArrayValue.GetCount;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayListDelegate.SetCount(Value: Integer);
+begin
+fArrayValue.SetCount(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TMVArrayListDelegate - public methods
+-------------------------------------------------------------------------------}
+
+constructor TMVArrayListDelegate.Create(ArrayValue: TMVArrayManagedValue);
+begin
+inherited Create;
+fArrayValue := ArrayValue;
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVArrayListDelegate.LowIndex: Integer;
+begin
+Result := fArrayValue.LowIndex;
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVArrayListDelegate.HighIndex: Integer;
+begin
+Result := fArrayValue.HighIndex;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayListDelegate.Grow(MinDelta: Integer = 1);
+begin
+inherited Grow(MinDelta);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayListDelegate.Shrink;
+begin
+inherited Shrink;
+end;
+
+
+{===============================================================================
+--------------------------------------------------------------------------------
+                              TMVArrayManagedValue                              
+--------------------------------------------------------------------------------
+===============================================================================}
+{===============================================================================
+    TMVArrayManagedValue - class implementation
+===============================================================================}
+{-------------------------------------------------------------------------------
+    TMVArrayManagedValue - protected methods
+-------------------------------------------------------------------------------}
+
+Function TMVArrayManagedValue.GetCount: Integer;
+begin
+Result := fCurrentCount;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.Grow;
+begin
+TMVArrayListDelegate(fListDelegate).Grow;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.Shrink;
+begin
+TMVArrayListDelegate(fListDelegate).Shrink;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.Initialize;
+begin
+fListDelegate := TMVArrayListDelegate.Create(Self);
+inherited;
+fCurrentCount := 0;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.Finalize;
+begin
+inherited;
+FreeAndNil(fListDelegate);
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVArrayManagedValue.SameArrayItemValues(const A,B; Arg: Boolean): Boolean;
+begin
+Result := CompareArrayItemValues(A,B,Arg) = 0;
+end;
+
+{-------------------------------------------------------------------------------
+    TMVArrayManagedValue - public methods
+-------------------------------------------------------------------------------}
+
+Function TMVArrayManagedValue.HighIndex: Integer;
+begin
+Result := Pred(fCurrentCount);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVArrayManagedValue.CheckIndex(Index: Integer): Boolean;
+begin
+Result := fListDelegate.CheckIndex(Index);
+end;
+
+{===============================================================================
+--------------------------------------------------------------------------------
+                              TMVValuesManagerBase
+--------------------------------------------------------------------------------
+===============================================================================}
+{===============================================================================
+    TMVValuesManagerBase - class implementation
+===============================================================================}
+{-------------------------------------------------------------------------------
+    TMVValuesManagerBase - protected methods
+-------------------------------------------------------------------------------}
+
+Function TMVValuesManagerBase.GetValue(Index: Integer): TMVManagedValueBase;
+begin
+If CheckIndex(Index) then
+  Result := fValues[Index]
+else
+  raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.GetValue: Index (%d) out of bounds.',[Index]);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValuesManagerBase.GetCapacity: Integer;
 begin
 Result := Length(fValues);
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.SetCapacity(Value: Integer);
+procedure TMVValuesManagerBase.SetCapacity(Value: Integer);
 begin
 If Value >= 0 then
   begin
@@ -695,12 +880,12 @@ If Value >= 0 then
           fCount := Value;
       end;
   end
-else raise EMVInvalidValue.CreateFmt('TValuesManagerBase.SetCapacity: Invalid capacity (%d).',[Value]);
+else raise EMVInvalidValue.CreateFmt('TMVValuesManagerBase.SetCapacity: Invalid capacity (%d).',[Value]);
 end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerBase.GetCount: Integer;
+Function TMVValuesManagerBase.GetCount: Integer;
 begin
 Result := fCount;
 end;
@@ -708,7 +893,7 @@ end;
 //------------------------------------------------------------------------------
 
 {$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
-procedure TValuesManagerBase.SetCount(Value: Integer);
+procedure TMVValuesManagerBase.SetCount(Value: Integer);
 begin
 // do nothing
 end;
@@ -716,9 +901,9 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.ValueChangeHandler(Sender: TObject);
+procedure TMVValuesManagerBase.ValueChangeHandler(Sender: TObject);
 begin
-If not(Self is TValuesManagerGlobal) then
+If not(Self is TMVValuesManagerGlobal) then
   If fUpdateCounter <= 0 then
     begin
       Include(fUpdated,vmuValue);
@@ -731,9 +916,9 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.EqualsChangeHandler(Sender: TObject);
+procedure TMVValuesManagerBase.EqualsChangeHandler(Sender: TObject);
 begin
-If not(Self is TValuesManagerGlobal) then
+If not(Self is TMVValuesManagerGlobal) then
   If fUpdateCounter <= 0 then
     begin
       CheckAndSetEquality;
@@ -747,9 +932,9 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.DoChange;
+procedure TMVValuesManagerBase.DoChange;
 begin
-If not(Self is TValuesManagerGlobal) then
+If not(Self is TMVValuesManagerGlobal) then
   If fUpdateCounter <= 0 then
     begin
       Include(fUpdated,vmuList);
@@ -762,7 +947,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.DoStreaming(Index: Integer; var CanStream: Boolean);
+procedure TMVValuesManagerBase.DoStreaming(Index: Integer; var CanStream: Boolean);
 begin
 If Assigned(fOnStreamingEvent) then
   fOnStreamingEvent(Self,Index,CanStream);
@@ -772,7 +957,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.Initialize;
+procedure TMVValuesManagerBase.Initialize;
 begin
 SetLength(fValues,0);
 fCount := 0;
@@ -791,7 +976,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.Finalize;
+procedure TMVValuesManagerBase.Finalize;
 begin
 // prevent updates on clear
 fOnChangeEvent := nil;
@@ -801,11 +986,11 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.CheckAndSetEquality;
+procedure TMVValuesManagerBase.CheckAndSetEquality;
 var
   i:  Integer;
 begin
-If not (Self is TValuesManagerGlobal) then
+If not (Self is TMVValuesManagerGlobal) then
   begin
     fEqualsToInit := True;
     For i := LowIndex to HighIndex do
@@ -819,9 +1004,9 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.ProcessAddedValue(var Value: TManagedValueBase);
+procedure TMVValuesManagerBase.ProcessAddedValue(var Value: TMVManagedValueBase);
 begin
-If not (Self is TValuesManagerGlobal) then
+If not (Self is TMVValuesManagerGlobal) then
   begin
     Value.LocalManager := Self;
     Value.OnValueChangeInternal := ValueChangeHandler;
@@ -831,19 +1016,19 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.ProcessDeletedValue(var Value: TManagedValueBase; CanBeFreed: Boolean);
+procedure TMVValuesManagerBase.ProcessDeletedValue(var Value: TMVManagedValueBase; CanBeFreed: Boolean);
 begin
 Value.LocalManager := nil;
 Value.OnValueChangeInternal := nil;
 Value.OnEqualsChangeInternal := nil;
-If (Self is TValuesManagerGlobal) and CanBeFreed then
+If (Self is TMVValuesManagerGlobal) and CanBeFreed then
   FreeAndNil(Value);
 end;
 
 //------------------------------------------------------------------------------
 
 {$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
-Function TValuesManagerBase.GetSortedAdditionIndex(Addition: TManagedValueBase): Integer;
+Function TMVValuesManagerBase.GetSortedAdditionIndex(Addition: TMVManagedValueBase): Integer;
 begin
 Result := fCount;
 end;
@@ -851,7 +1036,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.DeleteInternal(Index: Integer; CanFree: Boolean = True);
+procedure TMVValuesManagerBase.DeleteInternal(Index: Integer; CanFree: Boolean = True);
 var
   i:  Integer;
 begin
@@ -866,14 +1051,14 @@ If CheckIndex(Index) then
     Shrink;
     DoChange;
   end
-else raise EMVIndexOutOfBounds.CreateFmt('TValuesManagerBase.DeleteInternal: Index (%d) out of bounds.',[Index]);
+else raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.DeleteInternal: Index (%d) out of bounds.',[Index]);
 end;
 
 {-------------------------------------------------------------------------------
-    TValuesManagerBase - public methods
+    TMVValuesManagerBase - public methods
 -------------------------------------------------------------------------------}
 
-constructor TValuesManagerBase.Create;
+constructor TMVValuesManagerBase.Create;
 begin
 inherited Create;
 Initialize;
@@ -881,7 +1066,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-destructor TValuesManagerBase.Destroy;
+destructor TMVValuesManagerBase.Destroy;
 begin
 Finalize;
 inherited;
@@ -889,7 +1074,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerBase.LowIndex: Integer;
+Function TMVValuesManagerBase.LowIndex: Integer;
 begin
 Lock;
 try
@@ -901,7 +1086,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerBase.HighIndex: Integer;
+Function TMVValuesManagerBase.HighIndex: Integer;
 begin
 Lock;
 try
@@ -913,23 +1098,23 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.Lock;
+procedure TMVValuesManagerBase.Lock;
 begin
 // do nothing in this class
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.Unlock;
+procedure TMVValuesManagerBase.Unlock;
 begin
 // do nothing in this class
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.BeginUpdate;
+procedure TMVValuesManagerBase.BeginUpdate;
 begin
-If not (Self is TValuesManagerGlobal) then
+If not (Self is TMVValuesManagerGlobal) then
   begin
     If fUpdateCounter <= 0 then
       fUpdated := [];
@@ -939,9 +1124,9 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.EndUpdate;
+procedure TMVValuesManagerBase.EndUpdate;
 begin
-If not (Self is TValuesManagerGlobal) then
+If not (Self is TMVValuesManagerGlobal) then
   begin
     Dec(fUpdateCounter);
     If fUpdateCounter <= 0 then
@@ -960,7 +1145,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerBase.IndexOf(const Name: String): Integer;
+Function TMVValuesManagerBase.IndexOf(const Name: String): Integer;
 var
   i:  Integer;
 begin
@@ -980,7 +1165,7 @@ end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Function TValuesManagerBase.IndexOf(Value: TManagedValueBase): Integer;
+Function TMVValuesManagerBase.IndexOf(Value: TMVManagedValueBase): Integer;
 var
   i:  Integer;
 begin
@@ -1000,7 +1185,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerBase.FindFirst(const Name: String; out Index: Integer): Boolean;
+Function TMVValuesManagerBase.FindFirst(const Name: String; out Index: Integer): Boolean;
 begin
 Lock;
 try
@@ -1013,7 +1198,7 @@ end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Function TValuesManagerBase.FindFirst(const Name: String; out Value: TManagedValueBase): Boolean;
+Function TMVValuesManagerBase.FindFirst(const Name: String; out Value: TMVManagedValueBase): Boolean;
 begin
 Lock;
 try
@@ -1026,7 +1211,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerBase.FindNext(const Name: String; out Index: Integer): Boolean;
+Function TMVValuesManagerBase.FindNext(const Name: String; out Index: Integer): Boolean;
 var
   i:  Integer;
 begin
@@ -1048,7 +1233,7 @@ end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Function TValuesManagerBase.FindNext(const Name: String; out Value: TManagedValueBase): Boolean;
+Function TMVValuesManagerBase.FindNext(const Name: String; out Value: TMVManagedValueBase): Boolean;
 var
   Index:  Integer;
 begin
@@ -1066,7 +1251,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerBase.Find(const Name: String; out Index: Integer): Boolean;
+Function TMVValuesManagerBase.Find(const Name: String; out Index: Integer): Boolean;
 begin
 Lock;
 try
@@ -1079,7 +1264,7 @@ end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Function TValuesManagerBase.Find(const Name: String; out Value: TManagedValueBase): Boolean;
+Function TMVValuesManagerBase.Find(const Name: String; out Value: TMVManagedValueBase): Boolean;
 var
   Index:  Integer;
 begin
@@ -1098,7 +1283,7 @@ end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Function TValuesManagerBase.Find(Value: TManagedValueBase; out Index: Integer): Boolean;
+Function TMVValuesManagerBase.Find(Value: TMVManagedValueBase; out Index: Integer): Boolean;
 begin
 Lock;
 try
@@ -1111,7 +1296,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerBase.Add(Value: TManagedValueBase): Integer;
+Function TMVValuesManagerBase.Add(Value: TMVManagedValueBase): Integer;
 var
   i:  Integer;
 begin
@@ -1121,7 +1306,7 @@ try
   If not CheckIndex(Result) then
     begin
       // value must not be already locally managed elsewhere
-      If not Value.LocallyManaged or (Self is TValuesManagerGlobal) then
+      If not Value.LocallyManaged or (Self is TMVValuesManagerGlobal) then
         begin
           Grow;
           Result := GetSortedAdditionIndex(Value);
@@ -1133,7 +1318,7 @@ try
           CheckAndSetEquality;
           DoChange;
         end
-      else raise EMVAlreadyManaged.CreateFmt('TValuesManagerBase.Add: Value %s is already managed.',[Value.InstanceString]);
+      else raise EMVAlreadyManaged.CreateFmt('TMVValuesManagerBase.Add: Value %s is already managed.',[Value.InstanceString]);
     end;
 finally
   Unlock;
@@ -1142,13 +1327,13 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.Insert(Index: Integer; Value: TManagedValueBase);
+procedure TMVValuesManagerBase.Insert(Index: Integer; Value: TMVManagedValueBase);
 var
   Idx,i:  Integer;
 begin
 Lock;
 try
-  If not(Self is TValuesManagerGlobal) then
+  If not(Self is TMVValuesManagerGlobal) then
     begin
       Idx := IndexOf(Value);
       If not CheckIndex(Idx) then
@@ -1169,12 +1354,12 @@ try
               else If Index = fCount then
                 Add(Value)
               else
-                raise EMVIndexOutOfBounds.CreateFmt('TValuesManagerBase.Insert: Index (%d) out of bounds.',[Index]);
+                raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Insert: Index (%d) out of bounds.',[Index]);
             end
-          else raise EMVAlreadyManaged.CreateFmt('TValuesManagerBase.Insert: Value %s is already managed.',[Value.InstanceString]);
+          else raise EMVAlreadyManaged.CreateFmt('TMVValuesManagerBase.Insert: Value %s is already managed.',[Value.InstanceString]);
         end;
     end
-  else raise EMVInvalidOperation.Create('TValuesManagerBase.Insert: Invalid operation.');
+  else raise EMVInvalidOperation.Create('TMVValuesManagerBase.Insert: Invalid operation.');
 finally
   Unlock;
 end;
@@ -1182,27 +1367,27 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.Exchange(Idx1,Idx2: Integer);
+procedure TMVValuesManagerBase.Exchange(Idx1,Idx2: Integer);
 var
-  Temp: TManagedValueBase;
+  Temp: TMVManagedValueBase;
 begin
 Lock;
 try
-  If not(Self is TValuesManagerGlobal) then
+  If not(Self is TMVValuesManagerGlobal) then
     begin
       If Idx1 <> Idx2 then
         begin
           If not CheckIndex(Idx1) then
-            raise EMVIndexOutOfBounds.CreateFmt('TValuesManagerBase.Exchange: Index 1 (%d) out of bounds.',[Idx1]);
+            raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Exchange: Index 1 (%d) out of bounds.',[Idx1]);
           If not CheckIndex(Idx2) then
-            raise EMVIndexOutOfBounds.CreateFmt('TValuesManagerBase.Exchange: Index 2 (%d) out of bounds.',[Idx2]);
+            raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Exchange: Index 2 (%d) out of bounds.',[Idx2]);
           Temp := fValues[Idx1];
           fValues[Idx1] := fValues[Idx2];
           fValues[Idx2] := Temp;
           DoChange;
         end
     end
-  else raise EMVInvalidOperation.Create('TValuesManagerBase.Exchange: Invalid operation.');
+  else raise EMVInvalidOperation.Create('TMVValuesManagerBase.Exchange: Invalid operation.');
 finally
   Unlock;
 end;    
@@ -1210,21 +1395,21 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.Move(SrcIdx,DstIdx: Integer);
+procedure TMVValuesManagerBase.Move(SrcIdx,DstIdx: Integer);
 var
-  Temp: TManagedValueBase;
+  Temp: TMVManagedValueBase;
   i:    Integer;
 begin
 Lock;
 try
-  If not(Self is TValuesManagerGlobal) then
+  If not(Self is TMVValuesManagerGlobal) then
     begin
       If SrcIdx <> DstIdx then
         begin
           If not CheckIndex(SrcIdx) then
-            raise EMVIndexOutOfBounds.CreateFmt('TValuesManagerBase.Move: Source index (%d) out of bounds.',[SrcIdx]);
+            raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Move: Source index (%d) out of bounds.',[SrcIdx]);
           If not CheckIndex(DstIdx) then
-            raise EMVIndexOutOfBounds.CreateFmt('TValuesManagerBase.Move: Destination index (%d) out of bounds.',[DstIdx]);
+            raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Move: Destination index (%d) out of bounds.',[DstIdx]);
           Temp := fValues[SrcIdx];
           If SrcIdx < DstIdx then
             For i := SrcIdx to Pred(DstIdx) do
@@ -1236,7 +1421,7 @@ try
           DoChange;
         end
     end
-  else raise EMVInvalidOperation.Create('TValuesManagerBase.Move: Invalid operation.');
+  else raise EMVInvalidOperation.Create('TMVValuesManagerBase.Move: Invalid operation.');
 finally
   Unlock;
 end;    
@@ -1244,7 +1429,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerBase.Extract(const Name: String): TManagedValueBase;
+Function TMVValuesManagerBase.Extract(const Name: String): TMVManagedValueBase;
 var
   Index: Integer;
 begin
@@ -1264,7 +1449,7 @@ end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Function TValuesManagerBase.Extract(Value: TManagedValueBase): TManagedValueBase;
+Function TMVValuesManagerBase.Extract(Value: TMVManagedValueBase): TMVManagedValueBase;
 var
   Index: Integer;
 begin
@@ -1284,7 +1469,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManagerBase.Remove(const Name: String): Integer;
+Function TMVValuesManagerBase.Remove(const Name: String): Integer;
 begin
 Lock;
 try
@@ -1298,7 +1483,7 @@ end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Function TValuesManagerBase.Remove(Value: TManagedValueBase): Integer;
+Function TMVValuesManagerBase.Remove(Value: TMVManagedValueBase): Integer;
 begin
 Lock;
 try
@@ -1312,7 +1497,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.Delete(Index: Integer);
+procedure TMVValuesManagerBase.Delete(Index: Integer);
 begin
 Lock;
 try
@@ -1324,7 +1509,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.Clear;
+procedure TMVValuesManagerBase.Clear;
 var
   i:  Integer;
 begin
@@ -1343,7 +1528,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.FreeValuesAndClear;
+procedure TMVValuesManagerBase.FreeValuesAndClear;
 var
   i:  Integer;
 begin
@@ -1352,7 +1537,7 @@ try
   For i := LowIndex to HighIndex do
     begin
       ProcessDeletedValue(fValues[i],True);
-      If not(Self is TValuesManagerGlobal) then
+      If not(Self is TMVValuesManagerGlobal) then
         FreeandNil(fValues[i]);
     end;
   SetLength(fValues,0);
@@ -1366,7 +1551,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.SaveToStream(Stream: TStream; StreamingEvents: Boolean = False);
+procedure TMVValuesManagerBase.SaveToStream(Stream: TStream; StreamingEvents: Boolean = False);
 var
   i:          Integer;
   CanStream:  Boolean;
@@ -1383,7 +1568,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TValuesManagerBase.LoadFromStream(Stream: TStream; Init: Boolean = False; StreamingEvents: Boolean = False);
+procedure TMVValuesManagerBase.LoadFromStream(Stream: TStream; Init: Boolean = False; StreamingEvents: Boolean = False);
 var
   i:          Integer;
   CanStream:  Boolean;
@@ -1404,10 +1589,10 @@ end;
 ===============================================================================}
 {$IFDEF MV_GlobalManager}
 initialization
-  MV_GlobalManager := TValuesManagerGlobal.Create;
+  MVGlobalManager := TMVValuesManagerGlobal.Create;
 
 finalization
-  FreeAndNil(MV_GlobalManager);
+  FreeAndNil(MVGlobalManager);
 {$ENDIF}
 
 end.

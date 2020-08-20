@@ -7,25 +7,25 @@
     procedure SetCurrentValue({$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType);
     procedure SetInitialValue({$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType);
   protected
-    class Function GetValueType: TManagedValueType; override;
+    class Function GetValueType: TMVManagedValueType; override;
     procedure Initialize; override;
-    Function CompareBaseValues(const A,B; Arg: Boolean): Integer; override;
+    class Function CompareBaseValues(const A,B; Arg: Boolean): Integer; override;
   {$IFNDEF MV_AssignIsThreadSafe}
-    Function ThreadSafeAssign({$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType): TMVValueBaseType; reintroduce; virtual;
+    Function ThreadSafeAssign({$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType): TMVValueBaseType; virtual;
   {$ENDIF}
     procedure CheckAndSetEquality; override;
   public
     constructor CreateAndInit({$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType); overload;
     constructor CreateAndInit(const Name: String; {$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType); overload;
-    Function Compare(Value: TManagedValueBase{$IFDEF MV_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
-    Function Same(Value: TManagedValueBase{$IFDEF MV_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean; virtual;
+    Function Compare(Value: TMVManagedValueBase{$IFDEF MV_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
+    Function Same(Value: TMVManagedValueBase{$IFDEF MV_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean; virtual;
     procedure Initialize({$IFDEF MV_ConstParams}const{$ENDIF} Value: TMVValueBaseType; OnlyValues: Boolean); reintroduce; overload; virtual;
     procedure InitialToCurrent; override;
     procedure CurrentToInitial; override;
     procedure SwapInitialAndCurrent; override;
     Function SavedSize: TMemSize; override;
-    procedure AssignFrom(Value: TManagedValueBase); override;
-    procedure AssignTo(Value: TManagedValueBase); override;
+    procedure AssignFrom(Value: TMVManagedValueBase); override;
+    procedure AssignTo(Value: TMVManagedValueBase); override;
     procedure SaveToStream(Stream: TStream); override;    
     procedure LoadFromStream(Stream: TStream; Init: Boolean = False); override;
     Function AsString: String; override;
@@ -38,7 +38,6 @@
 //==============================================================================
 
 {$IFDEF MV_ClassImplementation}
-
 {-------------------------------------------------------------------------------
     TMVValueClass - private methods
 -------------------------------------------------------------------------------}
@@ -117,7 +116,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.Compare(Value: TManagedValueBase{$IFDEF MV_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer;
+Function TMVValueClass.Compare(Value: TMVManagedValueBase{$IFDEF MV_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer;
 var
   Temp: TMVValueBaseType;
 begin
@@ -131,7 +130,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.Same(Value: TManagedValueBase{$IFDEF MV_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean;
+Function TMVValueClass.Same(Value: TMVManagedValueBase{$IFDEF MV_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean;
 begin
 Result := Compare(Value{$IFDEF MV_StringLikeType},CaseSensitive{$ENDIF}) = 0;
 end;
@@ -187,7 +186,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TMVValueClass.AssignFrom(Value: TManagedValueBase);
+procedure TMVValueClass.AssignFrom(Value: TMVManagedValueBase);
 begin
 If Value is TMVValueClass then
   SetCurrentValue(TMVValueClass(Value).CurrentValue)
@@ -197,7 +196,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TMVValueClass.AssignTo(Value: TManagedValueBase);
+procedure TMVValueClass.AssignTo(Value: TMVManagedValueBase);
 begin
 If Value is TMVValueClass then
   TMVValueClass(Value).CurrentValue := fCurrentValue

@@ -11,7 +11,7 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TAnsiCharValue
+                                TMVAnsiCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
@@ -23,10 +23,10 @@ type
 {$UNDEF MV_ComplexStreaming}
 
 {===============================================================================
-    TAnsiCharValue - class declaration
+    TMVAnsiCharValue - class declaration
 ===============================================================================}
 type
-  TMVAnsiCharValue = class(TCharManagedValue)
+  TMVAnsiCharValue = class(TMVCharManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
@@ -43,14 +43,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TAnsiCharValue
+                                TMVAnsiCharValue                                
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_VALUE = AnsiChar(#0);
 
 {===============================================================================
-    TAnsiCharValue - class implementation
+    TMVAnsiCharValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -59,14 +59,14 @@ const
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.GetValueType: TManagedValueType;
+class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
 Result := mvtAnsiChar;
 end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := AnsiStringCompare(AnsiChar(A),AnsiChar(B),Arg);
 end;

@@ -11,7 +11,7 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                TShortStringValue
+                               TMVShortStringValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
@@ -23,10 +23,10 @@ type
 {$DEFINE MV_ComplexStreaming}
 
 {===============================================================================
-    TShortStringValue - class declaration
+    TMVShortStringValue - class declaration
 ===============================================================================}
 type
-  TMVShortStringValue = class(TStringManagedValue)
+  TMVShortStringValue = class(TMVStringManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
@@ -43,14 +43,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                TShortStringValue
+                               TMVShortStringValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_VALUE = ShortString('');
 
 {===============================================================================
-    TShortStringValue - class implementation
+    TMVShortStringValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -59,14 +59,14 @@ const
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.GetValueType: TManagedValueType;
+class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
 Result := mvtShortString;
 end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := ShortStringCompare(ShortString(A),ShortString(B),Arg);
 end;

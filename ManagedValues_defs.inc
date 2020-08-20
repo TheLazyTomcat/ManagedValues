@@ -28,6 +28,11 @@
 {$UNDEF MV_StringLikeType}
 {$UNDEF MV_ComplexStreaming}
 
+{$UNDEF MV_ItemConstParams}
+{$UNDEF MV_ItemAssignIsThreadSafe}
+{$UNDEF MV_ItemStringLikeType}
+
+
 {$UNDEF MV_ClassDeclaration}
 {$UNDEF MV_ClassImplementation}
 

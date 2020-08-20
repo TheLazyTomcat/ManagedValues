@@ -11,7 +11,7 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                  TObjectValue
+                                 TMVObjectValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
@@ -23,10 +23,10 @@ type
 {$UNDEF MV_ComplexStreaming}
 
 {===============================================================================
-    TObjectValue - class declaration
+    TMVObjectValue - class declaration
 ===============================================================================}
 type
-  TMVObjectValue = class(TOtherManagedValue)
+  TMVObjectValue = class(TMVOtherManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
@@ -50,14 +50,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                  TObjectValue
+                                 TMVObjectValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_VALUE = nil;
 
 {===============================================================================
-    TObjectValue - class implementation
+    TMVObjectValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -66,7 +66,7 @@ const
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.GetValueType: TManagedValueType;
+class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
 Result := mvtObject;
 end;
@@ -74,7 +74,7 @@ end;
 //------------------------------------------------------------------------------
 
 {$IFDEF FPCDWM}{$PUSH}W4055 {$IFNDEF MV_StringLikeType}W5024{$ENDIF}{$ENDIF}
-Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If PtrUInt(Pointer(TObject(A))) > PtrUInt(Pointer(TObject(B))) then
   Result := +1

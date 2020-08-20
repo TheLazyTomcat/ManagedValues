@@ -11,7 +11,7 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                  TInt64Value
+                                 TMVInt64Value
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
@@ -23,10 +23,10 @@ type
 {$UNDEF MV_ComplexStreaming}
 
 {===============================================================================
-    TInt64Value - class declaration
+    TMVInt64Value - class declaration
 ===============================================================================}
 type
-  TMVInt64Value = class(TIntegerManagedValue)
+  TMVInt64Value = class(TMVIntegerManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
@@ -48,14 +48,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                  TInt64Value                                  
+                                 TMVInt64Value
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_VALUE = 0;
 
 {===============================================================================
-    TInt64Value - class implementation
+    TMVInt64Value - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -64,7 +64,7 @@ const
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.GetValueType: TManagedValueType;
+class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
 Result := mvtInt64;
 end;
@@ -72,7 +72,7 @@ end;
 //------------------------------------------------------------------------------
 
 {$IFNDEF MV_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
-Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If Int64(A) > Int64(B) then
   Result := +1

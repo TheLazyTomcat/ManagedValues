@@ -11,7 +11,7 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                   TCharValue
+                                  TMVCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
@@ -23,10 +23,10 @@ type
 {$UNDEF MV_ComplexStreaming}
 
 {===============================================================================
-    TCharValue - class declaration
+    TMVCharValue - class declaration
 ===============================================================================}
 type
-  TMVCharValue = class(TCharManagedValue)
+  TMVCharValue = class(TMVCharManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
@@ -43,14 +43,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                   TCharValue
+                                  TMVCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_VALUE = Char(#0);
 
 {===============================================================================
-    TCharValue - class implementation
+    TMVCharValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -59,14 +59,14 @@ const
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.GetValueType: TManagedValueType;
+class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
 Result := mvtChar;
 end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := StringCompare(Char(A),Char(B),Arg);
 end;

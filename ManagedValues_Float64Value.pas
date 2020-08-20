@@ -11,7 +11,7 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TFloat64Value
+                                TMVFloat64Value
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
@@ -23,10 +23,10 @@ type
 {$UNDEF MV_ComplexStreaming}
 
 {===============================================================================
-    TFloat64Value - class declaration
+    TMVFloat64Value - class declaration
 ===============================================================================}
 type
-  TMVFloat64Value = class(TRealManagedValue)
+  TMVFloat64Value = class(TMVRealManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
@@ -48,14 +48,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TFloat64Value
+                                TMVFloat64Value
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_VALUE = 0.0;
 
 {===============================================================================
-    TFloat64Value - class implementation
+    TMVFloat64Value - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -64,7 +64,7 @@ const
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.GetValueType: TManagedValueType;
+class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
 Result := mvtFloat64;
 end;
@@ -72,7 +72,7 @@ end;
 //------------------------------------------------------------------------------
 
 {$IFNDEF MV_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
-Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If Float64(A) > Float64(B) then
   Result := +1

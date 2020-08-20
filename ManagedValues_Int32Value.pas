@@ -11,7 +11,7 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                  TInt32Value
+                                 TMVInt32Value
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
@@ -23,10 +23,10 @@ type
 {$UNDEF MV_ComplexStreaming}
 
 {===============================================================================
-    TInt32Value - class declaration
+    TMVInt32Value - class declaration
 ===============================================================================}
 type
-  TMVInt32Value = class(TIntegerManagedValue)
+  TMVInt32Value = class(TMVIntegerManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
@@ -48,14 +48,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                  TInt32Value
+                                 TMVInt32Value
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_VALUE = 0;
 
 {===============================================================================
-    TInt32Value - class implementation
+    TMVInt32Value - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -64,7 +64,7 @@ const
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.GetValueType: TManagedValueType;
+class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
 Result := mvtInt32;
 end;
@@ -72,7 +72,7 @@ end;
 //------------------------------------------------------------------------------
 
 {$IFNDEF MV_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
-Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := Integer(Int32(A) - Int32(B));
 end; 

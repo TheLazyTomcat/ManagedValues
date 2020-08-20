@@ -11,7 +11,7 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                  TBooleanValue
+                                 TMVBooleanValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
@@ -23,10 +23,10 @@ type
 {$DEFINE MV_ComplexStreaming}
 
 {===============================================================================
-    TBooleanValue - class declaration
+    TMVBooleanValue - class declaration
 ===============================================================================}
 type
-  TMVBooleanValue = class(TOtherManagedValue)
+  TMVBooleanValue = class(TMVOtherManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
@@ -48,14 +48,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                  TBooleanValue
+                                 TMVBooleanValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_VALUE = False;
 
 {===============================================================================
-    TBooleanValue - class declaration
+    TMVBooleanValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -64,7 +64,7 @@ const
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.GetValueType: TManagedValueType;
+class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
 Result := mvtBoolean;
 end;
@@ -72,7 +72,7 @@ end;
 //------------------------------------------------------------------------------
 
 {$IFNDEF MV_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
-Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If Boolean(A) and not Boolean(B) then
   Result := +1

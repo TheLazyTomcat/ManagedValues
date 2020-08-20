@@ -11,7 +11,7 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TCurrencyValue
+                                TMVCurrencyValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
@@ -23,10 +23,10 @@ type
 {$UNDEF MV_ComplexStreaming}
 
 {===============================================================================
-    TCurrencyValue - class declaration
+    TMVCurrencyValue - class declaration
 ===============================================================================}
 type
-  TMVCurrencyValue = class(TRealManagedValue)
+  TMVCurrencyValue = class(TMVRealManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
@@ -48,14 +48,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TCurrencyValue
+                                TMVCurrencyValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_VALUE = 0.0;
 
 {===============================================================================
-    TCurrencyValue - class implementation
+    TMVCurrencyValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -64,7 +64,7 @@ const
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.GetValueType: TManagedValueType;
+class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
 Result := mvtCurrency;
 end;
@@ -72,7 +72,7 @@ end;
 //------------------------------------------------------------------------------
 
 {$IFNDEF MV_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
-Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If Currency(A) > Currency(B) then
   Result := +1

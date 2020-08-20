@@ -11,7 +11,7 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TPointerValue
+                                TMVPointerValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
@@ -23,10 +23,10 @@ type
 {$UNDEF MV_ComplexStreaming}
 
 {===============================================================================
-    TPointerValue - class declaration
+    TMVPointerValue - class declaration
 ===============================================================================}
 type
-  TMVPointerValue = class(TOtherManagedValue)
+  TMVPointerValue = class(TMVOtherManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
@@ -50,14 +50,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                 TPointerValue
+                                TMVPointerValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_VALUE = nil;
 
 {===============================================================================
-    TPointerValue - class implementation
+    TMVPointerValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -66,7 +66,7 @@ const
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.GetValueType: TManagedValueType;
+class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
 Result := mvtPointer;
 end;
@@ -74,7 +74,7 @@ end;
 //------------------------------------------------------------------------------
 
 {$IFDEF FPCDWM}{$PUSH}W4055 {$IFNDEF MV_StringLikeType}W5024{$ENDIF}{$ENDIF}
-Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If PtrUInt(Pointer(A)) > PtrUInt(Pointer(B)) then
   Result := +1

@@ -11,7 +11,7 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                TUTF8StringValue
+                               TMVUTF8StringValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
@@ -23,10 +23,10 @@ type
 {$DEFINE MV_ComplexStreaming}
 
 {===============================================================================
-    TUTF8StringValue - class declaration
+    TMVUTF8StringValue - class declaration
 ===============================================================================}
 type
-  TMVUTF8StringValue = class(TStringManagedValue)
+  TMVUTF8StringValue = class(TMVStringManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
@@ -43,14 +43,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                TUTF8StringValue
+                               TMVUTF8StringValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_VALUE = UTF8String('');
 
 {===============================================================================
-    TUTF8StringValue - class implementation
+    TMVUTF8StringValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -59,14 +59,14 @@ const
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.GetValueType: TManagedValueType;
+class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
 Result := mvtUTF8String;
 end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := UTF8StringCompare(UTF8String(A),UTF8String(B),Arg);
 end;

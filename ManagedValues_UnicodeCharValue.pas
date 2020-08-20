@@ -11,7 +11,7 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                               TUnicodeCharValue
+                              TMVUnicodeCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
@@ -23,10 +23,10 @@ type
 {$UNDEF MV_ComplexStreaming}
 
 {===============================================================================
-    TUnicodeCharValue - class declaration
+    TMVUnicodeCharValue - class declaration
 ===============================================================================}
 type
-  TMVUnicodeCharValue = class(TCharManagedValue)
+  TMVUnicodeCharValue = class(TMVCharManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
@@ -43,14 +43,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                               TUnicodeCharValue
+                              TMVUnicodeCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_VALUE = UnicodeChar(#0);
 
 {===============================================================================
-    TUnicodeCharValue - class implementation
+    TMVUnicodeCharValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -59,14 +59,14 @@ const
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.GetValueType: TManagedValueType;
+class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
 Result := mvtUnicodeChar;
 end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := UnicodeStringCompare(UnicodeChar(A),UnicodeChar(B),Arg);
 end;

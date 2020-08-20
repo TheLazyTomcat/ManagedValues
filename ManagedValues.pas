@@ -39,9 +39,12 @@ uses
 ===============================================================================}
 
 type
-  TManagedValue = TManagedValueBase;
+  TManagedValue = TMVManagedValueBase;
 
   TManagedValueClass = class of TManagedValue;
+
+Function InitValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue; overload;
+procedure FinalValue(var Value: TManagedValue); overload;
 
 {===============================================================================
     TBooleanValue
@@ -339,9 +342,9 @@ procedure FinalValue(var Value: TObjectValue); overload;
     TValuesManager - class declaration
 ===============================================================================}
 type
-  TValuesManager = class(TValuesManagerBase)
+  TValuesManager = class(TMVValuesManagerBase)
   public
-    Function NewValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValueBase; virtual;
+    Function NewValue(ValueType: TMVManagedValueType; const Name: String = ''): TMVManagedValueBase; virtual;
     Function NewBooleanValue(const Name: String = ''; InitTo: Boolean = False): TBooleanValue; virtual;
     Function NewInt8Value(const Name: String = ''; InitTo: Int8 = 0): TInt8Value; virtual;
     Function NewUInt8Value(const Name: String = ''; InitTo: UInt8 = 0): TUInt8Value; virtual;
@@ -375,9 +378,9 @@ type
 ===============================================================================}
 
 type
-  TValueArray = array of TManagedValueBase;
+  TValueArray = array of TMVManagedValueBase;
 
-Function FindManagedValue(const Name: String; out Value: TManagedValueBase): Boolean;
+Function FindManagedValue(const Name: String; out Value: TMVManagedValueBase): Boolean;
 Function FindManagedValues(const Name: String; out Values: TValueArray): Integer;
 
 Function ManagedValuesCount: Integer;
@@ -387,6 +390,23 @@ implementation
 
 uses
   SysUtils;
+
+{===============================================================================
+    TManagedValue
+===============================================================================}
+
+Function InitValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue;
+begin
+Result := ValueClass.Create(Name);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TManagedValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
 
 {===============================================================================
     TBooleanValue
@@ -843,7 +863,7 @@ end;
     TValuesManager - public methods
 -------------------------------------------------------------------------------}
 
-Function TValuesManager.NewValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValueBase;
+Function TValuesManager.NewValue(ValueType: TMVManagedValueType; const Name: String = ''): TMVManagedValueBase;
 begin
 case ValueType of
   mvtBoolean:       Result := TBooleanValue.Create(Name);
@@ -1090,9 +1110,9 @@ end;
     Global manager access functions - implementation
 ===============================================================================}
 
-Function FindManagedValue(const Name: String; out Value: TManagedValueBase): Boolean;
+Function FindManagedValue(const Name: String; out Value: TMVManagedValueBase): Boolean;
 var
-  GlobalManager:  TValuesManagerBase;
+  GlobalManager:  TMVValuesManagerBase;
 begin
 Value := nil;
 GlobalManager := GetGlobalValuesManager;
@@ -1106,8 +1126,8 @@ end;
 
 Function FindManagedValues(const Name: String; out Values: TValueArray): Integer;
 var
-  GlobalManager:  TValuesManagerBase;
-  NewValue:       TManagedValueBase;
+  GlobalManager:  TMVValuesManagerBase;
+  NewValue:       TMVManagedValueBase;
 begin
 SetLength(Values,0);
 GlobalManager := GetGlobalValuesManager;
@@ -1127,7 +1147,7 @@ end;
 
 Function ManagedValuesCount: Integer;
 var
-  GlobalManager:  TValuesManagerBase;
+  GlobalManager:  TMVValuesManagerBase;
 begin
 GlobalManager := GetGlobalValuesManager;
 If Assigned(GlobalManager) then
@@ -1140,7 +1160,7 @@ end;
 
 procedure ManagedValuesClear;
 var
-  GlobalManager:  TValuesManagerBase;
+  GlobalManager:  TMVValuesManagerBase;
 begin
 GlobalManager := GetGlobalValuesManager;
 If Assigned(GlobalManager) then
