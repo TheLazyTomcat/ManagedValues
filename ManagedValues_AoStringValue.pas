@@ -1,4 +1,4 @@
-unit ManagedValues_AoBooleanValue;
+unit ManagedValues_AoStringValue;
 
 {$INCLUDE './ManagedValues_defs.inc'}
 
@@ -11,49 +11,49 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                               TMVAoBooleanValue
+                                TMVAoStringValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVAoBoolean = array of Boolean;
+  TMVAoString = array of String;
 
-  TMVValueArrayItemType = Boolean;
-  TMVValueArrayType     = TMVAoBoolean;
+  TMVValueArrayItemType = String;
+  TMVValueArrayType     = TMVAoString;
 
-{$UNDEF MV_ArrayItem_ConstParams}
-{$DEFINE MV_ArrayItem_AssignIsThreadSafe}
-{$UNDEF MV_ArrayItem_StringLikeType}
+{$DEFINE MV_ArrayItem_ConstParams}
+{$UNDEF MV_ArrayItem_AssignIsThreadSafe}
+{$DEFINE MV_ArrayItem_StringLikeType}
 {$DEFINE MV_ArrayItem_ComplexStreaming}
 
 {===============================================================================
-    TMVAoBooleanValue - class declaration
+    TMVAoStringValue - class declaration
 ===============================================================================}
 type
-  TMVAoBooleanValue = class(TMVAoOtherManagedValue)
+  TMVAoStringValue = class(TMVAoStringManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_ArrayValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
 type
-  TMVValueClass = TMVAoBooleanValue;
+  TMVValueClass = TMVAoStringValue;
 
 implementation
 
 uses
-  SysUtils, Math,
-  BinaryStreaming;
+  Math,
+  StrRect, BinaryStreaming;
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                               TMVAoBooleanValue
+                                TMVAoStringValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
-  MV_LOCAL_DEFAULT_ITEM_VALUE = False;
+  MV_LOCAL_DEFAULT_ITEM_VALUE = String('');
   
 {===============================================================================
-    TMVAoBooleanValue - class implementation
+    TMVAoStringValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -61,41 +61,47 @@ const
 {$UNDEF MV_ClassImplementation}
 
 {-------------------------------------------------------------------------------
-    TMVAoBooleanValue - specific protected methods
+    TMVAoStringValue - specific protected methods
 -------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
-Result := mvtAoBoolean;
+Result := mvtAoString;
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
 begin
-Result := aitBoolean;
+Result := aitString;
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
-If TMVValueArrayItemType(A) and not TMVValueArrayItemType(B) then
-  Result := +1
-else If not TMVValueArrayItemType(A) and TMVValueArrayItemType(B) then
-  Result := -1
-else
-  Result := 0;
+Result := StringCompare(TMVValueArrayItemType(A),TMVValueArrayItemType(B),Arg);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.ArrayItemThreadSafeAssign({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType): TMVValueArrayItemType;
+begin
+Result := Value;
+UniqueString(Result);
 end;
 
 {-------------------------------------------------------------------------------
-    TMVAoBooleanValue - specific public methods
--------------------------------------------------------------------------------}
+    TMVAoStringValue - specific public methods
+-------------------------------------------------------------------------------}  
 
 Function TMVValueClass.SavedSize: TMemSize;
+var
+  i:  Integer;
 begin
-// each boolean item is saved as one byte
-Result := SizeOf(Int32){array length} + fCurrentCount;
+Result := SizeOf(Int32);  // array length
+For i := LowIndex to HighIndex do
+  Inc(Result,4 + Length(StrToUTF8(fCurrentValue[i])));
 end;
 
 //------------------------------------------------------------------------------
@@ -106,7 +112,7 @@ var
 begin
 Stream_WriteInt32(Stream,fCurrentCount);
 For i := LowIndex to HighIndex do
-  Stream_WriteBool(Stream,fCurrentValue[i]);
+  Stream_WriteString(Stream,fCurrentValue[i]);
 end;
 
 //------------------------------------------------------------------------------
@@ -119,7 +125,7 @@ begin
 // load into temp
 SetLength(Temp,Stream_ReadInt32(Stream));
 For i := Low(Temp) to High(Temp) do
-  Temp[i] := Stream_ReadBool(Stream);
+  Temp[i] := Stream_ReadString(Stream);
 // assign temp
 If Init then
   Initialize(Temp,False)
@@ -137,8 +143,8 @@ begin
 Strings := TStringList.Create;
 try
   For i := LowIndex to HighIndex do
-    Strings.Add(BoolToStr(fCurrentValue[i],True));
-  Result := Strings.Text;
+    Strings.Add(fCurrentValue[i]);
+  Result := Strings.DelimitedText;
 finally
   Strings.Free;
 end;
@@ -155,10 +161,10 @@ var
 begin
 Strings := TStringList.Create;
 try
-  Strings.Text := Str;
+  Strings.DelimitedText := Str;
   SetLength(Temp,Strings.Count);
   For i := 0 to Pred(Strings.Count) do
-    Temp[i] := StrToBool(Strings[i]);
+    Temp[i] := Strings[i];
   SetCurrentValue(Temp);
 finally
   Strings.Free;

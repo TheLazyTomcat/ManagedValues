@@ -41,6 +41,8 @@ uses
   SysUtils,
   BinaryStreaming;
 
+{$message 'remove unused units; add code separators for cpecific public/protected/private methods'}  
+
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
   {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
