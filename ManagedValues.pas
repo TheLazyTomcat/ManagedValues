@@ -43,8 +43,8 @@ type
 
   TManagedValueClass = class of TManagedValue;
 
-Function InitValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue; overload;
-procedure FinalValue(var Value: TManagedValue); overload;
+Function CreateValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue; 
+procedure FreeValue(var Value: TManagedValue); overload;
 
 {===============================================================================
     TBooleanValue
@@ -403,14 +403,14 @@ uses
     TManagedValue
 ===============================================================================}
 
-Function InitValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue;
+Function CreateValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue;
 begin
 Result := ValueClass.Create(Name);
 end;
 
 //------------------------------------------------------------------------------
 
-procedure FinalValue(var Value: TManagedValue);
+procedure FreeValue(var Value: TManagedValue);
 begin
 If Assigned(Value) then
   FreeAndNil(Value);

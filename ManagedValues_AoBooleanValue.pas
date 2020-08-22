@@ -5,6 +5,8 @@ unit ManagedValues_AoBooleanValue;
 interface
 
 uses
+  Classes,
+  AuxTypes,
   ManagedValues_Base;
 
 {===============================================================================
@@ -15,12 +17,13 @@ uses
 type
   TMVAoBoolean = array of Boolean;
 
-  TMVValueItemType  = Boolean;
-  TMVValueArrayType = TMVAoBoolean;
+  TMVValueArrayItemType = Boolean;
+  TMVValueArrayType     = TMVAoBoolean;
 
-{$UNDEF MV_ItemConstParams}
-{$DEFINE MV_ItemAssignIsThreadSafe}
-{$UNDEF MV_ItemStringLikeType}
+{$UNDEF MV_ArrayItem_ConstParams}
+{$DEFINE MV_ArrayItem_AssignIsThreadSafe}
+{$UNDEF MV_ArrayItem_StringLikeType}
+{$DEFINE MV_ArrayItem_ComplexStreaming}
 
 {===============================================================================
     TMVAoBooleanValue - class declaration
@@ -30,62 +33,71 @@ type
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_ArrayValues.inc'}
   {$UNDEF MV_ClassDeclaration}
-  (*
   private
-    fCurrentValue:  TMVValueArrayTypeInternal;
-    fInitialValue:  TMVValueArrayTypeInternal;
-    // getters,setters
+    fCurrentValue:  TMVValueArrayType;
+    fInitialValue:  TMVValueArrayType;
+    // getters, setters
     Function GetCurrentValue: TMVValueArrayType;
     procedure SetCurrentValue(const Value: TMVValueArrayType);
     Function GetInitialValue: TMVValueArrayType;
     procedure SetInitialValue(const Value: TMVValueArrayType);
+    Function GetItem(Index: Integer): TMVValueArrayItemType;
+    procedure SetItem(Index: Integer;{$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType);
   protected
-    class Function GetValueType: TManagedValueType; override;
-    class Function GetItemType: TArrayItemType; override;
-    Function GetCurrentCount: Integer; override;
-    procedure SetCurrentCount(Value: Integer); override;
+    // class info
+    class Function GetValueType: TMVManagedValueType; override;
+    class Function GetArrayItemType: TMVArrayItemType; override;
+    // list management
+    Function GetCapacity: Integer; override;
+    procedure SetCapacity(Value: Integer); override;
+    procedure SetCount(Value: Integer); override;
     Function GetInitialCount: Integer; override;
-    procedure Initialize; override;
+    // init, final
+    procedure Initialize; overload; override;
     procedure Finalize; override;
-    class Function CompareArrays(A,B: TMVValueArrayTypeInternal; Arg: Boolean): Integer; overload; virtual;
-    class Function CompareArrays(A: TMVValueArrayTypeInternal; const B: TMVValueArrayType; Arg: Boolean): Integer; overload; virtual;
-    class Function CompareArrays(const A: TMVValueArrayType; B: TMVValueArrayTypeInternal; Arg: Boolean): Integer; overload; virtual;
-    class Function SameArrays(A,B: TMVValueArrayTypeInternal; Arg: Boolean): Boolean; overload; virtual;
-    class Function SameArrays(A: TMVValueArrayTypeInternal; const B: TMVValueArrayType; Arg: Boolean): Boolean; overload; virtual;
-    class Function SameArrays(const A: TMVValueArrayType; B: TMVValueArrayTypeInternal; Arg: Boolean): Boolean; overload; virtual;
-    class procedure ArrayAssignTo(var Dst: TMVValueArrayTypeInternal; const Src: TMVValueArrayType); virtual;
-    class procedure ArrayAssignFrom(var Dst: TMVValueArrayType; const Src: TMVValueArrayTypeInternal); virtual;
-    procedure CheckAndSetEquality; override;
-    class Function CompareItemValues(const A,B; Arg: Boolean): Integer; override;
-  {$IFNDEF MV_ItemAssignIsThreadSafe}
-    Function ItemThreadSafeAssign({$IFDEF MV_ItemConstParams}const{$ENDIF} Value: TMVValueItemType): TMVValueItemType; virtual;
+    // compare methods
+    class Function CompareBaseValuesCnt(const A,B; CntA,CntB: Integer; Arg: Boolean): Integer; override;
+    class Function CompareBaseValues(const A,B; Arg: Boolean): Integer; override;
+    class Function CompareArrayItemValues(const A,B; Arg: Boolean): Integer; override;
+    Function SortingCompare(Idx1,Idx2: Integer{$IFDEF MV_ArrayItem_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
+    // assignment methods
+    Function ThreadSafeAssign(const Arr: TMVValueArrayType; Index: Integer; Count: Integer): TMVValueArrayType; overload; virtual;
+    Function ThreadSafeAssign(const Arr: TMVValueArrayType): TMVValueArrayType; overload; virtual;
+  {$IFNDEF MV_ArrayItem_AssignIsThreadSafe}
+    Function ArrayItemThreadSafeAssign({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType): TMVValueArrayItemType; virtual;
   {$ENDIF}
-    Function SortingCompare(Idx1,Idx2: Integer{$IFDEF MV_ItemStringLikeType}, CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
+    // utility
+    procedure CheckAndSetEquality; override;  
   public
-    {$message 'try if open array will work (if proper overload can be called in D7)'}
-    //constructor CreateAndInit(const Value: TMVValueArrayType); overload;
-    //constructor CreateAndInit(const Name: String; const Value: TMVValueArrayType); overload;
-    //Function LowIndex: Integer; override;
-    //Function HighIndex: Integer; virtual; abstract;
-    //Function CheckIndex(Index: Integer): Boolean; virtual; abstract;
-    //Function Compare(Value: TManagedValueBase{$IFDEF MV_ItemStringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
-    //Function Same(Value: TManagedValueBase{$IFDEF MV_ItemStringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean; virtual;
-    //procedure Initialize(const Value: TMVValueArrayType; OnlyValues: Boolean); reintroduce; overload; virtual;
-    //procedure InitialToCurrent; override;
-    //procedure CurrentToInitial; override;
-    //procedure SwapInitialAndCurrent; override;
-    //Function SavedSize: TMemSize; override;
-    //procedure AssignFrom(Value: TManagedValueBase); override;
-    //procedure AssignTo(Value: TManagedValueBase); override;
-    //procedure SaveToStream(Stream: TStream); override;
-    //procedure LoadFromStream(Stream: TStream; Init: Boolean = False); override;
-    //Function AsString: String; override;
-    //procedure FromString(const Str: String); override;      
+    // costructors, destructors
+    constructor CreateAndInit(const Value: TMVValueArrayType); overload;
+    constructor CreateAndInit(const Name: String; const Value: TMVValueArrayType); overload;
+    // value manipulation
+    procedure BuildFrom(const Source: array of TMVValueArrayItemType); virtual;
+    procedure Initialize(const Value: TMVValueArrayType; OnlyValues: Boolean); reintroduce; overload; virtual;
+    procedure InitialToCurrent; override;
+    procedure CurrentToInitial; override;
+    procedure SwapInitialAndCurrent; override;
+    // public compare
+    Function Compare(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
+    Function Same(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean; virtual;
+    // assigning
+    procedure AssignFrom(Value: TMVManagedValueBase); override;
+    procedure AssignTo(Value: TMVManagedValueBase); override;
+    // streaming
+    Function SavedSize: TMemSize; override;
+    procedure SaveToStream(Stream: TStream); override;
+    procedure LoadFromStream(Stream: TStream; Init: Boolean = False); override;
+    // string conversion
+    Function AsString: String; override;
+    procedure FromString(const Str: String); override;
+    // index methods
+    Function LowIndex: Integer; override;
+    // value-specific properties
     property CurrentValue: TMVValueArrayType read GetCurrentValue write SetCurrentValue;
     property InitialValue: TMVValueArrayType read GetInitialValue write SetInitialValue;
     property Value: TMVValueArrayType read GetCurrentValue write SetCurrentValue;
-    //property Items
-  *)
+    property Items[Index: Integer]: TMVValueArrayItemType read GetItem write SetItem; default;
   end;
 
 type
@@ -94,7 +106,8 @@ type
 implementation
 
 uses
-  Math;
+  SysUtils, Math,
+  BinaryStreaming;
 
 {===============================================================================
 --------------------------------------------------------------------------------
@@ -110,10 +123,10 @@ const
 {-------------------------------------------------------------------------------
     TMVValueClass - private methods
 -------------------------------------------------------------------------------}
-(*
+
 Function TMVValueClass.GetCurrentValue: TMVValueArrayType;
 begin
-ArrayAssignFrom(Result,fCurrentValue);
+Result := ThreadSafeAssign(fCurrentValue,Low(fCurrentValue),fCurrentCount);
 Inc(fReadCount);
 end;
 
@@ -121,9 +134,11 @@ end;
 
 procedure TMVValueClass.SetCurrentValue(const Value: TMVValueArrayType);
 begin
-If not SameArrays(Value,fCurrentValue,True) then
+If not SameBaseValuesCnt(Value,fCurrentValue,Length(Value),fCurrentCount,True) then
   begin
-    ArrayAssignTo(fCurrentValue,Value);
+    SetLength(fCurrentValue,0);
+    fCurrentValue := ThreadSafeAssign(Value);
+    fCurrentCount := Length(fCurrentValue);
     Inc(fWriteCount);
     CheckAndSetEquality;
     DoCurrentChange;
@@ -134,120 +149,177 @@ end;
 
 Function TMVValueClass.GetInitialValue: TMVValueArrayType;
 begin
-ArrayAssignFrom(Result,fInitialValue);
-Inc(fReadCount);
+Result := ThreadSafeAssign(fInitialValue);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.SetInitialValue(const Value: TMVValueArrayType);
 begin
-If not SameArrays(Value,fInitialValue,True) then
+If not SameBaseValues(Value,fInitialValue,True) then
   begin
-    ArrayAssignTo(fInitialValue,Value);
+    SetLength(fInitialValue,0);
+    fInitialValue := ThreadSafeAssign(Value);
     CheckAndSetEquality;
   end;
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.GetItem(Index: Integer): TMVValueArrayItemType;
+begin
+If CheckIndex(Index) then
+  begin
+    Result := {$IFNDEF MV_ArrayItem_AssignIsThreadSafe}ArrayItemThreadSafeAssign{$ENDIF}(fCurrentValue[Index]);
+    Inc(fReadCount);
+  end
+else raise EMVIndexOutOfBounds.CreateFmt('%s.GetItem: Index (%d) out of bounds.',[Self.ClassName,Index]);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.SetItem(Index: Integer;{$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType);
+begin
+If CheckIndex(Index) then
+  begin
+    If not SameArrayItemValues(fCurrentValue[Index],Value,True) then
+      begin
+        fCurrentValue[Index] := {$IFNDEF MV_ArrayItem_AssignIsThreadSafe}ArrayItemThreadSafeAssign{$ENDIF}(Value);
+        Inc(fWriteCount);
+        CheckAndSetEquality;
+        DoCurrentChange;
+      end;
+  end
+else raise EMVIndexOutOfBounds.CreateFmt('%s.SetItem: Index (%d) out of bounds.',[Self.ClassName,Index]);
 end;
 
 {-------------------------------------------------------------------------------
     TMVValueClass - protected methods
 -------------------------------------------------------------------------------}
 
-class Function TMVValueClass.GetValueType: TManagedValueType;
+class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
 Result := mvtAoBoolean;
 end;
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.GetItemType: TArrayItemType;
+class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
 begin
 Result := aitBoolean;
 end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.GetCurrentCount: Integer;
+Function TMVValueClass.GetCapacity: Integer;
 begin
-Result := CDA_Count(fCurrentValue);
+Result := Length(fCurrentValue);
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TMVValueClass.SetCurrentCount(Value: Integer);
+procedure TMVValueClass.SetCapacity(Value: Integer);
+var
+  i:  Integer;
 begin
-CDA_SetCount(fCurrentValue,Value);
+If Value >= 0 then
+  begin
+    If Value <> Length(fCurrentValue) then
+      begin
+        If Value < fCurrentCount then
+          begin
+            For i := Value to HighIndex do
+              fCurrentValue[i] := MV_LOCAL_DEFAULT_ITEM_VALUE;
+            fCurrentCount := Value;
+            CheckAndSetEquality;
+            DoCurrentChange;
+          end;
+        SetLength(fCurrentValue,Value);
+      end;
+  end
+else raise EMVInvalidValue.CreateFmt('%.SetCapacity: Invalid capacitny (%d).',[Self.ClassName,Value]);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.SetCount(Value: Integer);
+var
+  i:  Integer;
+begin
+If Value >= 0 then
+  begin
+    If Value <> fCurrentCount then
+      begin
+        If Value > Capacity then
+          SetCapacity(Value);
+        If Value < fCurrentCount then
+          begin
+            // existing items are removed
+            For i := Value to HighIndex do
+              fCurrentValue[i] := MV_LOCAL_DEFAULT_ITEM_VALUE;
+          end
+        else 
+          begin
+            // new empty items are addded
+            For i := HighIndex to Pred(Value) do
+              fCurrentValue[i] := MV_LOCAL_DEFAULT_ITEM_VALUE;
+          end;
+        fCurrentCount := Value;
+        CheckAndSetEquality;
+        DoCurrentChange;
+      end;
+  end
+else raise EMVInvalidValue.CreateFmt('%.SetCount: Invalid count (%d).',[Self.ClassName,Value]);
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.GetInitialCount: Integer;
 begin
-Result := CDA_Count(fInitialValue);
+Result := Length(fInitialValue);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.Initialize;
 begin
-CDA_Init(fCurrentValue);
-CDA_Init(fInitialValue);
+inherited;
+SetLength(fCurrentValue,0);
+SetLength(fInitialValue,0);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.Finalize;
+var
+  i:  Integer;
 begin
-CDA_Clear(fCurrentValue);
-CDA_Clear(fInitialValue);
+For i := Low(fCurrentValue) to High(fCurrentValue) do
+  fCurrentValue[i] := MV_LOCAL_DEFAULT_ITEM_VALUE;
+SetLength(fCurrentValue,0);
+For i := Low(fInitialValue) to High(fInitialValue) do
+  fInitialValue[i] := MV_LOCAL_DEFAULT_ITEM_VALUE;
+SetLength(fInitialValue,0);
+inherited;
 end;
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.CompareArrays(A,B: TMVValueArrayTypeInternal; Arg: Boolean): Integer;
-begin
-Result := CDA_Compare(A,B{$IFDEF MV_ItemStringLikeType},Arg{$ENDIF});
-end;
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-class Function TMVValueClass.CompareArrays(A: TMVValueArrayTypeInternal; const B: TMVValueArrayType; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareBaseValuesCnt(const A,B; CntA,CntB: Integer; Arg: Boolean): Integer;
 var
   i:  Integer;
 begin
 // first compare items at common indices
-For i := 0 to Pred(Min(CDA_Count(A),Length(B))) do
+For i := 0 to Pred(Min(CntA,CntB)) do
   begin
-    Result := CompareItemValues(CDA_GetItemPtr(A,i)^,B[i],Arg);
+    Result := CompareArrayItemValues(TMVValueArrayType(A)[i],TMVValueArrayType(B)[i],Arg);
     If Result <> 0 then
       Exit;
   end;
 // all items at common indices match, compare lengths
-If CDA_Count(A) < Length(B) then
+If CntA < CntB then
   Result := -1
-else If CDA_Count(A) > Length(B) then
-  Result := +1
-else
-  Result := 0;
-end;
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-class Function TMVValueClass.CompareArrays(const A: TMVValueArrayType; B: TMVValueArrayTypeInternal; Arg: Boolean): Integer;
-var
-  i:  Integer;
-begin
-// first compare items at common indices
-For i := 0 to Pred(Min(Length(A),CDA_Count(B))) do
-  begin
-    Result := CompareItemValues(A[i],CDA_GetItemPtr(B,i)^,Arg);
-    If Result <> 0 then
-      Exit;
-  end;
-// all items at common indices match, compare lengths
-If Length(A) < CDA_Count(B) then
-  Result := -1
-else If Length(A) > CDA_Count(B) then
+else If CntA > CntB then
   Result := +1
 else
   Result := 0;
@@ -255,53 +327,56 @@ end;
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.SameArrays(A,B: TMVValueArrayTypeInternal; Arg: Boolean): Boolean;
+class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-Result := CompareArrays(A,B,Arg) = 0;
-end;
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-class Function TMVValueClass.SameArrays(A: TMVValueArrayTypeInternal; const B: TMVValueArrayType; Arg: Boolean): Boolean;
-begin
-Result := CompareArrays(A,B,Arg) = 0;
-end;
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-class Function TMVValueClass.SameArrays(const A: TMVValueArrayType; B: TMVValueArrayTypeInternal; Arg: Boolean): Boolean;
-begin
-Result := CompareArrays(A,B,Arg) = 0;
+Result := CompareBaseValuesCnt(A,B,Length(TMVValueArrayType(A)),Length(TMVValueArrayType(B)),Arg);
 end;
 
 //------------------------------------------------------------------------------
 
-class procedure TMVValueClass.ArrayAssignTo(var Dst: TMVValueArrayTypeInternal; const Src: TMVValueArrayType);
-var
-  i:  Integer;
+class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
-If Length(Src) > 0 then
-  begin
-    CDA_SetCount(Dst,Length(Src));
-    For i := Low(Src) to High(Src) do
-      CDA_SetItem(Dst,i,{$IFNDEF MV_ItemAssignIsThreadSafe}ItemThreadSafeAssign{$ENDIF}(Src[i]));
-  end
-else CDA_SetCount(Dst,0);
+If TMVValueArrayItemType(A) and not TMVValueArrayItemType(B) then
+  Result := +1
+else If not TMVValueArrayItemType(A) and TMVValueArrayItemType(B) then
+  Result := -1
+else
+  Result := 0;
 end;
 
 //------------------------------------------------------------------------------
 
-class procedure TMVValueClass.ArrayAssignFrom(var Dst: TMVValueArrayType; const Src: TMVValueArrayTypeInternal);
+Function TMVValueClass.SortingCompare(Idx1,Idx2: Integer{$IFDEF MV_ArrayItem_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer;
+begin
+If Idx1 <> Idx2 then
+  Result := CompareArrayItemValues(fCurrentValue[Idx1],fCurrentValue[Idx2],
+    {$IFDEF MV_ArrayItem_StringLikeType}CaseSensitive{$ELSE}True{$ENDIF})
+else
+  Result := 0;
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.ThreadSafeAssign(const Arr: TMVValueArrayType; Index: Integer; Count: Integer): TMVValueArrayType;
+{$IFNDEF MV_ArrayItem_AssignIsThreadSafe}
 var
   i:  Integer;
+{$ENDIF}
 begin
-If CDA_Count(Src) > 0 then
-  begin
-    SetLength(Dst,CDA_Count(Src));
-    For i := CDA_Low(Src) to CDA_High(Src) do
-      Dst[i] := {$IFNDEF MV_ItemAssignIsThreadSafe}ItemThreadSafeAssign{$ENDIF}(CDA_GetItem(Src,i));
-  end
-else SetLength(Dst,0);
+{$IFDEF MV_ArrayItem_AssignIsThreadSafe}
+Result := Copy(Arr,Index,Count);
+{$ELSE}
+SetLength(Result,Count);
+For i := 0 to Pred(Count) do
+  Result[i] := {$IFNDEF MV_ArrayItem_AssignIsThreadSafe}ArrayItemThreadSafeAssign{$ENDIF}(Arr[Index + i]);
+{$ENDIF}
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Function TMVValueClass.ThreadSafeAssign(const Arr: TMVValueArrayType): TMVValueArrayType;
+begin
+Result := ThreadSafeAssign(Arr,Low(Arr),Length(Arr));
 end;
 
 //------------------------------------------------------------------------------
@@ -310,7 +385,7 @@ procedure TMVValueClass.CheckAndSetEquality;
 var
   IsEqual:  Boolean;
 begin
-IsEqual := SameArrays(fCurrentValue,fInitialValue,True);
+IsEqual := SameBaseValuesCnt(fCurrentValue,fInitialValue,fCurrentCount,Length(fInitialValue),True);
 If IsEqual <> fEqualsToInitial then
   begin
     fEqualsToInitial := IsEqual;
@@ -318,27 +393,210 @@ If IsEqual <> fEqualsToInitial then
   end;
 end;
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVValueClass - public methods
+-------------------------------------------------------------------------------}
 
-class Function TMVValueClass.CompareItemValues(const A,B; Arg: Boolean): Integer;
+constructor TMVValueClass.CreateAndInit(const Value: TMVValueArrayType);
 begin
-If Boolean(A) and not Boolean(B) then
-  Result := +1
-else If not Boolean(A) and Boolean(B) then
-  Result := -1
-else
-  Result := 0;
+CreateAndInit('',Value);
 end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.SortingCompare(Idx1,Idx2: Integer{$IFDEF MV_ItemStringLikeType}, CaseSensitive: Boolean{$ENDIF}): Integer;
+constructor TMVValueClass.CreateAndInit(const Name: String; const Value: TMVValueArrayType);
 begin
-If Idx1 <> Idx2 then
-  Result := CompareItemValues(CDA_GetItemPtr(fCurrentValue,Idx1)^,
-    CDA_GetItemPtr(fCurrentValue,Idx2)^{$IFDEF MV_ItemStringLikeType},CaseSensitive{$ELSE},True{$ENDIF})
-else
-  Result := 0;
+Create(Name);
+Initialize(Value,False);
 end;
-*)
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.BuildFrom(const Source: array of TMVValueArrayItemType);
+var
+  i:  Integer;
+begin
+SetLength(fCurrentValue,Length(Source));
+For i := Low(Source) to High(Source) do
+  fCurrentValue[i] := {$IFNDEF MV_ArrayItem_AssignIsThreadSafe}ArrayItemThreadSafeAssign{$ENDIF}(Source[i]);
+fCurrentCount := Length(fCurrentValue);
+CheckAndSetEquality;
+DoCurrentChange;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.Initialize(const Value: TMVValueArrayType; OnlyValues: Boolean);
+begin
+inherited Initialize(OnlyValues);
+fCurrentValue := ThreadSafeAssign(Value);
+fCurrentCount := Length(fCurrentValue);
+fInitialValue := ThreadSafeAssign(fCurrentValue);
+CheckAndSetEquality;
+DoCurrentChange;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.InitialToCurrent;
+begin
+SetCurrentValue(fInitialValue);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.CurrentToInitial;
+begin
+SetInitialValue(fCurrentValue);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.SwapInitialAndCurrent;
+var
+  Temp: TMVValueArrayType;
+begin
+If not fEqualsToInitial then
+  begin
+    Temp := ThreadSafeAssign(fCurrentValue,Low(fCurrentValue),fCurrentCount);
+    fCurrentValue := fInitialValue;
+    fCurrentCount := Length(fCurrentValue);
+    fInitialValue := Temp;
+    DoCurrentChange;
+    // no need to check equality, temp is deallocated automatically
+  end;
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.Compare(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer;
+var
+  Temp: TMVValueArrayType;
+begin
+If Value is TMVValueClass then
+  begin
+    Temp := TMVValueClass(Value).CurrentValue;
+    Result := CompareBaseValues(fCurrentValue,Temp,{$IFDEF MV_ArrayItem_StringLikeType}CaseSensitive{$ELSE}True{$ENDIF});
+  end
+else raise EMVIncompatibleClass.CreateFmt('%s.Compare: Incompatible class (%s).',[Self.ClassName,Value.ClassName]);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.Same(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean;
+begin
+Result := Compare(Value{$IFDEF MV_Value_StringLikeType},CaseSensitive{$ENDIF}) = 0;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.AssignFrom(Value: TMVManagedValueBase);
+begin
+If Value is TMVValueClass then
+  SetCurrentValue(TMVValueClass(Value).CurrentValue)
+else
+  raise EMVIncompatibleClass.CreateFmt('%s.AssignFrom: Incompatible class (%s).',[Self.ClassName,Value.ClassName]);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.AssignTo(Value: TMVManagedValueBase);
+begin
+If Value is TMVValueClass then
+  TMVValueClass(Value).CurrentValue := fCurrentValue
+else
+  raise EMVIncompatibleClass.CreateFmt('%s.AssignTo: Incompatible class (%s).',[Self.ClassName,Value.ClassName]);
+end;
+
+//------------------------------------------------------------------------------
+
+{$IFNDEF MV_ArrayItem_ComplexStreaming}
+Function TMVValueClass.SavedSize: TMemSize;
+begin
+Result := SizeOf(Int32){array length} + (fCurrentCount * SizeOf(TMVValueArrayItemType));
+end;
+{$ENDIF}
+
+Function TMVValueClass.SavedSize: TMemSize;
+begin
+// each boolean item is saved as one byte
+Result := SizeOf(Int32){array length} + fCurrentCount;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.SaveToStream(Stream: TStream);
+var
+  i:  Integer;
+begin
+Stream_WriteInt32(Stream,fCurrentCount);
+For i := LowIndex to HighIndex do
+  Stream_WriteBool(Stream,fCurrentValue[i]);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.LoadFromStream(Stream: TStream; Init: Boolean = False);
+var
+  Temp: TMVValueArrayType;
+  i:    Integer;
+begin
+// load into temp
+SetLength(Temp,Stream_ReadInt32(Stream));
+For i := Low(Temp) to High(Temp) do
+  Temp[i] := Stream_ReadBool(Stream);
+// assign temp
+If Init then
+  Initialize(Temp,False)
+else
+  SetCurrentValue(Temp);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.AsString: String;
+var
+  Strings:  TStringList;
+  i:        Integer;
+begin
+Strings := TStringList.Create;
+try
+  For i := LowIndex to HighIndex do
+    Strings.Add(BoolToStr(fCurrentValue[i],True));
+  Result := Strings.Text;
+finally
+  Strings.Free;
+end;
+inherited AsString;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.FromString(const Str: String);
+var
+  Strings:  TStringList;
+  Temp:     TMVValueArrayType;
+  i:        Integer;
+begin
+Strings := TStringList.Create;
+try
+  Strings.Text := Str;
+  SetLength(Temp,Strings.Count);
+  For i := 0 to Pred(Strings.Count) do
+    Temp[i] := StrToBool(Strings[i]);
+  SetCurrentValue(Temp);
+finally
+  Strings.Free;
+end;
+inherited;
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.LowIndex: Integer;
+begin
+Result := Low(fCurrentValue);
+end;
+
+
 end.

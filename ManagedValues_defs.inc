@@ -29,8 +29,9 @@
 {$UNDEF MV_Value_ComplexStreaming}
 
 {$UNDEF MV_ArrayItem_ConstParams}
-{$UNDEF MV_ArrayItem_ItemAssignIsThreadSafe}
-{$UNDEF MV_ArrayItem_ItemStringLikeType}
+{$UNDEF MV_ArrayItem_AssignIsThreadSafe}
+{$UNDEF MV_ArrayItem_StringLikeType}
+{$UNDEF MV_ArrayItem_ComplexStreaming}
 
 {$UNDEF MV_ClassDeclaration}
 {$UNDEF MV_ClassImplementation}

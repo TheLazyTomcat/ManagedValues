@@ -8,6 +8,9 @@ uses
   SysUtils, Classes,
   AuxTypes, AuxClasses;
 
+{===============================================================================
+    Exceptions
+===============================================================================}
 type
   EMVException = class(Exception);
 
@@ -24,12 +27,12 @@ type
 ===============================================================================}
 type
   TMVManagedValueType = (
-    // primitives
+    // primitive values
     mvtBoolean,mvtInt8,mvtUInt8,mvtInt16,mvtUInt16,mvtInt32,mvtUInt32,mvtInt64,
     mvtUInt64,mvtFloat32,mvtFloat64,mvtDateTime,mvtCurrency,mvtAnsiChar,
     mvtWideChar,mvtUTF8Char,mvtUnicodeChar,mvtChar,mvtShortString,mvtAnsiString,
     mvtUTF8String,mvtWideString,mvtUnicodeString,mvtString,mvtPointer,mvtObject,
-    // arrays - implement later
+    // array values
     mvtAoBoolean,mvtAoInt8,mvtAoUInt8,mvtAoInt16,mvtAoUInt16,mvtAoInt32,
     mvtAoUInt32,mvtAoInt64,mvtAoUInt64,mvtAoFloat32,mvtAoFloat64,mvtAoDateTime,
     mvtAoCurrency,mvtAoAnsiChar,mvtAoWideChar,mvtAoUTF8Char,mvtAoUnicodeChar,
@@ -47,7 +50,7 @@ type
     fName:                    String;
     fReadCount:               UInt64;
     fWriteCount:              UInt64;
-    fEqualsToInitial:         Boolean;  // whether the current walue is equal to initial
+    fEqualsToInitial:         Boolean;
     fFormatSettings:          TFormatSettings;
     // events
     fOnValueChangeInternal:   TNotifyEvent;
@@ -63,41 +66,50 @@ type
     // init/final
     procedure Initialize; overload; virtual;
     procedure Finalize; virtual;
-    // events
+    // event calls
     procedure DoCurrentChange; virtual;
     procedure DoEqualChange; virtual;
-    // utility methods
+    // compare methods
     class Function CompareBaseValues(const A,B; Arg: Boolean): Integer; virtual; abstract;  // override or reintroduce for specific type
     class Function SameBaseValues(const A,B; Arg: Boolean): Boolean; virtual;               // calls CompareBaseValues
+    // auxiliary methods (pretty much macro methods)
     procedure CheckAndSetEquality; virtual; abstract;                                       // must be overridden
     // protected properties (used by managers)
     property LocalManager: TObject read fLocalManager write fLocalManager;
     property OnValueChangeInternal: TNotifyEvent read fOnValueChangeInternal write fOnValueChangeInternal;
     property OnEqualsChangeInternal: TNotifyEvent read fOnEqualsChangeInternal write fOnEqualsChangeInternal;
   public
+    // constructors, destructors
     constructor Create; overload;
     constructor Create(const Name: String); overload;
-    constructor CreateAndLoad(Stream: TStream); overload;    
+    constructor CreateAndLoad(Stream: TStream); overload;
     constructor CreateAndLoad(const Name: String; Stream: TStream); overload;
     destructor Destroy; override;
+    // value manipulation
     procedure Initialize(OnlyValues: Boolean); overload; virtual;
     procedure InitialToCurrent; virtual; abstract;
     procedure CurrentToInitial; virtual; abstract;
     procedure SwapInitialAndCurrent; virtual; abstract;
-    Function SavedSize: TMemSize; virtual; abstract;
+    // assigning
     procedure AssignFrom(Value: TMVManagedValueBase); virtual; abstract;
     procedure AssignTo(Value: TMVManagedValueBase); virtual; abstract;
+    procedure Assign(Value: TMVManagedValueBase); virtual;
+    // streaming
+    Function SavedSize: TMemSize; virtual; abstract;
     procedure SaveToStream(Stream: TStream); virtual; abstract;
     procedure LoadFromStream(Stream: TStream; Init: Boolean = False); virtual; abstract;
+    // string conversion
     Function AsString: String; virtual;
     procedure FromString(const Str: String); virtual;
+    // properties
     property ValueType: TMVManagedValueType read GetValueType;
     property GloballyManaged: Boolean read GetGloballyManaged;
     property LocallyManaged: Boolean read GetLocallyManaged;
     property Name: String read fName;
     property ReadCount: UInt64 read fReadCount;
     property WriteCount: UInt64 read fWriteCount;
-    property EqualsToInitial: Boolean read fEqualsToInitial;
+    property EqualsToInitial: Boolean read fEqualsToInitial;  // indicates whether the current walue is equal to initial
+    // event properties
     property OnValueChangeEvent: TNotifyEvent read fOnValueChangeEvent write fOnValueChangeEvent;
     property OnValueChangeCallback: TNotifyCallback read fOnValueChangeCallback write fOnValueChangeCallback;
     property OnValueChange: TNotifyEvent read fOnValueChangeEvent write fOnValueChangeEvent;
@@ -146,27 +158,29 @@ type
     fListDelegate:  TCustomListObject;
     fCurrentCount:  Integer;
     // getters, setters
-    class Function GetArrayItemType: TMVArrayItemType; virtual; abstract;       // <<<
-    // list management
-    Function GetCapacity: Integer; virtual; abstract;                           // <<<
-    procedure SetCapacity(Value: Integer); virtual; abstract;                   // <<<
+    class Function GetArrayItemType: TMVArrayItemType; virtual; abstract;
+    // list management (eg. growing)
+    Function GetCapacity: Integer; virtual; abstract;
+    procedure SetCapacity(Value: Integer); virtual; abstract;
     Function GetCount: Integer; virtual;
-    procedure SetCount(Value: Integer); virtual; abstract;                      // <<<
-    Function GerInitialCount: Integer; virtual; abstract;                       // <<<
+    procedure SetCount(Value: Integer); virtual; abstract;
+    Function GetInitialCount: Integer; virtual; abstract;
     procedure Grow; virtual;
     procedure Shrink; virtual;
     // init/final
     procedure Initialize; overload; override;
     procedure Finalize; override;
-    // utility methods
+    // compare methods
     class Function CompareBaseValuesCnt(const A,B; CntA,CntB: Integer; Arg: Boolean): Integer; virtual; abstract;
+    class Function SameBaseValuesCnt(const A,B; CntA,CntB: Integer; Arg: Boolean): Boolean; virtual;
     class Function CompareArrayItemValues(const A,B; Arg: Boolean): Integer; virtual; abstract;
     class Function SameArrayItemValues(const A,B; Arg: Boolean): Boolean; virtual;
   public
-    Function LowIndex: Integer; virtual; abstract;                              // <<<
+    // index methods
+    Function LowIndex: Integer; virtual; abstract;                              
     Function HighIndex: Integer; virtual;
     Function CheckIndex(Index: Integer): Boolean; virtual;
-
+    // list methods
     //procedure Exchange(Idx1,Idx2: Integer); virtual; abstract;
     //procedure Move(SrcIdx,DstIdx: Integer); virtual; abstract;
     //procedure Delete(Index: Integer); virtual; abstract;
@@ -185,8 +199,11 @@ type
     *Remove
 
   *)
+    // properties common to all arrays
+    property CurrentCapacity: Integer read GetCapacity write SetCapacity;
     property CurrentCount: Integer read GetCount write SetCount;
-    property InitialCount: Integer read GerInitialCount;
+    property InitialCount: Integer read GetInitialCount;
+    property Capacity: Integer read GetCapacity write SetCapacity;
     property Count: Integer read GetCount write SetCount;
   //*Items
   end;
@@ -243,7 +260,7 @@ type
     procedure SetCapacity(Value: Integer); override;
     Function GetCount: Integer; override;
     procedure SetCount(Value: Integer); override;
-    // events
+    // event calls and handlers
     procedure ValueChangeHandler(Sender: TObject); virtual;
     procedure EqualsChangeHandler(Sender: TObject); virtual;
     procedure DoChange; virtual;
@@ -260,13 +277,13 @@ type
   public
     constructor Create;
     destructor Destroy; override;
-    Function LowIndex: Integer; override;
-    Function HighIndex: Integer; override;
     procedure Lock; virtual;
     procedure Unlock; virtual;
     procedure BeginUpdate; virtual;
     procedure EndUpdate; virtual;
     // list methods
+    Function LowIndex: Integer; override;
+    Function HighIndex: Integer; override;
     Function IndexOf(const Name: String): Integer; overload; virtual;
     Function IndexOf(Value: TMVManagedValueBase): Integer; overload; virtual;
     Function FindFirst(const Name: String; out Index: Integer): Boolean; overload; virtual;
@@ -747,6 +764,13 @@ end;
 
 //------------------------------------------------------------------------------
 
+procedure TMVManagedValueBase.Assign(Value: TMVManagedValueBase);
+begin
+AssignFrom(Value);
+end;
+
+//------------------------------------------------------------------------------
+
 Function TMVManagedValueBase.AsString: String;
 begin
 Inc(fReadCount);
@@ -768,6 +792,9 @@ end;
                               TMVArrayListDelegate
 --------------------------------------------------------------------------------
 ===============================================================================}
+{
+  Small class delegated to list management in array values.
+}
 {===============================================================================
     TMVArrayListDelegate - class declaration
 ===============================================================================}
@@ -903,8 +930,16 @@ end;
 
 procedure TMVArrayManagedValue.Finalize;
 begin
+fCurrentCount := 0;
 inherited;
 FreeAndNil(fListDelegate);
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVArrayManagedValue.SameBaseValuesCnt(const A,B; CntA,CntB: Integer; Arg: Boolean): Boolean;
+begin
+Result := CompareBaseValuesCnt(A,B,CntA,CntB,Arg) = 0;
 end;
 
 //------------------------------------------------------------------------------
@@ -1159,6 +1194,57 @@ end;
 
 //------------------------------------------------------------------------------
 
+procedure TMVValuesManagerBase.Lock;
+begin
+// do nothing in this class
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValuesManagerBase.Unlock;
+begin
+// do nothing in this class
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValuesManagerBase.BeginUpdate;
+begin
+Lock;
+try
+  If fUpdateCounter <= 0 then
+    fUpdated := [];
+  Inc(fUpdateCounter);
+finally
+  Unlock;
+end;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValuesManagerBase.EndUpdate;
+begin
+Lock;
+try
+  Dec(fUpdateCounter);
+  If fUpdateCounter <= 0 then
+    begin
+      fUpdateCounter := 0;
+      If vmuValue in fUpdated then
+        ValueChangeHandler(nil);
+      If vmuEquals in fUpdated then
+        EqualsChangeHandler(nil);
+      If vmuList in fUpdated then
+        DoChange;
+      fUpdated := [];
+    end;
+finally
+  Unlock;
+end;
+end;
+
+//------------------------------------------------------------------------------
+
 Function TMVValuesManagerBase.LowIndex: Integer;
 begin
 Lock;
@@ -1179,47 +1265,6 @@ try
 finally
   Unlock;
 end;  
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TMVValuesManagerBase.Lock;
-begin
-// do nothing in this class
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TMVValuesManagerBase.Unlock;
-begin
-// do nothing in this class
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TMVValuesManagerBase.BeginUpdate;
-begin
-If fUpdateCounter <= 0 then
-  fUpdated := [];
-Inc(fUpdateCounter);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TMVValuesManagerBase.EndUpdate;
-begin
-Dec(fUpdateCounter);
-If fUpdateCounter <= 0 then
-  begin
-    fUpdateCounter := 0;
-    If vmuValue in fUpdated then
-      ValueChangeHandler(nil);
-    If vmuEquals in fUpdated then
-      EqualsChangeHandler(nil);
-    If vmuList in fUpdated then
-      DoChange;
-    fUpdated := [];
-  end;
 end;
 
 //------------------------------------------------------------------------------
@@ -1623,14 +1668,19 @@ var
   i:          Integer;
   CanStream:  Boolean;
 begin
-For i := lowIndex to HighIndex do
-  begin
-    CanStream := True;
-    If StreamingEvents then
-      DoStreaming(i,CanStream);
-    If CanStream then
-      fValues[i].SaveToStream(Stream);
-  end;
+Lock;
+try
+  For i := LowIndex to HighIndex do
+    begin
+      CanStream := True;
+      If StreamingEvents then
+        DoStreaming(i,CanStream);
+      If CanStream then
+        fValues[i].SaveToStream(Stream);
+    end;
+finally
+  Unlock;
+end;
 end;
 
 //------------------------------------------------------------------------------
@@ -1640,14 +1690,19 @@ var
   i:          Integer;
   CanStream:  Boolean;
 begin
-For i := lowIndex to HighIndex do
-  begin
-    CanStream := True;
-    If StreamingEvents then
-      DoStreaming(i,CanStream);
-    If CanStream then
-      fValues[i].LoadFromStream(Stream,Init);
-  end;
+Lock;
+try
+  For i := lowIndex to HighIndex do
+    begin
+      CanStream := True;
+      If StreamingEvents then
+        DoStreaming(i,CanStream);
+      If CanStream then
+        fValues[i].LoadFromStream(Stream,Init);
+    end;
+finally
+  Unlock;
+end;
 end;
 
 

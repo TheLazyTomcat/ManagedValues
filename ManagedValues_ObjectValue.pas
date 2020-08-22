@@ -76,9 +76,9 @@ end;
 {$IFDEF FPCDWM}{$PUSH}W4055 {$IFNDEF MV_Value_StringLikeType}W5024{$ENDIF}{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-If PtrUInt(Pointer(TObject(A))) > PtrUInt(Pointer(TObject(B))) then
+If PtrUInt(Pointer(TMVValueBaseType(A))) > PtrUInt(Pointer(TMVValueBaseType(B))) then
   Result := +1
-else If PtrUInt(Pointer(TObject(A))) < PtrUInt(Pointer(TObject(B))) then
+else If PtrUInt(Pointer(TMVValueBaseType(A))) < PtrUInt(Pointer(TMVValueBaseType(B))) then
   Result := -1
 else
   Result := 0;

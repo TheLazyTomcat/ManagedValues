@@ -74,9 +74,9 @@ end;
 {$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-If Int64(A) > Int64(B) then
+If TMVValueBaseType(A) > TMVValueBaseType(B) then
   Result := +1
-else If Int64(A) < Int64(B) then
+else If TMVValueBaseType(A) < TMVValueBaseType(B) then
   Result := -1
 else
   Result := 0;

@@ -74,9 +74,9 @@ end;
 {$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-If Boolean(A) and not Boolean(B) then
+If TMVValueBaseType(A) and not TMVValueBaseType(B) then
   Result := +1
-else If not Boolean(A) and Boolean(B) then
+else If not TMVValueBaseType(A) and TMVValueBaseType(B) then
   Result := -1
 else
   Result := 0;

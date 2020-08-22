@@ -5,34 +5,46 @@
   private
     fCurrentValue:  TMVValueBaseType;
     fInitialValue:  TMVValueBaseType;
-    // getters,setters
+    // getters, setters
     Function GetCurrentValue: TMVValueBaseType;
     procedure SetCurrentValue({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType);
     procedure SetInitialValue({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType);
   protected
+    // class info methods
     class Function GetValueType: TMVManagedValueType; override;
+    // init, final
     procedure Initialize; override;
+    // compare methods
     class Function CompareBaseValues(const A,B; Arg: Boolean): Integer; override;
+    // assignment methods
   {$IFNDEF MV_Value_AssignIsThreadSafe}
     Function ThreadSafeAssign({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType): TMVValueBaseType; virtual;
   {$ENDIF}
+    // utility
     procedure CheckAndSetEquality; override;
   public
+    // costructors, destructors
     constructor CreateAndInit({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType); overload;
     constructor CreateAndInit(const Name: String; {$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType); overload;
-    Function Compare(Value: TMVManagedValueBase{$IFDEF MV_Value_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
-    Function Same(Value: TMVManagedValueBase{$IFDEF MV_Value_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean; virtual;
+    // value manipulation
     procedure Initialize({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType; OnlyValues: Boolean); reintroduce; overload; virtual;
     procedure InitialToCurrent; override;
     procedure CurrentToInitial; override;
     procedure SwapInitialAndCurrent; override;
-    Function SavedSize: TMemSize; override;
+    // public compare
+    Function Compare(Value: TMVManagedValueBase{$IFDEF MV_Value_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
+    Function Same(Value: TMVManagedValueBase{$IFDEF MV_Value_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean; virtual;
+    // assigning
     procedure AssignFrom(Value: TMVManagedValueBase); override;
     procedure AssignTo(Value: TMVManagedValueBase); override;
-    procedure SaveToStream(Stream: TStream); override;    
+    // streaming
+    Function SavedSize: TMemSize; override;
+    procedure SaveToStream(Stream: TStream); override;
     procedure LoadFromStream(Stream: TStream; Init: Boolean = False); override;
+    // string conversion
     Function AsString: String; override;
     procedure FromString(const Str: String); override;
+    // value-specific properties
     property CurrentValue: TMVValueBaseType read GetCurrentValue write SetCurrentValue;
     property InitialValue: TMVValueBaseType read fInitialValue write SetInitialValue;
     property Value: TMVValueBaseType read GetCurrentValue write SetCurrentValue;
@@ -120,32 +132,11 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.Compare(Value: TMVManagedValueBase{$IFDEF MV_Value_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer;
-var
-  Temp: TMVValueBaseType;
-begin
-If Value is TMVValueClass then
-  begin
-    Temp := TMVValueClass(Value).CurrentValue;
-    Result := CompareBaseValues(fCurrentValue,Temp,{$IFDEF MV_Value_StringLikeType}CaseSensitive{$ELSE}True{$ENDIF});
-  end
-else raise EMVIncompatibleClass.CreateFmt('%s.Compare: Incompatible class (%s).',[Self.ClassName,Value.ClassName]);
-end;
-
-//------------------------------------------------------------------------------
-
-Function TMVValueClass.Same(Value: TMVManagedValueBase{$IFDEF MV_Value_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean;
-begin
-Result := Compare(Value{$IFDEF MV_Value_StringLikeType},CaseSensitive{$ENDIF}) = 0;
-end;
-
-//------------------------------------------------------------------------------
-
 procedure TMVValueClass.Initialize({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType; OnlyValues: Boolean);
 begin
 inherited Initialize(OnlyValues);
 fCurrentValue := {$IFNDEF MV_Value_AssignIsThreadSafe}ThreadSafeAssign{$ENDIF}(Value);
-fInitialValue := fCurrentValue;
+fInitialValue := {$IFNDEF MV_Value_AssignIsThreadSafe}ThreadSafeAssign{$ENDIF}(fCurrentValue);
 CheckAndSetEquality;
 end;
 
@@ -181,12 +172,24 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFNDEF MV_Value_ComplexStreaming}
-Function TMVValueClass.SavedSize: TMemSize;
+Function TMVValueClass.Compare(Value: TMVManagedValueBase{$IFDEF MV_Value_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer;
+var
+  Temp: TMVValueBaseType;
 begin
-Result := SizeOf(TMVValueBaseType);
-end;   
-{$ENDIF}
+If Value is TMVValueClass then
+  begin
+    Temp := TMVValueClass(Value).CurrentValue;
+    Result := CompareBaseValues(fCurrentValue,Temp,{$IFDEF MV_Value_StringLikeType}CaseSensitive{$ELSE}True{$ENDIF});
+  end
+else raise EMVIncompatibleClass.CreateFmt('%s.Compare: Incompatible class (%s).',[Self.ClassName,Value.ClassName]);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.Same(Value: TMVManagedValueBase{$IFDEF MV_Value_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean;
+begin
+Result := Compare(Value{$IFDEF MV_Value_StringLikeType},CaseSensitive{$ENDIF}) = 0;
+end;
 
 //------------------------------------------------------------------------------
 
@@ -207,5 +210,14 @@ If Value is TMVValueClass then
 else
   raise EMVIncompatibleClass.CreateFmt('%s.AssignTo: Incompatible class (%s).',[Self.ClassName,Value.ClassName]);
 end;
+
+//------------------------------------------------------------------------------
+
+{$IFNDEF MV_Value_ComplexStreaming}
+Function TMVValueClass.SavedSize: TMemSize;
+begin
+Result := SizeOf(TMVValueBaseType);
+end;
+{$ENDIF}
 
 {$ENDIF MV_ClassImplementation}

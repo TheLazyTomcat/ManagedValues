@@ -75,7 +75,7 @@ end;
 {$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-Result := CompareUInt64(UInt64(A),UInt64(B));
+Result := CompareUInt64(TMVValueBaseType(A),TMVValueBaseType(B));
 end;    
 {$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
 

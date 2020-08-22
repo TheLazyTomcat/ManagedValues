@@ -68,7 +68,7 @@ end;
 
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-Result := UnicodeStringCompare(UnicodeChar(A),UnicodeChar(B),Arg);
+Result := UnicodeStringCompare(TMVValueBaseType(A),TMVValueBaseType(B),Arg);
 end;
 
 //------------------------------------------------------------------------------

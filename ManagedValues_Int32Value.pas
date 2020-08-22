@@ -74,7 +74,7 @@ end;
 {$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-Result := Integer(Int32(A) - Int32(B));
+Result := Integer(TMVValueBaseType(A) - TMVValueBaseType(B));
 end; 
 {$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
 

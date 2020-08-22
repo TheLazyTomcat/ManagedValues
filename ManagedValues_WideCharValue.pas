@@ -68,7 +68,7 @@ end;
 
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
-Result := WideStringCompare(WideChar(A),WideChar(B),Arg);
+Result := WideStringCompare(TMVValueBaseType(A),TMVValueBaseType(B),Arg);
 end;
 
 //------------------------------------------------------------------------------
