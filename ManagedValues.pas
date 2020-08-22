@@ -43,7 +43,8 @@ type
 
   TManagedValueClass = class of TManagedValue;
 
-Function CreateValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue; 
+Function CreateValue(ValueType: TMVManagedValueType; const Name: String = ''): TManagedValue; overload;
+Function CreateValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue; overload;
 procedure FreeValue(var Value: TManagedValue); overload;
 
 {===============================================================================
@@ -86,7 +87,7 @@ type
   TInt16Value = class(TMVInt16Value);
 
   TSmallIntValue = TInt16Value;
-{$If SizeOf(Integer) = 2}
+{$IF SizeOf(Integer) = 2}
   TIntegerValue  = TInt16Value;
 {$IFEND}
 
@@ -110,10 +111,10 @@ procedure FinalValue(var Value: TUInt16Value); overload;
 type
   TInt32Value = class(TMVInt32Value);
 
-{$If SizeOf(Integer) = 4}
+{$IF SizeOf(Integer) = 4}
   TIntegerValue = TInt32Value;
 {$IFEND}
-{$If SizeOf(LongInt) = 4}
+{$IF SizeOf(LongInt) = 4}
   TLongIntValue = TInt32Value;
 {$IFEND}
 
@@ -126,10 +127,10 @@ procedure FinalValue(var Value: TInt32Value); overload;
 type
   TUInt32Value = class(TMVUInt32Value);
 
-{$If SizeOf(Cardinal) = 4}
+{$IF SizeOf(Cardinal) = 4}
   TCardinalValue = TUInt32Value;
 {$IFEND}
-{$If SizeOf(LongWord) = 4}
+{$IF SizeOf(LongWord) = 4}
   TLongWordValue = TUInt32Value;
 {$IFEND}
   TDWordValue    = TUInt32Value;
@@ -143,10 +144,10 @@ procedure FinalValue(var Value: TUInt32Value); overload;
 type
   TInt64Value = class(TMVInt64Value);
 
-{$If SizeOf(Integer) = 8}
+{$IF SizeOf(Integer) = 8}
   TIntegerValue = TInt64Value;
 {$IFEND}
-{$If SizeOf(LongInt) = 8}
+{$IF SizeOf(LongInt) = 8}
   TLongIntValue = TInt64Value;
 {$IFEND}
 
@@ -161,10 +162,10 @@ type
 
   TQWordValue    = TUInt64Value;
   TQuadWordValue = TUInt64Value;
-{$If SizeOf(Cardinal) = 8}
+{$IF SizeOf(Cardinal) = 8}
   TCardinalValue = TUInt64Value;
 {$IFEND}
-{$If SizeOf(LongWord) = 8}
+{$IF SizeOf(LongWord) = 8}
   TLongWordValue = TUInt64Value;
 {$IFEND}
 
@@ -352,7 +353,8 @@ Function CreateByValueType(ValueType: TMVManagedValueType; const Name: String = 
 type
   TValuesManager = class(TMVValuesManagerBase)
   public
-    Function NewValue(ValueType: TMVManagedValueType; const Name: String = ''): TMVManagedValueBase; virtual;
+    Function NewValue(ValueType: TMVManagedValueType; const Name: String = ''): TMVManagedValueBase; overload; virtual;
+    Function NewValue(ValueClass: TManagedValueClass; const Name: String = ''): TMVManagedValueBase; overload; virtual;
     Function NewBooleanValue(const Name: String = ''; InitTo: Boolean = False): TBooleanValue; virtual;
     Function NewInt8Value(const Name: String = ''; InitTo: Int8 = 0): TInt8Value; virtual;
     Function NewUInt8Value(const Name: String = ''; InitTo: UInt8 = 0): TUInt8Value; virtual;
@@ -402,6 +404,13 @@ uses
 {===============================================================================
     TManagedValue
 ===============================================================================}
+
+Function CreateValue(ValueType: TMVManagedValueType; const Name: String = ''): TManagedValue;
+begin
+Result := CreateByValueType(ValueType,Name);
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 Function CreateValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue;
 begin
@@ -950,6 +959,14 @@ end;
 Function TValuesManager.NewValue(ValueType: TMVManagedValueType; const Name: String = ''): TMVManagedValueBase;
 begin
 Result := CreateByValueType(ValueType,Name);
+Add(Result);
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Function TValuesManager.NewValue(ValueClass: TManagedValueClass; const Name: String = ''): TMVManagedValueBase;
+begin
+Result := ValueClass.Create(Name);
 Add(Result);
 end;
 

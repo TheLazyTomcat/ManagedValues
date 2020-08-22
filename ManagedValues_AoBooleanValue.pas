@@ -456,6 +456,7 @@ procedure TMVValueClass.SwapInitialAndCurrent;
 var
   Temp: TMVValueArrayType;
 begin
+SetLength(Temp,0);  // suppressing warnings
 If not fEqualsToInitial then
   begin
     Temp := ThreadSafeAssign(fCurrentValue,Low(fCurrentValue),fCurrentCount);

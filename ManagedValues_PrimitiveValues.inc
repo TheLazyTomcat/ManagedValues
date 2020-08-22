@@ -138,6 +138,7 @@ inherited Initialize(OnlyValues);
 fCurrentValue := {$IFNDEF MV_Value_AssignIsThreadSafe}ThreadSafeAssign{$ENDIF}(Value);
 fInitialValue := {$IFNDEF MV_Value_AssignIsThreadSafe}ThreadSafeAssign{$ENDIF}(fCurrentValue);
 CheckAndSetEquality;
+DoCurrentChange;
 end;
 
 //------------------------------------------------------------------------------

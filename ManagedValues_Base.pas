@@ -8,6 +8,11 @@ uses
   SysUtils, Classes,
   AuxTypes, AuxClasses;
 
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W3031:={$WARN 3031 OFF}} // Values in enumeration types have to be ascending
+{$ENDIF}
+
 {===============================================================================
     Exceptions
 ===============================================================================}
@@ -32,6 +37,28 @@ type
     mvtUInt64,mvtFloat32,mvtFloat64,mvtDateTime,mvtCurrency,mvtAnsiChar,
     mvtWideChar,mvtUTF8Char,mvtUnicodeChar,mvtChar,mvtShortString,mvtAnsiString,
     mvtUTF8String,mvtWideString,mvtUnicodeString,mvtString,mvtPointer,mvtObject,
+  {$IFDEF FPCDWM}{$PUSH}W3031{$ENDIF}
+    // primitive value aliases
+    mvtBool = mvtBoolean, mvtShortInt = mvtInt8, mvtByte = mvtUInt8,
+    mvtSmalInt = mvtInt16, mvtWord = mvtUInt16, mvtDWord = mvtUInt32,
+    mvtQWord = mvtUInt64, mvtQuadWord = mvtUInt64, mvtSingle = mvtFloat32,
+    mvtDouble = mvtFloat64, mvtFloat = mvtFloat64, mvtReal = mvtFloat64,
+    mvtDate = mvtDateTime, mvtTime = mvtDateTime,
+       {$IF SizeOf(LongInt) = 4}mvtLongInt = mvtInt32,
+   {$ELSEIF SizeOf(LongInt) = 8}mvtLongInt = mvtInt64,
+   {$ELSE}{$MESSAGE FATAL 'Unssuported size of LongInt type.'}{$IFEND}
+       {$IF SizeOf(LongWord) = 4}mvtLongWord = mvtUInt32,
+   {$ELSEIF SizeOf(LongWord) = 8}mvtLongWord = mvtUInt64,
+   {$ELSE}{$MESSAGE FATAL 'Unssuported size of LongWord type.'}{$IFEND}
+       {$IF SizeOf(Integer) = 2}mvtInteger = mvtInt16,
+   {$ELSEIF SizeOf(Integer) = 4}mvtInteger = mvtInt32,
+   {$ELSEIF SizeOf(Integer) = 8}mvtInteger = mvtInt64,
+   {$ELSE}{$MESSAGE FATAL 'Unssuported size of Integer type.'}{$IFEND}
+       {$IF SizeOf(Cardinal) = 2}mvtCardinal = mvtUInt16,
+   {$ELSEIF SizeOf(Cardinal) = 4}mvtCardinal = mvtUInt32,
+   {$ELSEIF SizeOf(Cardinal) = 8}mvtCardinal = mvtUInt64,
+   {$ELSE}{$MESSAGE FATAL 'Unssuported size of Cardinal type.'}{$IFEND}
+  {$IFDEF FPCDWM}{$POP}W3031{$ENDIF}
     // array values
     mvtAoBoolean,mvtAoInt8,mvtAoUInt8,mvtAoInt16,mvtAoUInt16,mvtAoInt32,
     mvtAoUInt32,mvtAoInt64,mvtAoUInt64,mvtAoFloat32,mvtAoFloat64,mvtAoDateTime,
@@ -272,7 +299,7 @@ type
     procedure CheckAndSetEquality; virtual;
     procedure ProcessAddedValue(var Value: TMVManagedValueBase); virtual;
     procedure ProcessDeletedValue(var Value: TMVManagedValueBase; CanBeFreed: Boolean); virtual;
-    Function GetSortedAdditionIndex(Addition: TMVManagedValueBase): Integer; virtual;
+    Function GetAdditionIndex(Addition: TMVManagedValueBase): Integer; virtual;
     procedure DeleteInternal(Index: Integer; CanFree: Boolean = True); virtual;
   public
     constructor Create;
@@ -334,6 +361,8 @@ type
 
 Function GetGlobalValuesManager: TMVValuesManagerBase;
 
+{$UNDEF FPCDWM}
+
 implementation
 
 uses
@@ -366,7 +395,7 @@ type
     procedure ProcessAddedValue(var Value: TMVManagedValueBase); override;
     procedure ProcessDeletedValue(var Value: TMVManagedValueBase; CanBeFreed: Boolean); override;
     class Function CompareObjects(A,B: TMVManagedValueBase): Integer; virtual;
-    Function GetSortedAdditionIndex(Addition: TMVManagedValueBase): Integer; override;
+    Function GetAdditionIndex(Addition: TMVManagedValueBase): Integer; override;
   public
     procedure Lock; override;
     procedure Unlock; override;
@@ -443,10 +472,12 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TMVValuesManagerGlobal.ProcessAddedValue(var Value: TMVManagedValueBase);
 begin
 // do nothing
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -473,7 +504,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValuesManagerGlobal.GetSortedAdditionIndex(Addition: TMVManagedValueBase): Integer;
+Function TMVValuesManagerGlobal.GetAdditionIndex(Addition: TMVManagedValueBase): Integer;
 var
   L,C,R:  Integer;  // left, center, right
 begin
@@ -481,7 +512,8 @@ If fCount > 0 then
   begin
     L := LowIndex;
     R := HighIndex;
-    while L <= R do   // this must be true at least once when count > 0
+    C := (L + R) shr 1; // just to suppress warnings
+    while L <= R do     // this must be true at least once when count > 0
       begin
         C := (L + R) shr 1;
         case Sign(CompareObjects(fValues[C],Addition)) of
@@ -562,24 +594,30 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TMVValuesManagerGlobal.Insert(Index: Integer; Value: TMVManagedValueBase);
 begin
 raise EMVInvalidOperation.Create('TMVValuesManagerGlobal.Insert: Invalid operation.');
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TMVValuesManagerGlobal.Exchange(Idx1,Idx2: Integer);
 begin
 raise EMVInvalidOperation.Create('TMVValuesManagerGlobal.Exchange: Invalid operation.');
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TMVValuesManagerGlobal.Move(SrcIdx,DstIdx: Integer);
 begin
 raise EMVInvalidOperation.Create('TMVValuesManagerGlobal.Move: Invalid operation.');
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 {===============================================================================
     Public auxiliary functions - implementation
@@ -1034,9 +1072,9 @@ end;
 
 procedure TMVValuesManagerBase.ValueChangeHandler(Sender: TObject);
 begin
+Include(fUpdated,vmuValue);
 If fUpdateCounter <= 0 then
   begin
-    Include(fUpdated,vmuValue);
     If Assigned(fOnValueChangeEvent) then
       fOnValueChangeEvent(Self,Sender);
     If Assigned(fOnValueChangeCallback) then
@@ -1048,10 +1086,10 @@ end;
 
 procedure TMVValuesManagerBase.EqualsChangeHandler(Sender: TObject);
 begin
+Include(fUpdated,vmuEquals);
 If fUpdateCounter <= 0 then
   begin
     CheckAndSetEquality;
-    Include(fUpdated,vmuEquals);
     If Assigned(fOnEqualsChangeEvent) then
       fOnEqualsChangeEvent(Self,Sender);
     If Assigned(fOnEqualsChangeCallback) then
@@ -1063,9 +1101,9 @@ end;
 
 procedure TMVValuesManagerBase.DoChange;
 begin
+Include(fUpdated,vmuList);
 If fUpdateCounter <= 0 then
   begin
-    Include(fUpdated,vmuList);
     If Assigned(fOnChangeEvent) then
       fOnChangeEvent(Self);
     If Assigned(fOnChangeCallback) then
@@ -1138,17 +1176,19 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TMVValuesManagerBase.ProcessDeletedValue(var Value: TMVManagedValueBase; CanBeFreed: Boolean);
 begin
 Value.LocalManager := nil;
 Value.OnValueChangeInternal := nil;
 Value.OnEqualsChangeInternal := nil;
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
 {$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
-Function TMVValuesManagerBase.GetSortedAdditionIndex(Addition: TMVManagedValueBase): Integer;
+Function TMVValuesManagerBase.GetAdditionIndex(Addition: TMVManagedValueBase): Integer;
 begin
 Result := fCount;
 end;
@@ -1230,12 +1270,12 @@ try
   If fUpdateCounter <= 0 then
     begin
       fUpdateCounter := 0;
-      If vmuValue in fUpdated then
-        ValueChangeHandler(nil);
-      If vmuEquals in fUpdated then
-        EqualsChangeHandler(nil);
       If vmuList in fUpdated then
         DoChange;
+      If vmuEquals in fUpdated then
+        EqualsChangeHandler(nil);
+      If vmuValue in fUpdated then
+        ValueChangeHandler(nil);
       fUpdated := [];
     end;
 finally
@@ -1433,7 +1473,7 @@ try
       If not Value.LocallyManaged or (Self is TMVValuesManagerGlobal) then
         begin
           Grow;
-          Result := GetSortedAdditionIndex(Value);
+          Result := GetAdditionIndex(Value);
           For i := HighIndex downto Result do
             fValues[i + 1] := fValues[i];
           fValues[Result] := Value;
@@ -1442,7 +1482,7 @@ try
           CheckAndSetEquality;
           DoChange;
         end
-      else raise EMVAlreadyManaged.CreateFmt('TMVValuesManagerBase.Add: Value %s is already managed.',[Value.InstanceString]);
+      else raise EMVAlreadyManaged.CreateFmt('TMVValuesManagerBase.Add: Value %s is already managed elsewhere.',[Value.InstanceString]);
     end;
 finally
   Unlock;
@@ -1478,7 +1518,7 @@ try
           else
             raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.Insert: Index (%d) out of bounds.',[Index]);
         end
-      else raise EMVAlreadyManaged.CreateFmt('TMVValuesManagerBase.Insert: Value %s is already managed.',[Value.InstanceString]);
+      else raise EMVAlreadyManaged.CreateFmt('TMVValuesManagerBase.Insert: Value %s is already managed elsewhere.',[Value.InstanceString]);
     end;
 finally
   Unlock;
