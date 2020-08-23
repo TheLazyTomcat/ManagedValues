@@ -22,8 +22,8 @@ type
 
 {$DEFINE MV_ArrayItem_ConstParams}
 {$UNDEF MV_ArrayItem_AssignIsThreadSafe}
-{$DEFINE MV_ArrayItem_StringLikeType}
-{$DEFINE MV_ArrayItem_ComplexStreaming}
+{$DEFINE MV_ArrayItem_CaseSensitivity}
+{$DEFINE MV_ArrayItem_ComplexStreamedSize}
 
 {===============================================================================
     TMVAoStringValue - class declaration

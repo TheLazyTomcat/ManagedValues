@@ -19,8 +19,8 @@ type
 
 {$DEFINE MV_Value_ConstParams}
 {$UNDEF MV_Value_AssignIsThreadSafe}
-{$DEFINE MV_Value_StringLikeType}
-{$DEFINE MV_Value_ComplexStreaming}
+{$DEFINE MV_Value_CaseSensitivity}
+{$DEFINE MV_Value_ComplexStreamedSize}
 
 {===============================================================================
     TMVAnsiStringValue - class declaration

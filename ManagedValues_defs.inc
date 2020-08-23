@@ -25,13 +25,13 @@
 
 {$UNDEF MV_Value_ConstParams}
 {$UNDEF MV_Value_AssignIsThreadSafe}
-{$UNDEF MV_Value_StringLikeType}
-{$UNDEF MV_Value_ComplexStreaming}
+{$UNDEF MV_Value_CaseSensitivity}
+{$UNDEF MV_Value_ComplexStreamedSize}
 
 {$UNDEF MV_ArrayItem_ConstParams}
 {$UNDEF MV_ArrayItem_AssignIsThreadSafe}
-{$UNDEF MV_ArrayItem_StringLikeType}
-{$UNDEF MV_ArrayItem_ComplexStreaming}
+{$UNDEF MV_ArrayItem_CaseSensitivity}
+{$UNDEF MV_ArrayItem_ComplexStreamedSize}
 
 {$UNDEF MV_ClassDeclaration}
 {$UNDEF MV_ClassImplementation}

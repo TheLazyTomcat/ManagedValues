@@ -19,8 +19,8 @@ type
 
 {$UNDEF MV_Value_ConstParams}
 {$DEFINE MV_Value_AssignIsThreadSafe}
-{$UNDEF MV_Value_StringLikeType}
-{$UNDEF MV_Value_ComplexStreaming}
+{$UNDEF MV_Value_CaseSensitivity}
+{$UNDEF MV_Value_ComplexStreamedSize}
 
 {===============================================================================
     TMVInt64Value - class declaration
@@ -73,7 +73,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
+{$IFNDEF MV_Value_CaseSensitivity}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If TMVValueBaseType(A) > TMVValueBaseType(B) then
@@ -83,7 +83,7 @@ else If TMVValueBaseType(A) < TMVValueBaseType(B) then
 else
   Result := 0;
 end;
-{$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
+{$IFNDEF MV_Value_CaseSensitivity}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
 
 {-------------------------------------------------------------------------------
     TMVInt64Value - specific public methods

@@ -32,8 +32,8 @@
     procedure CurrentToInitial; override;
     procedure SwapInitialAndCurrent; override;
     // public compare
-    Function Compare(Value: TMVManagedValueBase{$IFDEF MV_Value_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
-    Function Same(Value: TMVManagedValueBase{$IFDEF MV_Value_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean; virtual;
+    Function Compare(Value: TMVManagedValueBase{$IFDEF MV_Value_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
+    Function Same(Value: TMVManagedValueBase{$IFDEF MV_Value_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Boolean; virtual;
     // assigning
     procedure AssignFrom(Value: TMVManagedValueBase); override;
     procedure AssignTo(Value: TMVManagedValueBase); override;
@@ -173,23 +173,23 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.Compare(Value: TMVManagedValueBase{$IFDEF MV_Value_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer;
+Function TMVValueClass.Compare(Value: TMVManagedValueBase{$IFDEF MV_Value_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer;
 var
   Temp: TMVValueBaseType;
 begin
 If Value is TMVValueClass then
   begin
     Temp := TMVValueClass(Value).CurrentValue;
-    Result := CompareBaseValues(fCurrentValue,Temp,{$IFDEF MV_Value_StringLikeType}CaseSensitive{$ELSE}True{$ENDIF});
+    Result := CompareBaseValues(fCurrentValue,Temp,{$IFDEF MV_Value_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF});
   end
 else raise EMVIncompatibleClass.CreateFmt('%s.Compare: Incompatible class (%s).',[Self.ClassName,Value.ClassName]);
 end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.Same(Value: TMVManagedValueBase{$IFDEF MV_Value_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean;
+Function TMVValueClass.Same(Value: TMVManagedValueBase{$IFDEF MV_Value_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Boolean;
 begin
-Result := Compare(Value{$IFDEF MV_Value_StringLikeType},CaseSensitive{$ENDIF}) = 0;
+Result := Compare(Value{$IFDEF MV_Value_CaseSensitivity},CaseSensitive{$ENDIF}) = 0;
 end;
 
 //------------------------------------------------------------------------------
@@ -214,7 +214,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFNDEF MV_Value_ComplexStreaming}
+{$IFNDEF MV_Value_ComplexStreamedSize}
 Function TMVValueClass.StreamedSize: TMemSize;
 begin
 Result := SizeOf(TMVValueBaseType);

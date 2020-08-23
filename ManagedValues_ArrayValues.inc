@@ -28,7 +28,7 @@
     class Function CompareBaseValuesCnt(const A,B; CntA,CntB: Integer; Arg: Boolean): Integer; override;
     class Function CompareBaseValues(const A,B; Arg: Boolean): Integer; override;
     class Function CompareArrayItemValues(const A,B; Arg: Boolean): Integer; override;
-    Function SortingCompare(Idx1,Idx2: Integer{$IFDEF MV_ArrayItem_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
+    Function SortingCompare(Idx1,Idx2: Integer{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
     // assignment methods
     Function ThreadSafeAssign(const Arr: TMVValueArrayType; Index: Integer; Count: Integer): TMVValueArrayType; overload; virtual;
     Function ThreadSafeAssign(const Arr: TMVValueArrayType): TMVValueArrayType; overload; virtual;
@@ -48,8 +48,8 @@
     procedure CurrentToInitial; override;
     procedure SwapInitialAndCurrent; override;
     // public compare
-    Function Compare(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
-    Function Same(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean; virtual;
+    Function Compare(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
+    Function Same(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Boolean; virtual;
     // assigning
     procedure AssignFrom(Value: TMVManagedValueBase); override;
     procedure AssignTo(Value: TMVManagedValueBase); override;
@@ -273,11 +273,11 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.SortingCompare(Idx1,Idx2: Integer{$IFDEF MV_ArrayItem_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer;
+Function TMVValueClass.SortingCompare(Idx1,Idx2: Integer{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer;
 begin
 If Idx1 <> Idx2 then
   Result := CompareArrayItemValues(fCurrentValue[Idx1],fCurrentValue[Idx2],
-    {$IFDEF MV_ArrayItem_StringLikeType}CaseSensitive{$ELSE}True{$ENDIF})
+    {$IFDEF MV_ArrayItem_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF})
 else
   Result := 0;
 end;
@@ -397,23 +397,23 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.Compare(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Integer;
+Function TMVValueClass.Compare(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer;
 var
   Temp: TMVValueArrayType;
 begin
 If Value is TMVValueClass then
   begin
     Temp := TMVValueClass(Value).CurrentValue;
-    Result := CompareBaseValues(fCurrentValue,Temp,{$IFDEF MV_ArrayItem_StringLikeType}CaseSensitive{$ELSE}True{$ENDIF});
+    Result := CompareBaseValues(fCurrentValue,Temp,{$IFDEF MV_ArrayItem_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF});
   end
 else raise EMVIncompatibleClass.CreateFmt('%s.Compare: Incompatible class (%s).',[Self.ClassName,Value.ClassName]);
 end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.Same(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_StringLikeType}; CaseSensitive: Boolean{$ENDIF}): Boolean;
+Function TMVValueClass.Same(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Boolean;
 begin
-Result := Compare(Value{$IFDEF MV_ArrayItem_StringLikeType},CaseSensitive{$ENDIF}) = 0;
+Result := Compare(Value{$IFDEF MV_ArrayItem_CaseSensitivity},CaseSensitive{$ENDIF}) = 0;
 end;
 
 //------------------------------------------------------------------------------
@@ -438,7 +438,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFNDEF MV_ArrayItem_ComplexStreaming}
+{$IFNDEF MV_ArrayItem_ComplexStreamedSize}
 Function TMVValueClass.SavedSize: TMemSize;
 begin
 Result := SizeOf(Int32){array length} + (fCurrentCount * SizeOf(TMVValueArrayItemType));

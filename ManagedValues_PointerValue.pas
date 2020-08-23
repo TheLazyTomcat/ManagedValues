@@ -19,8 +19,8 @@ type
 
 {$UNDEF MV_Value_ConstParams}
 {$DEFINE MV_Value_AssignIsThreadSafe}
-{$UNDEF MV_Value_StringLikeType}
-{$UNDEF MV_Value_ComplexStreaming}
+{$UNDEF MV_Value_CaseSensitivity}
+{$UNDEF MV_Value_ComplexStreamedSize}
 
 {===============================================================================
     TMVPointerValue - class declaration
@@ -75,7 +75,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFDEF FPCDWM}{$PUSH}W4055 {$IFNDEF MV_Value_StringLikeType}W5024{$ENDIF}{$ENDIF}
+{$IFDEF FPCDWM}{$PUSH}W4055 {$IFNDEF MV_Value_CaseSensitivity}W5024{$ENDIF}{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If PtrUInt(TMVValueBaseType(A)) > PtrUInt(TMVValueBaseType(B)) then

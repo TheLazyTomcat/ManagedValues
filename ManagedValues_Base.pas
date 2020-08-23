@@ -174,7 +174,7 @@ type
     aitUInt32,aitInt64,aitUInt64,aitFloat32,aitFloat64,aitDateTime,aitCurrency,
     aitAnsiChar,aitWideChar,aitUTF8Char,aitUnicodeChar,aitChar,aitShortString,
     aitAnsiString,aitUTF8String,aitWideString,aitUnicodeString,aitString,
-    aitPointer,aitObject);
+    aitPointer,aitObject,aitGUID);
 
 {===============================================================================
     TMVArrayManagedValue - class declaration

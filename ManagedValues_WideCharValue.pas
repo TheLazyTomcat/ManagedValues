@@ -19,8 +19,8 @@ type
 
 {$UNDEF MV_Value_ConstParams}
 {$DEFINE MV_Value_AssignIsThreadSafe}
-{$DEFINE MV_Value_StringLikeType}
-{$UNDEF MV_Value_ComplexStreaming}
+{$DEFINE MV_Value_CaseSensitivity}
+{$UNDEF MV_Value_ComplexStreamedSize}
 
 {===============================================================================
     TMVWideCharValue - class declaration
