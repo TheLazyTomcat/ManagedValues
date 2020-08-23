@@ -41,8 +41,6 @@ uses
   SysUtils,
   BinaryStreaming;
 
-{$message 'remove unused units; add code separators for cpecific public/protected/private methods'}  
-
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
   {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
@@ -64,7 +62,9 @@ const
   {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
 {$UNDEF MV_ClassImplementation}
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVBooleanValue - specific protected methods
+-------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
@@ -85,9 +85,11 @@ else
 end; 
 {$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVBooleanValue - specific public methods
+-------------------------------------------------------------------------------}
 
-Function TMVValueClass.SavedSize: TMemSize;
+Function TMVValueClass.StreamedSize: TMemSize;
 begin
 Result := 1;
 end;

@@ -42,7 +42,7 @@ implementation
 
 uses
   Math,
-  StrRect, BinaryStreaming;
+  BinaryStreaming, StrRect;
 
 {===============================================================================
 --------------------------------------------------------------------------------
@@ -95,7 +95,7 @@ end;
     TMVAoStringValue - specific public methods
 -------------------------------------------------------------------------------}  
 
-Function TMVValueClass.SavedSize: TMemSize;
+Function TMVValueClass.StreamedSize: TMemSize;
 var
   i:  Integer;
 begin

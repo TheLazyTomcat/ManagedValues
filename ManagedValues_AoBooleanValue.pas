@@ -92,7 +92,7 @@ end;
     TMVAoBooleanValue - specific public methods
 -------------------------------------------------------------------------------}
 
-Function TMVValueClass.SavedSize: TMemSize;
+Function TMVValueClass.StreamedSize: TMemSize;
 begin
 // each boolean item is saved as one byte
 Result := SizeOf(Int32){array length} + fCurrentCount;

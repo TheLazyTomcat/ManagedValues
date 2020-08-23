@@ -1,4 +1,4 @@
-unit ManagedValues_UnicodeStringValue;
+unit ManagedValues_GUIDValue;
 
 {$INCLUDE './ManagedValues_defs.inc'}
 
@@ -11,45 +11,51 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                             TMVUnicodeStringValue
+                                  TMVGUIDValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVValueBaseType = UnicodeString;
+  TMVValueBaseType = TGUID;
 
 {$DEFINE MV_Value_ConstParams}
-{$UNDEF MV_Value_AssignIsThreadSafe}
-{$DEFINE MV_Value_StringLikeType}
-{$DEFINE MV_Value_ComplexStreaming}
+{$DEFINE MV_Value_AssignIsThreadSafe}
+{$UNDEF MV_Value_StringLikeType}
+{$UNDEF MV_Value_ComplexStreaming}
 
 {===============================================================================
-    TMVUnicodeStringValue - class declaration
+    TMVGUIDValue - class declaration
 ===============================================================================}
 type
-  TMVUnicodeStringValue = class(TMVStringManagedValue)
+  TMVGUIDValue = class(TMVOtherManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
 type
-  TMVValueClass = TMVUnicodeStringValue;
+  TMVValueClass = TMVGUIDValue;
 
 implementation
 
 uses
-  BinaryStreaming, StrRect;
+  SysUtils,
+  BinaryStreaming;  
+
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
+{$ENDIF}
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                             TMVUnicodeStringValue
+                                  TMVGUIDValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
-  MV_LOCAL_DEFAULT_VALUE = UnicodeString('');
+  MV_LOCAL_DEFAULT_VALUE: TGUID = '{00000000-0000-0000-0000-000000000000}';
 
 {===============================================================================
-    TMVUnicodeStringValue - class implementation
+    TMVGUIDValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -57,60 +63,90 @@ const
 {$UNDEF MV_ClassImplementation}
 
 {-------------------------------------------------------------------------------
-    TMVUnicodeStringValue - specific protected methods
+    TMVGUIDValue - specific protected methods
 -------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
-Result := mvtUnicodeString;
+Result := mvtGUID;
 end;
 
 //------------------------------------------------------------------------------
 
+{$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+var
+  i:  Integer;
 begin
-Result := UnicodeStringCompare(TMVValueBaseType(A),TMVValueBaseType(B),Arg);
+If TMVValueBaseType(A).D1 > TMVValueBaseType(B).D1 then
+  Result := +1
+else If TMVValueBaseType(A).D1 < TMVValueBaseType(B).D1 then
+  Result := -1
+else
+  begin
+    If TMVValueBaseType(A).D2 > TMVValueBaseType(B).D2 then
+      Result := +1
+    else If TMVValueBaseType(A).D2 < TMVValueBaseType(B).D2 then
+      Result := -1
+    else
+      begin
+        If TMVValueBaseType(A).D3 > TMVValueBaseType(B).D3 then
+          Result := +1
+        else If TMVValueBaseType(A).D3 < TMVValueBaseType(B).D3 then
+          Result := -1
+        else
+          begin
+            Result := 0;
+            For i := Low(TMVValueBaseType(A).D4) to High(TMVValueBaseType(B).D4) do
+              If TMVValueBaseType(A).D4[i] > TMVValueBaseType(B).D4[i] then
+                begin
+                  Result := +1;
+                  Break{For i};
+                end
+              else If TMVValueBaseType(A).D4[i] < TMVValueBaseType(B).D4[i] then
+                begin
+                  Result := -1;
+                  Break{For i};
+                end;
+          end;
+      end;
+  end;
 end;
-
-//------------------------------------------------------------------------------
-
-Function TMVValueClass.ThreadSafeAssign(const Value: TMVValueBaseType): TMVValueBaseType;
-begin
-Result := Value;
-UniqueString(Result);
-end;
+{$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
 
 {-------------------------------------------------------------------------------
-    TMVUnicodeStringValue - specific public methods
+    TMVGUIDValue - specific public methods
 -------------------------------------------------------------------------------}
-
-Function TMVValueClass.StreamedSize: TMemSize;
-begin
-Result := 4 + (Length(fCurrentValue) * SizeOf(UnicodeChar));
-end;
-
-//------------------------------------------------------------------------------
 
 procedure TMVValueClass.SaveToStream(Stream: TStream);
 begin
-Stream_WriteUnicodeString(Stream,fCurrentValue);
+Stream_WriteUInt32(Stream,fCurrentValue.D1);
+Stream_WriteUInt16(Stream,fCurrentValue.D2);
+Stream_WriteUInt16(Stream,fCurrentValue.D3);
+Stream_WriteBuffer(Stream,fCurrentValue.D4,SizeOf(fCurrentValue.D4));
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.LoadFromStream(Stream: TStream; Init: Boolean = False);
+var
+  Temp: TMVValueBaseType;
 begin
+Temp.D1 := Stream_ReadUInt32(Stream);
+Temp.D2 := Stream_ReadUInt16(Stream);
+Temp.D3 := Stream_ReadUInt16(Stream);
+Stream_ReadBuffer(STream,Temp.D4,SizeOf(Temp.D4));
 If Init then
-  Initialize(Stream_ReadUnicodeString(Stream),False)
+  Initialize(Temp,False)
 else
-  SetCurrentValue(Stream_ReadUnicodeString(Stream));
+  SetCurrentValue(Temp);
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.AsString: String;
 begin
-Result := UnicodeToStr(ThreadSafeAssign(fCurrentValue));
+Result := GUIDToString(fCurrentValue);
 inherited AsString;
 end;
 
@@ -118,7 +154,7 @@ end;
 
 procedure TMVValueClass.FromString(const Str: String);
 begin
-SetCurrentValue(ThreadSafeAssign(StrToUnicode(Str)));
+SetCurrentValue(StringToGUID(Str));
 inherited;
 end;
 

@@ -38,7 +38,6 @@ type
 implementation
 
 uses
-  SysUtils,
   BinaryStreaming, StrRect;
 
 {===============================================================================
@@ -57,7 +56,9 @@ const
   {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
 {$UNDEF MV_ClassImplementation}
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVShortStringValue - specific protected methods
+-------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
@@ -71,9 +72,11 @@ begin
 Result := ShortStringCompare(TMVValueBaseType(A),TMVValueBaseType(B),Arg);
 end;
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVShortStringValue - specific public methods
+-------------------------------------------------------------------------------}
 
-Function TMVValueClass.SavedSize: TMemSize;
+Function TMVValueClass.StreamedSize: TMemSize;
 begin
 Result := 1 + Length(fCurrentValue);
 end;

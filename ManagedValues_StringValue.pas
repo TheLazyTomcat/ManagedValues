@@ -38,7 +38,6 @@ type
 implementation
 
 uses
-  SysUtils,
   BinaryStreaming, StrRect;
 
 {===============================================================================
@@ -57,7 +56,9 @@ const
   {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
 {$UNDEF MV_ClassImplementation}
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVStringValue - specific protected methods
+-------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
@@ -79,9 +80,11 @@ Result := Value;
 UniqueString(Result);
 end;
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVStringValue - specific public methods
+-------------------------------------------------------------------------------}
 
-Function TMVValueClass.SavedSize: TMemSize;
+Function TMVValueClass.StreamedSize: TMemSize;
 begin
 // always saved as an UTF-8 encoded string
 Result := 4 + (Length(StrToUTF8(fCurrentValue)));

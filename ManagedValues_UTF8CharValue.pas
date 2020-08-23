@@ -38,7 +38,6 @@ type
 implementation
 
 uses
-  SysUtils,
   BinaryStreaming, StrRect;
 
 {===============================================================================
@@ -57,7 +56,9 @@ const
   {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
 {$UNDEF MV_ClassImplementation}
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVUTF8CharValue - specific protected methods
+-------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
@@ -71,7 +72,9 @@ begin
 Result := UTF8StringCompare(TMVValueBaseType(A),TMVValueBaseType(B),Arg);
 end;
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVUTF8CharValue - specific public methods
+-------------------------------------------------------------------------------}
 
 procedure TMVValueClass.SaveToStream(Stream: TStream);
 begin

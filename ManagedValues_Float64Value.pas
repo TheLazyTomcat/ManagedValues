@@ -62,7 +62,9 @@ const
   {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
 {$UNDEF MV_ClassImplementation}
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVFloat64Value - specific protected methods
+-------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
@@ -83,7 +85,9 @@ else
 end;
 {$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVFloat64Value - specific public methods
+-------------------------------------------------------------------------------}
 
 procedure TMVValueClass.SaveToStream(Stream: TStream);
 begin

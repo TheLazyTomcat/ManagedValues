@@ -64,7 +64,9 @@ const
   {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
 {$UNDEF MV_ClassImplementation}
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVObjectValue - specific protected methods
+-------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
@@ -85,7 +87,9 @@ else
 end; 
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVObjectValue - specific public methods
+-------------------------------------------------------------------------------}
 
 {$IFDEF FPCDWM}{$PUSH}W4055 W4056{$ENDIF}
 procedure TMVValueClass.SaveToStream(Stream: TStream);

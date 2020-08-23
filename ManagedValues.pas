@@ -32,7 +32,8 @@ uses
   ManagedValues_UnicodeStringValue,
   ManagedValues_StringValue,
   ManagedValues_PointerValue,
-  ManagedValues_ObjectValue;
+  ManagedValues_ObjectValue,
+  ManagedValues_GUIDValue;
 
 {===============================================================================
     TManagedValue
@@ -333,6 +334,16 @@ type
 
 procedure InitValue(out Value: TObjectValue; const Name: String = ''; InitializeTo: TObject = nil); overload;
 procedure FinalValue(var Value: TObjectValue); overload;
+
+{===============================================================================
+    TGUIDValue
+===============================================================================}
+type
+  TGUIDValue = class(TMVGUIDValue);
+
+procedure InitValue(out Value: TGUIDValue; const Name: String; InitializeTo: TGUID); overload;
+procedure InitValue(out Value: TGUIDValue; const Name: String = ''); overload;
+procedure FinalValue(var Value: TGUIDValue); overload;
 
 {===============================================================================
     Auxiliary funtions
@@ -867,6 +878,29 @@ If Assigned(Value) then
   FreeAndNil(Value);
 end;
 
+{===============================================================================
+    TGUIDValue
+===============================================================================}
+
+procedure InitValue(out Value: TGUIDValue; const Name: String; InitializeTo: TGUID);
+begin
+Value := TGUIDValue.CreateAndInit(Name,InitializeTo);
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+procedure InitValue(out Value: TGUIDValue; const Name: String = '');
+begin
+InitValue(Value,Name,StringToGUID('{00000000-0000-0000-0000-000000000000}'));
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TGUIDValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
 
 {===============================================================================
     Auxiliary funtions
@@ -902,6 +936,7 @@ case ValueType of
   mvtString:          Result := TStringValue;
   mvtPointer:         Result := TPointerValue;
   mvtObject:          Result := TObjectValue;
+  mvtGUID:            Result := TGUIDValue;
   // array values
 (*
   mvtAoBoolean:       Result := TAoBooleanValue;
@@ -930,6 +965,7 @@ case ValueType of
   mvtAoString:        Result := TAoStringValue;
   mvtAoPointer:       Result := TAoPointerValue;
   mvtAoObject:        Result := TAoObjectValue;
+  mvtAoGUID:          REsult := TAoGUIDValue;
 *)
 else
   raise EMVInvalidValue.CreateFmt('ClassByValueType: Unknown value type (%d).',[Ord(ValueType)]);

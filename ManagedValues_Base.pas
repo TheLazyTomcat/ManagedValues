@@ -37,6 +37,7 @@ type
     mvtUInt64,mvtFloat32,mvtFloat64,mvtDateTime,mvtCurrency,mvtAnsiChar,
     mvtWideChar,mvtUTF8Char,mvtUnicodeChar,mvtChar,mvtShortString,mvtAnsiString,
     mvtUTF8String,mvtWideString,mvtUnicodeString,mvtString,mvtPointer,mvtObject,
+    mvtGUID,
   {$IFDEF FPCDWM}{$PUSH}W3031{$ENDIF}
     // primitive value aliases
     mvtBool = mvtBoolean, mvtShortInt = mvtInt8, mvtByte = mvtUInt8,
@@ -64,7 +65,7 @@ type
     mvtAoUInt32,mvtAoInt64,mvtAoUInt64,mvtAoFloat32,mvtAoFloat64,mvtAoDateTime,
     mvtAoCurrency,mvtAoAnsiChar,mvtAoWideChar,mvtAoUTF8Char,mvtAoUnicodeChar,
     mvtAoChar,mvtAoShortString,mvtAoAnsiString,mvtAoUTF8String,mvtAoWideString,
-    mvtAoUnicodeString,mvtAoString,mvtAoPointer,mvtAoObject);
+    mvtAoUnicodeString,mvtAoString,mvtAoPointer,mvtAoObject,mvtAoGUID);
 
 {===============================================================================
     TMVManagedValueBase - class declaration
@@ -122,7 +123,7 @@ type
     procedure AssignTo(Value: TMVManagedValueBase); virtual; abstract;
     procedure Assign(Value: TMVManagedValueBase); virtual;
     // streaming
-    Function SavedSize: TMemSize; virtual; abstract;
+    Function StreamedSize: TMemSize; virtual; abstract;
     procedure SaveToStream(Stream: TStream); virtual; abstract;
     procedure LoadFromStream(Stream: TStream; Init: Boolean = False); virtual; abstract;
     // string conversion
@@ -207,6 +208,7 @@ type
     Function LowIndex: Integer; virtual; abstract;                              
     Function HighIndex: Integer; virtual;
     Function CheckIndex(Index: Integer): Boolean; virtual;
+    {$message 'implement list-like methods'}
     // list methods
     //procedure Exchange(Idx1,Idx2: Integer); virtual; abstract;
     //procedure Move(SrcIdx,DstIdx: Integer); virtual; abstract;

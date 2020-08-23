@@ -54,7 +54,7 @@
     procedure AssignFrom(Value: TMVManagedValueBase); override;
     procedure AssignTo(Value: TMVManagedValueBase); override;
     // streaming
-    Function SavedSize: TMemSize; override;
+    Function StreamedSize: TMemSize; override;
     procedure SaveToStream(Stream: TStream); override;
     procedure LoadFromStream(Stream: TStream; Init: Boolean = False); override;
     // string conversion

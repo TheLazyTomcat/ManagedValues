@@ -38,7 +38,6 @@ type
 implementation
 
 uses
-  SysUtils,
   UInt64Utils,
   BinaryStreaming;
 
@@ -63,7 +62,9 @@ const
   {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
 {$UNDEF MV_ClassImplementation}
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVUInt64Value - specific protected methods
+-------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
@@ -79,7 +80,9 @@ Result := CompareUInt64(TMVValueBaseType(A),TMVValueBaseType(B));
 end;    
 {$IFNDEF MV_Value_StringLikeType}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
 
-//------------------------------------------------------------------------------
+{-------------------------------------------------------------------------------
+    TMVUInt64Value - specific public methods
+-------------------------------------------------------------------------------}
 
 procedure TMVValueClass.SaveToStream(Stream: TStream);
 begin
