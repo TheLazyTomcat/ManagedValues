@@ -28,7 +28,7 @@
     class Function CompareBaseValuesCnt(const A,B; CntA,CntB: Integer; Arg: Boolean): Integer; override;
     class Function CompareBaseValues(const A,B; Arg: Boolean): Integer; override;
     class Function CompareArrayItemValues(const A,B; Arg: Boolean): Integer; override;
-    Function SortingCompare(Idx1,Idx2: Integer{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
+    Function SortingCompare(Idx1,Idx2: Integer): Integer; virtual;
     // assignment methods
     Function ThreadSafeAssign(const Arr: TMVValueArrayType; Index: Integer; Count: Integer): TMVValueArrayType; overload; virtual;
     Function ThreadSafeAssign(const Arr: TMVValueArrayType): TMVValueArrayType; overload; virtual;
@@ -42,14 +42,14 @@
     constructor CreateAndInit(const Value: TMVValueArrayType); overload;
     constructor CreateAndInit(const Name: String; const Value: TMVValueArrayType); overload;
     // value manipulation
-    procedure BuildFrom(const Source: array of TMVValueArrayItemType); virtual;
+    procedure BuildFrom(const Source: array of TMVValueArrayItemType); reintroduce; virtual;
     procedure Initialize(const Value: TMVValueArrayType; OnlyValues: Boolean); reintroduce; overload; virtual;
     procedure InitialToCurrent; override;
     procedure CurrentToInitial; override;
     procedure SwapInitialAndCurrent; override;
     // public compare
-    Function Compare(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
-    Function Same(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Boolean; virtual;
+    Function Compare(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer; reintroduce; virtual;
+    Function Same(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Boolean; reintroduce; virtual;
     // assigning
     procedure AssignFrom(Value: TMVManagedValueBase); override;
     procedure AssignTo(Value: TMVManagedValueBase); override;
@@ -62,6 +62,18 @@
     procedure FromString(const Str: String); override;
     // index methods
     Function LowIndex: Integer; override;
+    // list methods
+    Function First: TMVValueArrayItemType; reintroduce; virtual;
+    Function Last: TMVValueArrayItemType; reintroduce; virtual;
+    Function IndexOf({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean = False{$ENDIF}): Integer; reintroduce; virtual;
+    Function Add({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType): Integer; reintroduce; virtual;
+    procedure Insert(Index: Integer; {$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType); reintroduce; virtual;
+    procedure Exchange(Idx1,Idx2: Integer); override;
+    procedure Move(SrcIdx,DstIdx: Integer); override;
+    Function Remove({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean = False{$ENDIF}): Integer; reintroduce; virtual;
+    procedure Delete(Index: Integer); override;
+    procedure Clear; override;
+    procedure Sort(Reversed: Boolean = False{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean = False{$ENDIF}); reintroduce; virtual;
     // value-specific properties
     property CurrentValue: TMVValueArrayType read GetCurrentValue write SetCurrentValue;
     property InitialValue: TMVValueArrayType read GetInitialValue write SetInitialValue;
@@ -273,11 +285,10 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.SortingCompare(Idx1,Idx2: Integer{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer;
+Function TMVValueClass.SortingCompare(Idx1,Idx2: Integer): Integer;
 begin
 If Idx1 <> Idx2 then
-  Result := CompareArrayItemValues(fCurrentValue[Idx1],fCurrentValue[Idx2],
-    {$IFDEF MV_ArrayItem_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF})
+  Result := CompareArrayItemValues(fCurrentValue[Idx1],fCurrentValue[Idx2],fSortCompareArg)
 else
   Result := 0;
 end;
@@ -401,12 +412,9 @@ Function TMVValueClass.Compare(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_Ca
 var
   Temp: TMVValueArrayType;
 begin
-If Value is TMVValueClass then
-  begin
-    Temp := TMVValueClass(Value).CurrentValue;
-    Result := CompareBaseValues(fCurrentValue,Temp,{$IFDEF MV_ArrayItem_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF});
-  end
-else raise EMVIncompatibleClass.CreateFmt('%s.Compare: Incompatible class (%s).',[Self.ClassName,Value.ClassName]);
+inherited Compare(Value);
+Temp := TMVValueClass(Value).CurrentValue;
+Result := CompareBaseValues(fCurrentValue,Temp,{$IFDEF MV_ArrayItem_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF});
 end;
 
 //------------------------------------------------------------------------------
@@ -450,6 +458,176 @@ end;
 Function TMVValueClass.LowIndex: Integer;
 begin
 Result := Low(fCurrentValue);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.First: TMVValueArrayItemType;
+begin
+Result := GetItem(LowIndex);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.Last: TMVValueArrayItemType;
+begin
+Result := GetItem(HighIndex);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.IndexOf({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean = False{$ENDIF}): Integer;
+var
+  i:  Integer;
+begin
+Result := -1;
+For i := LowIndex to HighIndex do
+  If SameArrayItemValues(Value,fCurrentValue[i],{$IFDEF MV_ArrayItem_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF}) then
+    begin
+      Result := i;
+      Break{For i};
+    end;
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.Add({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType): Integer;
+begin
+Grow;
+Result := fCurrentCount;
+fCurrentValue[Result] := {$IFNDEF MV_ArrayItem_AssignIsThreadSafe}ArrayItemThreadSafeAssign{$ENDIF}(Value);
+Inc(fCurrentCount);
+CheckAndSetEquality;
+DoCurrentChange;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.Insert(Index: Integer; {$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType);
+var
+  i:  Integer;
+begin
+If CheckIndex(Index) then
+  begin
+    Grow;
+    For i := HighIndex downto Index do
+      fCurrentValue[i + 1] := fCurrentValue[i];
+    fCurrentValue[Index] := {$IFNDEF MV_ArrayItem_AssignIsThreadSafe}ArrayItemThreadSafeAssign{$ENDIF}(Value);
+    Inc(fCurrentCount);
+    CheckAndSetEquality;
+    DoCurrentChange;
+  end
+else If Index = fCurrentCount then
+  Add(Value)
+else
+  raise EMVIndexOutOfBounds.CreateFmt('%s.Insert: Index (%d) out of bounds.',[Self.ClassName,Index]);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.Exchange(Idx1,Idx2: Integer);
+var
+  Temp: TMVValueArrayItemType;
+begin
+If Idx1 <> Idx2 then
+  begin
+    If not CheckIndex(Idx1) then
+      raise EMVIndexOutOfBounds.CreateFmt('%s.Exchange: Index 1 (%d) out of bounds.',[Self.ClassName,Idx1]);
+    If not CheckIndex(Idx2) then
+      raise EMVIndexOutOfBounds.CreateFmt('%s.Exchange: Index 2 (%d) out of bounds.',[Self.ClassName,Idx2]);
+    Temp := fCurrentValue[Idx1];
+    fCurrentValue[Idx1] := fCurrentValue[Idx2];
+    fCurrentValue[Idx2] := Temp;
+    CheckAndSetEquality;
+    DoCurrentChange;
+  end;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.Move(SrcIdx,DstIdx: Integer);
+var
+  Temp: TMVValueArrayItemType;
+  i:    Integer;
+begin
+If SrcIdx <> DstIdx then
+  begin
+    If not CheckIndex(SrcIdx) then
+      raise EMVIndexOutOfBounds.CreateFmt('%s.Move: Source index (%d) out of bounds.',[Self.ClassName,SrcIdx]);
+    If not CheckIndex(DstIdx) then
+      raise EMVIndexOutOfBounds.CreateFmt('%s.Move: Destination index (%d) out of bounds.',[Self.ClassName,DstIdx]);    
+    Temp := fCurrentValue[SrcIdx];
+    If SrcIdx < DstIdx then
+      For i := SrcIdx to Pred(DstIdx) do
+        fCurrentValue[i] := fCurrentValue[i + 1]
+    else
+      For i := SrcIdx downto Succ(DstIdx) do
+        fCurrentValue[i] := fCurrentValue[i - 1];
+    fCurrentValue[DstIdx] := Temp;
+    CheckAndSetEquality;
+    DoCurrentChange;
+  end;
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.Remove({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean = False{$ENDIF}): Integer;
+begin
+Result := IndexOf(Value{$IFDEF MV_ArrayItem_CaseSensitivity},CaseSensitive{$ENDIF});
+If CheckIndex(Result) then
+  Delete(Result);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.Delete(Index: Integer);
+var
+  i:  Integer;
+begin
+If CheckIndex(Index) then
+  begin
+    For i := Index to Pred(HighIndex) do
+      fCurrentValue[i] := fCurrentValue[i + 1];
+    fCurrentValue[HighIndex] := MV_LOCAL_DEFAULT_ITEM_VALUE;
+    Dec(fCurrentCount);
+    Shrink;
+    CheckAndSetEquality;
+    DoCurrentChange;
+  end
+else raise EMVIndexOutOfBounds.CreateFmt('%s.Delete: Index (%d) out of bounds.',[Self.ClassName,Index]);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.Clear;
+var
+  i:  Integer;
+begin
+For i := LowIndex to HighIndex do
+  fCurrentValue[i] := MV_LOCAL_DEFAULT_ITEM_VALUE;
+SetLength(fCurrentValue,0);
+fCurrentCount := 0;
+CheckAndSetEquality;
+DoCurrentChange;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.Sort(Reversed: Boolean = False{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean = False{$ENDIF});
+var
+  Sorter: TListSorter;
+begin
+If fCurrentCount > 1 then
+  begin
+    Sorter := TListQuickSorter.Create(SortingCompare,Exchange);
+    try
+      fSortCompareArg := {$IFDEF MV_ArrayItem_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF};
+      Sorter.Reversed := Reversed;
+      Sorter.Sort(LowIndex,HighIndex);
+    finally
+      Sorter.Free;
+    end;
+  end;
 end;
 
 {$ENDIF MV_ClassImplementation}

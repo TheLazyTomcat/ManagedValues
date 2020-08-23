@@ -43,7 +43,7 @@ type
     mvtBool = mvtBoolean, mvtShortInt = mvtInt8, mvtByte = mvtUInt8,
     mvtSmalInt = mvtInt16, mvtWord = mvtUInt16, mvtDWord = mvtUInt32,
     mvtQWord = mvtUInt64, mvtQuadWord = mvtUInt64, mvtSingle = mvtFloat32,
-    mvtDouble = mvtFloat64, mvtFloat = mvtFloat64, mvtReal = mvtFloat64,
+    mvtDouble = mvtFloat64,mvtFloat = mvtFloat64, mvtReal = mvtFloat64,
     mvtDate = mvtDateTime, mvtTime = mvtDateTime,
        {$IF SizeOf(LongInt) = 4}mvtLongInt = mvtInt32,
    {$ELSEIF SizeOf(LongInt) = 8}mvtLongInt = mvtInt64,
@@ -118,6 +118,9 @@ type
     procedure InitialToCurrent; virtual; abstract;
     procedure CurrentToInitial; virtual; abstract;
     procedure SwapInitialAndCurrent; virtual; abstract;
+    // public compare
+    Function Compare(Value: TMVManagedValueBase): Integer; virtual;
+    Function Same(Value: TMVManagedValueBase): Boolean; virtual;
     // assigning
     procedure AssignFrom(Value: TMVManagedValueBase); virtual; abstract;
     procedure AssignTo(Value: TMVManagedValueBase); virtual; abstract;
@@ -183,8 +186,9 @@ type
   TMVArrayManagedValue = class(TMVComplexManagedValue)
   protected
     // initial array has capacity equal to count, current array is counted
-    fListDelegate:  TCustomListObject;
-    fCurrentCount:  Integer;
+    fListDelegate:    TCustomListObject;
+    fCurrentCount:    Integer;
+    fSortCompareArg:  Boolean;
     // getters, setters
     class Function GetArrayItemType: TMVArrayItemType; virtual; abstract;
     // list management (eg. growing)
@@ -204,37 +208,29 @@ type
     class Function CompareArrayItemValues(const A,B; Arg: Boolean): Integer; virtual; abstract;
     class Function SameArrayItemValues(const A,B; Arg: Boolean): Boolean; virtual;
   public
+    procedure BuildFrom; virtual;
     // index methods
     Function LowIndex: Integer; virtual; abstract;                              
     Function HighIndex: Integer; virtual;
     Function CheckIndex(Index: Integer): Boolean; virtual;
-    {$message 'implement list-like methods'}
     // list methods
-    //procedure Exchange(Idx1,Idx2: Integer); virtual; abstract;
-    //procedure Move(SrcIdx,DstIdx: Integer); virtual; abstract;
-    //procedure Delete(Index: Integer); virtual; abstract;
-    //procedure Clear; virtual; abstract;
-    //procedure Sort(Reversed: Boolean = False); virtual; abstract;
-  (*
-    * - must work with specific type
-
-    *First
-    *Last
-
-    *IndexOf
-    *Add
-    *Insert
-
-    *Remove
-
-  *)
+    procedure First; virtual;
+    procedure Last; virtual;
+    procedure IndexOf; virtual;
+    procedure Add; virtual;
+    procedure Insert; virtual;
+    procedure Exchange(Idx1,Idx2: Integer); virtual; abstract;
+    procedure Move(SrcIdx,DstIdx: Integer); virtual; abstract;
+    procedure Remove; virtual;
+    procedure Delete(Index: Integer); virtual; abstract;
+    procedure Clear; virtual; abstract;
+    procedure Sort; virtual;
     // properties common to all arrays
     property CurrentCapacity: Integer read GetCapacity write SetCapacity;
     property CurrentCount: Integer read GetCount write SetCount;
     property InitialCount: Integer read GetInitialCount;
     property Capacity: Integer read GetCapacity write SetCapacity;
     property Count: Integer read GetCount write SetCount;
-  //*Items
   end;
 
 {===============================================================================
@@ -804,6 +800,22 @@ end;
 
 //------------------------------------------------------------------------------
 
+Function TMVManagedValueBase.Compare(Value: TMVManagedValueBase): Integer;
+begin
+Result := 0;
+If not(Value is Self.ClassType) then
+  raise EMVIncompatibleClass.CreateFmt('TMVManagedValueBase.Compare: Incompatible class (%s).',[Value.ClassName]);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVManagedValueBase.Same(Value: TMVManagedValueBase): Boolean;
+begin
+Result := Compare(Value) = 0;
+end;
+
+//------------------------------------------------------------------------------
+
 procedure TMVManagedValueBase.Assign(Value: TMVManagedValueBase);
 begin
 AssignFrom(Value);
@@ -964,6 +976,7 @@ begin
 fListDelegate := TMVArrayListDelegate.Create(Self);
 inherited;
 fCurrentCount := 0;
+fSortCompareArg := True;
 end;
 
 //------------------------------------------------------------------------------
@@ -993,6 +1006,13 @@ end;
     TMVArrayManagedValue - public methods
 -------------------------------------------------------------------------------}
 
+procedure TMVArrayManagedValue.BuildFrom;
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
 Function TMVArrayManagedValue.HighIndex: Integer;
 begin
 Result := Pred(fCurrentCount);
@@ -1003,6 +1023,55 @@ end;
 Function TMVArrayManagedValue.CheckIndex(Index: Integer): Boolean;
 begin
 Result := fListDelegate.CheckIndex(Index);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.First;
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.Last;
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.IndexOf;
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.Add;
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.Insert;
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.Remove;
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.Sort;
+begin
+// do nothing
 end;
 
 {===============================================================================

@@ -32,8 +32,8 @@
     procedure CurrentToInitial; override;
     procedure SwapInitialAndCurrent; override;
     // public compare
-    Function Compare(Value: TMVManagedValueBase{$IFDEF MV_Value_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer; virtual;
-    Function Same(Value: TMVManagedValueBase{$IFDEF MV_Value_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Boolean; virtual;
+    Function Compare(Value: TMVManagedValueBase{$IFDEF MV_Value_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer; reintroduce; virtual;
+    Function Same(Value: TMVManagedValueBase{$IFDEF MV_Value_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Boolean; reintroduce; virtual;
     // assigning
     procedure AssignFrom(Value: TMVManagedValueBase); override;
     procedure AssignTo(Value: TMVManagedValueBase); override;
@@ -177,12 +177,9 @@ Function TMVValueClass.Compare(Value: TMVManagedValueBase{$IFDEF MV_Value_CaseSe
 var
   Temp: TMVValueBaseType;
 begin
-If Value is TMVValueClass then
-  begin
-    Temp := TMVValueClass(Value).CurrentValue;
-    Result := CompareBaseValues(fCurrentValue,Temp,{$IFDEF MV_Value_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF});
-  end
-else raise EMVIncompatibleClass.CreateFmt('%s.Compare: Incompatible class (%s).',[Self.ClassName,Value.ClassName]);
+inherited Compare(Value);
+Temp := TMVValueClass(Value).CurrentValue;
+Result := CompareBaseValues(fCurrentValue,Temp,{$IFDEF MV_Value_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF});
 end;
 
 //------------------------------------------------------------------------------

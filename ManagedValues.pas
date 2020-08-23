@@ -392,6 +392,8 @@ type
     Function NewStringValue(const Name: String = ''; InitTo: String = ''): TStringValue; virtual;
     Function NewPointerValue(const Name: String = ''; InitTo: Pointer = nil): TPointerValue; virtual;
     Function NewObjectValue(const Name: String = ''; InitTo: TObject = nil): TObjectValue; virtual;
+    Function NewGUIDValue(const Name: String; InitTo: TGUID): TGUIDValue; overload; virtual;
+    Function NewGUIDValue(const Name: String = ''): TGUIDValue; overload; virtual;
   end;
 
 {===============================================================================
@@ -1213,6 +1215,22 @@ begin
 Result := TObjectValue(NewValue(mvtObject,Name));
 Result.Initialize(InitTo,False);
 end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewGUIDValue(const Name: String; InitTo: TGUID): TGUIDValue;
+begin
+Result := TGUIDValue(NewValue(mvtGUID,Name));
+Result.Initialize(InitTo,False);
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Function TValuesManager.NewGUIDValue(const Name: String = ''): TGUIDValue;
+begin
+Result := NewGUIDValue(Name,StringToGUID('{00000000-0000-0000-0000-000000000000}'));
+end;
+
 
 {===============================================================================
     Global manager access functions - implementation
