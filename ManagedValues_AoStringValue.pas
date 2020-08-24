@@ -15,9 +15,8 @@ uses
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVAoString = array of String;
-
   TMVValueArrayItemType = String;
+  TMVAoString           = array of TMVValueArrayItemType;
   TMVValueArrayType     = TMVAoString;
 
 {$DEFINE MV_ArrayItem_ConstParams}
@@ -101,7 +100,7 @@ var
 begin
 Result := SizeOf(Int32);  // array length
 For i := LowIndex to HighIndex do
-  Inc(Result,4 + Length(StrToUTF8(fCurrentValue[i])));
+  Inc(Result,TMemSize(4 + Length(StrToUTF8(fCurrentValue[i]))));
 end;
 
 //------------------------------------------------------------------------------
@@ -156,16 +155,18 @@ end;
 procedure TMVValueClass.FromString(const Str: String);
 var
   Strings:  TStringList;
-  Temp:     TMVValueArrayType;
   i:        Integer;
 begin
 Strings := TStringList.Create;
 try
   Strings.DelimitedText := Str;
-  SetLength(Temp,Strings.Count);
+  SetLength(fCurrentValue,0);
+  SetLength(fCurrentValue,Strings.Count);
   For i := 0 to Pred(Strings.Count) do
-    Temp[i] := Strings[i];
-  SetCurrentValue(Temp);
+    fCurrentValue[i] := Strings[i];
+  fCurrentCount := Length(fCurrentValue);
+  CheckAndSetEquality;
+  DoCurrentChange;
 finally
   Strings.Free;
 end;

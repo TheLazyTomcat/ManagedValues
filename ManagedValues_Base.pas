@@ -32,39 +32,45 @@ type
 ===============================================================================}
 type
   TMVManagedValueType = (
-    // primitive values
+    // primitive values  - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     mvtBoolean,mvtInt8,mvtUInt8,mvtInt16,mvtUInt16,mvtInt32,mvtUInt32,mvtInt64,
     mvtUInt64,mvtFloat32,mvtFloat64,mvtDateTime,mvtCurrency,mvtAnsiChar,
     mvtWideChar,mvtUTF8Char,mvtUnicodeChar,mvtChar,mvtShortString,mvtAnsiString,
     mvtUTF8String,mvtWideString,mvtUnicodeString,mvtString,mvtPointer,mvtObject,
     mvtGUID,
-    // array values
+    // array values  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     mvtAoBoolean,mvtAoInt8,mvtAoUInt8,mvtAoInt16,mvtAoUInt16,mvtAoInt32,
     mvtAoUInt32,mvtAoInt64,mvtAoUInt64,mvtAoFloat32,mvtAoFloat64,mvtAoDateTime,
     mvtAoCurrency,mvtAoAnsiChar,mvtAoWideChar,mvtAoUTF8Char,mvtAoUnicodeChar,
     mvtAoChar,mvtAoShortString,mvtAoAnsiString,mvtAoUTF8String,mvtAoWideString,
     mvtAoUnicodeString,mvtAoString,mvtAoPointer,mvtAoObject,mvtAoGUID,
   {$IFDEF FPCDWM}{$PUSH}W3031{$ENDIF}
-    // primitive value aliases
+    // primitive value aliases - - - - - - - - - - - - - - - - - - - - - - - - -
     mvtBool = mvtBoolean, mvtShortInt = mvtInt8, mvtByte = mvtUInt8,
     mvtSmalInt = mvtInt16, mvtWord = mvtUInt16, mvtDWord = mvtUInt32,
     mvtQWord = mvtUInt64, mvtQuadWord = mvtUInt64, mvtSingle = mvtFloat32,
     mvtDouble = mvtFloat64,mvtFloat = mvtFloat64, mvtReal = mvtFloat64,
     mvtDate = mvtDateTime, mvtTime = mvtDateTime,
-       {$IF SizeOf(LongInt) = 4}mvtLongInt = mvtInt32,
-   {$ELSEIF SizeOf(LongInt) = 8}mvtLongInt = mvtInt64,
-   {$ELSE}{$MESSAGE FATAL 'Unssuported size of LongInt type.'}{$IFEND}
-       {$IF SizeOf(LongWord) = 4}mvtLongWord = mvtUInt32,
-   {$ELSEIF SizeOf(LongWord) = 8}mvtLongWord = mvtUInt64,
-   {$ELSE}{$MESSAGE FATAL 'Unssuported size of LongWord type.'}{$IFEND}
-       {$IF SizeOf(Integer) = 2}mvtInteger = mvtInt16,
-   {$ELSEIF SizeOf(Integer) = 4}mvtInteger = mvtInt32,
-   {$ELSEIF SizeOf(Integer) = 8}mvtInteger = mvtInt64,
-   {$ELSE}{$MESSAGE FATAL 'Unssuported size of Integer type.'}{$IFEND}
-       {$IF SizeOf(Cardinal) = 2}mvtCardinal = mvtUInt16
-   {$ELSEIF SizeOf(Cardinal) = 4}mvtCardinal = mvtUInt32
-   {$ELSEIF SizeOf(Cardinal) = 8}mvtCardinal = mvtUInt64
-   {$ELSE}{$MESSAGE FATAL 'Unssuported size of Cardinal type.'}{$IFEND}
+        {$IF SizeOf(LongInt) = 4}mvtLongInt = mvtInt32,
+    {$ELSEIF SizeOf(LongInt) = 8}mvtLongInt = mvtInt64,
+    {$ELSE}{$MESSAGE FATAL 'Unssuported size of LongInt type.'}{$IFEND}
+        {$IF SizeOf(LongWord) = 4}mvtLongWord = mvtUInt32,
+    {$ELSEIF SizeOf(LongWord) = 8}mvtLongWord = mvtUInt64,
+    {$ELSE}{$MESSAGE FATAL 'Unssuported size of LongWord type.'}{$IFEND}
+        {$IF SizeOf(Integer) = 2}mvtInteger = mvtInt16,
+    {$ELSEIF SizeOf(Integer) = 4}mvtInteger = mvtInt32,
+    {$ELSEIF SizeOf(Integer) = 8}mvtInteger = mvtInt64,
+    {$ELSE}{$MESSAGE FATAL 'Unssuported size of Integer type.'}{$IFEND}
+        {$IF SizeOf(Cardinal) = 2}mvtCardinal = mvtUInt16,
+    {$ELSEIF SizeOf(Cardinal) = 4}mvtCardinal = mvtUInt32,
+    {$ELSEIF SizeOf(Cardinal) = 8}mvtCardinal = mvtUInt64,
+    {$ELSE}{$MESSAGE FATAL 'Unssuported size of Cardinal type.'}{$IFEND}
+    // array value aliases - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    mvtAoBool = mvtAoBoolean, mvtArrayOfBoolean = mvtAoBoolean,
+    mvtArraOfBool = mvtAoBoolean,
+
+    mvtArrayOfString = mvtAoString
+
   {$IFDEF FPCDWM}{$POP}W3031{$ENDIF});
 
 {===============================================================================
@@ -424,17 +430,21 @@ var
     TMVValuesManagerGlobal - protected methods
 -------------------------------------------------------------------------------}
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TMVValuesManagerGlobal.ValueChangeHandler(Sender: TObject);
 begin
 // do nothing
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 procedure TMVValuesManagerGlobal.EqualsChangeHandler(Sender: TObject);
 begin
 // do nothing
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 

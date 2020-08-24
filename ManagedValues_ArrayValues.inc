@@ -102,7 +102,7 @@ procedure TMVValueClass.SetCurrentValue(const Value: TMVValueArrayType);
 begin
 If not SameBaseValuesCnt(Value,fCurrentValue,Length(Value),fCurrentCount,True) then
   begin
-    SetLength(fCurrentValue,0);
+    SetLength(fCurrentValue,0); // prevents reallocation and copying of memory
     fCurrentValue := ThreadSafeAssign(Value);
     fCurrentCount := Length(fCurrentValue);
     Inc(fWriteCount);
@@ -362,6 +362,7 @@ procedure TMVValueClass.BuildFrom(const Source: array of TMVValueArrayItemType);
 var
   i:  Integer;
 begin
+SetLength(fCurrentValue,0); // prevents memory copy
 SetLength(fCurrentValue,Length(Source));
 For i := Low(Source) to High(Source) do
   fCurrentValue[i] := {$IFNDEF MV_ArrayItem_AssignIsThreadSafe}ArrayItemThreadSafeAssign{$ENDIF}(Source[i]);
@@ -469,7 +470,7 @@ end;
 //------------------------------------------------------------------------------
 
 {$IFNDEF MV_ArrayItem_ComplexStreamedSize}
-Function TMVValueClass.SavedSize: TMemSize;
+Function TMVValueClass.StreamedSize: TMemSize;
 begin
 Result := SizeOf(Int32){array length} + (fCurrentCount * SizeOf(TMVValueArrayItemType));
 end;

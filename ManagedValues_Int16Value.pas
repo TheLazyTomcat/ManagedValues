@@ -111,7 +111,7 @@ end;
 
 procedure TMVValueClass.FromString(const Str: String);
 begin
-SetCurrentValue(StrToInt(Str));
+SetCurrentValue(Int16(StrToInt(Str)));
 inherited;
 end;
 

@@ -15,9 +15,8 @@ uses
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVAoBoolean = array of Boolean;
-
   TMVValueArrayItemType = Boolean;
+  TMVAoBoolean          = array of TMVValueArrayItemType;
   TMVValueArrayType     = TMVAoBoolean;
 
 {$UNDEF MV_ArrayItem_ConstParams}
@@ -43,6 +42,11 @@ implementation
 uses
   SysUtils, Math,
   BinaryStreaming, ListSorters;
+
+{$IFDEF FPC_DisableWarns}
+  {$DEFINE FPCDWM}
+  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
+{$ENDIF}  
 
 {===============================================================================
 --------------------------------------------------------------------------------
@@ -78,6 +82,7 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFNDEF MV_ArrayItem_CaseSensitivity}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
 If TMVValueArrayItemType(A) and not TMVValueArrayItemType(B) then
@@ -87,6 +92,7 @@ else If not TMVValueArrayItemType(A) and TMVValueArrayItemType(B) then
 else
   Result := 0;
 end;
+{$IFNDEF MV_ArrayItem_CaseSensitivity}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
 
 {-------------------------------------------------------------------------------
     TMVAoBooleanValue - specific public methods
@@ -150,16 +156,18 @@ end;
 procedure TMVValueClass.FromString(const Str: String);
 var
   Strings:  TStringList;
-  Temp:     TMVValueArrayType;
   i:        Integer;
 begin
 Strings := TStringList.Create;
 try
   Strings.DelimitedText := Str;
-  SetLength(Temp,Strings.Count);
+  SetLength(fCurrentValue,0);
+  SetLength(fCurrentValue,Strings.Count);
   For i := 0 to Pred(Strings.Count) do
-    Temp[i] := StrToBool(Strings[i]);
-  SetCurrentValue(Temp);
+    fCurrentValue[i] := StrToBool(Strings[i]);
+  fCurrentCount := Length(fCurrentValue);
+  CheckAndSetEquality;
+  DoCurrentChange;
 finally
   Strings.Free;
 end;

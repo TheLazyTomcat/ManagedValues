@@ -37,10 +37,11 @@ uses
   ManagedValues_GUIDValue,
   // arrays
   ManagedValues_AoBooleanValue,
+  ManagedValues_AoInt8Value,
   ManagedValues_AoStringValue;
 
 {===============================================================================
-    TManagedValue
+    Common
 ===============================================================================}
 
 type
@@ -375,6 +376,25 @@ procedure InitValue(out Value: TAoBooleanValue; const Name: String = ''; const I
 procedure FinalValue(var Value: TAoBooleanValue); overload;
 
 {===============================================================================
+    TAoInt8Value
+===============================================================================}
+type
+  TAoInt8 = TMVAoInt8;
+
+  TAoInt8Value = class(TMVAoInt8Value);
+
+  TArrayOfInt8     = TAoInt8;
+  TAoShortInt      = TAoInt8;
+  TArrayOfShortInt = TAoInt8;
+
+  TArrayOfInt8Value     = TAoInt8Value;
+  TAoShortIntValue      = TAoInt8Value;
+  TArrayOfShortIntValue = TAoInt8Value;
+
+procedure InitValue(out Value: TAoInt8Value; const Name: String = ''; const InitializeTo: TAoInt8 = nil); overload;
+procedure FinalValue(var Value: TAoInt8Value); overload;
+
+{===============================================================================
     TAoStringValue
 ===============================================================================}
 type
@@ -441,6 +461,7 @@ type
     Function NewGUIDValue(const Name: String = ''): TGUIDValue; overload; virtual;
     // arrays
     Function NewAoBooleanValue(const Name: String = ''; const InitTo: TAoBoolean = nil): TAoBooleanValue; virtual;
+    Function NewAoInt8Value(const Name: String = ''; const InitTo: TAoInt8 = nil): TAoInt8Value; virtual;
     Function NewAoStringValue(const Name: String = ''; const InitTo: TAoString = nil): TAoStringValue; virtual;
   end;
 
@@ -463,7 +484,7 @@ uses
   SysUtils;
 
 {===============================================================================
-    TManagedValue
+    Common
 ===============================================================================}
 
 Function CreateValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValue;
@@ -970,6 +991,23 @@ If Assigned(Value) then
 end;
 
 {===============================================================================
+    TAoInt8Value
+===============================================================================}
+
+procedure InitValue(out Value: TAoInt8Value; const Name: String = ''; const InitializeTo: TAoInt8 = nil);
+begin
+Value := TAoInt8Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoInt8Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
     TAoStringValue
 ===============================================================================}
 
@@ -1023,30 +1061,28 @@ case ValueType of
   mvtGUID:            Result := TGUIDValue;
   // array values
   mvtAoBoolean:       Result := TAoBooleanValue;
-(*  
   mvtAoInt8:          Result := TAoInt8Value;
-  mvtAoUInt8:         Result := TAoUInt8Value;
-  mvtAoInt16:         Result := TAoInt16Value;
-  mvtAoUInt16:        Result := TAoUInt16Value;
-  mvtAoInt32:         Result := TAoInt32Value;
-  mvtAoUInt32:        Result := TAoUInt32Value;
-  mvtAoInt64:         Result := TAoInt64Value;
-  mvtAoUInt64:        Result := TAoUInt64Value;
-  mvtAoFloat32:       Result := TAoFloat32Value;
-  mvtAoFloat64:       Result := TAoFloat64Value;
-  mvtAoDateTime:      Result := TAoDateTimeValue;
-  mvtAoCurrency:      Result := TAoCurrencyValue;
-  mvtAoAnsiChar:      Result := TAoAnsiCharValue;
-  mvtAoWideChar:      Result := TAoWideCharValue;
-  mvtAoUTF8Char:      Result := TAoUTF8CharValue;
-  mvtAoUnicodeChar:   Result := TAoUnicodeCharValue;
-  mvtAoChar:          Result := TAoCharValue;
-  mvtAoShortString:   Result := TAoShortStringValue;
-  mvtAoAnsiString:    Result := TAoAnsiStringValue;
-  mvtAoUTF8String:    Result := TAoUTF8StringValue;
-  mvtAoWideString:    Result := TAoWideStringValue;
-  mvtAoUnicodeString: Result := TAoUnicodeStringValue;
-*)
+  //mvtAoUInt8:         Result := TAoUInt8Value;
+  //mvtAoInt16:         Result := TAoInt16Value;
+  //mvtAoUInt16:        Result := TAoUInt16Value;
+  //mvtAoInt32:         Result := TAoInt32Value;
+  //mvtAoUInt32:        Result := TAoUInt32Value;
+  //mvtAoInt64:         Result := TAoInt64Value;
+  //mvtAoUInt64:        Result := TAoUInt64Value;
+  //mvtAoFloat32:       Result := TAoFloat32Value;
+  //mvtAoFloat64:       Result := TAoFloat64Value;
+  //mvtAoDateTime:      Result := TAoDateTimeValue;
+  //mvtAoCurrency:      Result := TAoCurrencyValue;
+  //mvtAoAnsiChar:      Result := TAoAnsiCharValue;
+  //mvtAoWideChar:      Result := TAoWideCharValue;
+  //mvtAoUTF8Char:      Result := TAoUTF8CharValue;
+  //mvtAoUnicodeChar:   Result := TAoUnicodeCharValue;
+  //mvtAoChar:          Result := TAoCharValue;
+  //mvtAoShortString:   Result := TAoShortStringValue;
+  //mvtAoAnsiString:    Result := TAoAnsiStringValue;
+  //mvtAoUTF8String:    Result := TAoUTF8StringValue;
+  //mvtAoWideString:    Result := TAoWideStringValue;
+  //mvtAoUnicodeString: Result := TAoUnicodeStringValue;
   mvtAoString:        Result := TAoStringValue;
   //mvtAoPointer:       Result := TAoPointerValue;
   //mvtAoObject:        Result := TAoObjectValue;
@@ -1319,6 +1355,14 @@ end;
 Function TValuesManager.NewAoBooleanValue(const Name: String = ''; const InitTo: TAoBoolean = nil): TAoBooleanValue;
 begin
 Result := TAoBooleanValue(NewValue(mvtAoBoolean,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoInt8Value(const Name: String = ''; const InitTo: TAoInt8 = nil): TAoInt8Value;
+begin
+Result := TAoInt8Value(NewValue(mvtAoInt8,Name));
 Result.Initialize(InitTo,False);
 end;
 

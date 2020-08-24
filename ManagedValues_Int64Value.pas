@@ -108,7 +108,7 @@ end;
 
 Function TMVValueClass.AsString: String;
 begin
-Result := IntToStr(Int64(fCurrentValue));
+Result := IntToStr(fCurrentValue);
 inherited AsString;
 end;
 
@@ -116,7 +116,7 @@ end;
 
 procedure TMVValueClass.FromString(const Str: String);
 begin
-SetCurrentValue(Int64(StrToInt64(Str)));
+SetCurrentValue(StrToInt64(Str));
 inherited;
 end;
 
