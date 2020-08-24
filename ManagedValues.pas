@@ -7,6 +7,7 @@ interface
 uses
   AuxTypes,
   ManagedValues_Base,
+  // primitives
   ManagedValues_BooleanValue,
   ManagedValues_Int8Value,
   ManagedValues_UInt8Value,
@@ -33,18 +34,27 @@ uses
   ManagedValues_StringValue,
   ManagedValues_PointerValue,
   ManagedValues_ObjectValue,
-  ManagedValues_GUIDValue;
+  ManagedValues_GUIDValue,
+  // arrays
+  ManagedValues_AoBooleanValue,
+  ManagedValues_AoStringValue;
 
 {===============================================================================
     TManagedValue
 ===============================================================================}
 
 type
+  TManagedValueType = TMVManagedValueType;
+
   TManagedValue = TMVManagedValueBase;
+
+  TArrayManagedValue = TMVArrayManagedValue;
 
   TManagedValueClass = class of TManagedValue;
 
-Function CreateValue(ValueType: TMVManagedValueType; const Name: String = ''): TManagedValue; overload;
+  TValuesManagerBase = TMVValuesManagerBase;
+
+Function CreateValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValue; overload;
 Function CreateValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue; overload;
 procedure FreeValue(var Value: TManagedValue); overload;
 
@@ -269,7 +279,7 @@ procedure FinalValue(var Value: TCharValue); overload;
 type
   TShortStringValue = class(TMVShortStringValue);
 
-procedure InitValue(out Value: TShortStringValue; const Name: String = ''; InitializeTo: ShortString = ''); overload;
+procedure InitValue(out Value: TShortStringValue; const Name: String = ''; const InitializeTo: ShortString = ''); overload;
 procedure FinalValue(var Value: TShortStringValue); overload;
 
 {===============================================================================
@@ -278,7 +288,7 @@ procedure FinalValue(var Value: TShortStringValue); overload;
 type
   TAnsiStringValue = class(TMVAnsiStringValue);
 
-procedure InitValue(out Value: TAnsiStringValue; const Name: String = ''; InitializeTo: AnsiString = ''); overload;
+procedure InitValue(out Value: TAnsiStringValue; const Name: String = ''; const InitializeTo: AnsiString = ''); overload;
 procedure FinalValue(var Value: TAnsiStringValue); overload;
 
 {===============================================================================
@@ -287,7 +297,7 @@ procedure FinalValue(var Value: TAnsiStringValue); overload;
 type
   TUTF8StringValue = class(TMVUTF8StringValue);
 
-procedure InitValue(out Value: TUTF8StringValue; const Name: String = ''; InitializeTo: UTF8String = ''); overload;
+procedure InitValue(out Value: TUTF8StringValue; const Name: String = ''; const InitializeTo: UTF8String = ''); overload;
 procedure FinalValue(var Value: TUTF8StringValue); overload;
 
 {===============================================================================
@@ -296,7 +306,7 @@ procedure FinalValue(var Value: TUTF8StringValue); overload;
 type
   TWideStringValue = class(TMVWideStringValue);
 
-procedure InitValue(out Value: TWideStringValue; const Name: String = ''; InitializeTo: WideString = ''); overload;
+procedure InitValue(out Value: TWideStringValue; const Name: String = ''; const InitializeTo: WideString = ''); overload;
 procedure FinalValue(var Value: TWideStringValue); overload;
 
 {===============================================================================
@@ -305,7 +315,7 @@ procedure FinalValue(var Value: TWideStringValue); overload;
 type
   TUnicodeStringValue = class(TMVUnicodeStringValue);
 
-procedure InitValue(out Value: TUnicodeStringValue; const Name: String = ''; InitializeTo: UnicodeString = ''); overload;
+procedure InitValue(out Value: TUnicodeStringValue; const Name: String = ''; const InitializeTo: UnicodeString = ''); overload;
 procedure FinalValue(var Value: TUnicodeStringValue); overload;
 
 {===============================================================================
@@ -314,7 +324,7 @@ procedure FinalValue(var Value: TUnicodeStringValue); overload;
 type
   TStringValue = class(TMVStringValue);
 
-procedure InitValue(out Value: TStringValue; const Name: String = ''; InitializeTo: String = ''); overload;
+procedure InitValue(out Value: TStringValue; const Name: String = ''; const InitializeTo: String = ''); overload;
 procedure FinalValue(var Value: TStringValue); overload;
 
 {===============================================================================
@@ -346,12 +356,46 @@ procedure InitValue(out Value: TGUIDValue; const Name: String = ''); overload;
 procedure FinalValue(var Value: TGUIDValue); overload;
 
 {===============================================================================
-    Auxiliary funtions
+    TAoBooleanValue
+===============================================================================}
+type
+  TAoBoolean = TMVAoBoolean;
+
+  TAoBooleanValue = class(TMVAoBooleanValue);
+
+  TAoBool         = TAoBoolean;
+  TArrayOfBoolean = TAoBoolean;
+  TArrayOfBool    = TAoBoolean;
+
+  TAoBoolValue         = TAoBooleanValue;
+  TArrayOfBooleanValue = TAoBooleanValue;
+  TArrayOfBoolValue    = TAoBooleanValue;
+
+procedure InitValue(out Value: TAoBooleanValue; const Name: String = ''; const InitializeTo: TAoBoolean = nil); overload;
+procedure FinalValue(var Value: TAoBooleanValue); overload;
+
+{===============================================================================
+    TAoStringValue
+===============================================================================}
+type
+  TAoString = TMVAoString;
+
+  TAoStringValue = class(TMVAoStringValue);
+
+  TArrayOfString = TAoString;
+
+  TArrayOfStringValue = TAoStringValue;
+
+procedure InitValue(out Value: TAoStringValue; const Name: String = ''; const InitializeTo: TAoString = nil); overload;
+procedure FinalValue(var Value: TAoStringValue); overload;
+
+{===============================================================================
+    Auxiliary functions
 ===============================================================================}
 
-Function ClassByValueType(ValueType: TMVManagedValueType): TManagedValueClass;
+Function ClassByValueType(ValueType: TManagedValueType): TManagedValueClass;
 
-Function CreateByValueType(ValueType: TMVManagedValueType; const Name: String = ''): TManagedValue;
+Function CreateByValueType(ValueType: TManagedValueType; const Name: String = ''): TManagedValue;
 
 {===============================================================================
 --------------------------------------------------------------------------------
@@ -364,8 +408,9 @@ Function CreateByValueType(ValueType: TMVManagedValueType; const Name: String = 
 type
   TValuesManager = class(TMVValuesManagerBase)
   public
-    Function NewValue(ValueType: TMVManagedValueType; const Name: String = ''): TMVManagedValueBase; overload; virtual;
-    Function NewValue(ValueClass: TManagedValueClass; const Name: String = ''): TMVManagedValueBase; overload; virtual;
+    Function NewValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValue; overload; virtual;
+    Function NewValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue; overload; virtual;
+    // primitives
     Function NewBooleanValue(const Name: String = ''; InitTo: Boolean = False): TBooleanValue; virtual;
     Function NewInt8Value(const Name: String = ''; InitTo: Int8 = 0): TInt8Value; virtual;
     Function NewUInt8Value(const Name: String = ''; InitTo: UInt8 = 0): TUInt8Value; virtual;
@@ -384,16 +429,19 @@ type
     Function NewWideCharValue(const Name: String = ''; InitTo: WideChar = #0): TWideCharValue; virtual;
     Function NewUnicodeCharValue(const Name: String = ''; InitTo: UnicodeChar = #0): TUnicodeCharValue; virtual;
     Function NewCharValue(const Name: String = ''; InitTo: Char = #0): TCharValue; virtual;
-    Function NewShortStringValue(const Name: String = ''; InitTo: ShortString = ''): TShortStringValue; virtual;
-    Function NewAnsiStringValue(const Name: String = ''; InitTo: AnsiString = ''): TAnsiStringValue; virtual;
-    Function NewUTF8StringValue(const Name: String = ''; InitTo: UTF8String = ''): TUTF8StringValue; virtual;
-    Function NewWideStringValue(const Name: String = ''; InitTo: WideString = ''): TWideStringValue; virtual;
-    Function NewUnicodeStringValue(const Name: String = ''; InitTo: UnicodeString = ''): TUnicodeStringValue; virtual;
-    Function NewStringValue(const Name: String = ''; InitTo: String = ''): TStringValue; virtual;
+    Function NewShortStringValue(const Name: String = ''; const InitTo: ShortString = ''): TShortStringValue; virtual;
+    Function NewAnsiStringValue(const Name: String = ''; const InitTo: AnsiString = ''): TAnsiStringValue; virtual;
+    Function NewUTF8StringValue(const Name: String = ''; const InitTo: UTF8String = ''): TUTF8StringValue; virtual;
+    Function NewWideStringValue(const Name: String = ''; const InitTo: WideString = ''): TWideStringValue; virtual;
+    Function NewUnicodeStringValue(const Name: String = ''; const InitTo: UnicodeString = ''): TUnicodeStringValue; virtual;
+    Function NewStringValue(const Name: String = ''; const InitTo: String = ''): TStringValue; virtual;
     Function NewPointerValue(const Name: String = ''; InitTo: Pointer = nil): TPointerValue; virtual;
     Function NewObjectValue(const Name: String = ''; InitTo: TObject = nil): TObjectValue; virtual;
     Function NewGUIDValue(const Name: String; InitTo: TGUID): TGUIDValue; overload; virtual;
     Function NewGUIDValue(const Name: String = ''): TGUIDValue; overload; virtual;
+    // arrays
+    Function NewAoBooleanValue(const Name: String = ''; const InitTo: TAoBoolean = nil): TAoBooleanValue; virtual;
+    Function NewAoStringValue(const Name: String = ''; const InitTo: TAoString = nil): TAoStringValue; virtual;
   end;
 
 {===============================================================================
@@ -401,9 +449,9 @@ type
 ===============================================================================}
 
 type
-  TValueArray = array of TMVManagedValueBase;
+  TValueArray = array of TManagedValue;
 
-Function FindManagedValue(const Name: String; out Value: TMVManagedValueBase): Boolean;
+Function FindManagedValue(const Name: String; out Value: TManagedValue): Boolean;
 Function FindManagedValues(const Name: String; out Values: TValueArray): Integer;
 
 Function ManagedValuesCount: Integer;
@@ -418,7 +466,7 @@ uses
     TManagedValue
 ===============================================================================}
 
-Function CreateValue(ValueType: TMVManagedValueType; const Name: String = ''): TManagedValue;
+Function CreateValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValue;
 begin
 Result := CreateByValueType(ValueType,Name);
 end;
@@ -748,7 +796,7 @@ end;
     TShortStringValue
 ===============================================================================}
 
-procedure InitValue(out Value: TShortStringValue; const Name: String = ''; InitializeTo: ShortString = '');
+procedure InitValue(out Value: TShortStringValue; const Name: String = ''; const InitializeTo: ShortString = '');
 begin
 Value := TShortStringValue.CreateAndInit(Name,InitializeTo);
 end;
@@ -765,7 +813,7 @@ end;
     TAnsiStringValue
 ===============================================================================}
 
-procedure InitValue(out Value: TAnsiStringValue; const Name: String = ''; InitializeTo: AnsiString = '');
+procedure InitValue(out Value: TAnsiStringValue; const Name: String = ''; const InitializeTo: AnsiString = '');
 begin
 Value := TAnsiStringValue.CreateAndInit(Name,InitializeTo);
 end;
@@ -782,7 +830,7 @@ end;
     TUTF8StringValue
 ===============================================================================}
 
-procedure InitValue(out Value: TUTF8StringValue; const Name: String = ''; InitializeTo: UTF8String = '');
+procedure InitValue(out Value: TUTF8StringValue; const Name: String = ''; const InitializeTo: UTF8String = '');
 begin
 Value := TUTF8StringValue.CreateAndInit(Name,InitializeTo);
 end;
@@ -799,7 +847,7 @@ end;
     TWideStringValue
 ===============================================================================}
 
-procedure InitValue(out Value: TWideStringValue; const Name: String = ''; InitializeTo: WideString = '');
+procedure InitValue(out Value: TWideStringValue; const Name: String = ''; const InitializeTo: WideString = '');
 begin
 Value := TWideStringValue.CreateAndInit(Name,InitializeTo);
 end;
@@ -816,7 +864,7 @@ end;
     TUnicodeStringValue
 ===============================================================================}
 
-procedure InitValue(out Value: TUnicodeStringValue; const Name: String = ''; InitializeTo: UnicodeString = '');
+procedure InitValue(out Value: TUnicodeStringValue; const Name: String = ''; const InitializeTo: UnicodeString = '');
 begin
 Value := TUnicodeStringValue.CreateAndInit(Name,InitializeTo);
 end;
@@ -833,7 +881,7 @@ end;
     TStringValue
 ===============================================================================}
 
-procedure InitValue(out Value: TStringValue; const Name: String = ''; InitializeTo: String = '');
+procedure InitValue(out Value: TStringValue; const Name: String = ''; const InitializeTo: String = '');
 begin
 Value := TStringValue.CreateAndInit(Name,InitializeTo);
 end;
@@ -905,10 +953,44 @@ If Assigned(Value) then
 end;
 
 {===============================================================================
-    Auxiliary funtions
+    TAoBooleanValue
 ===============================================================================}
 
-Function ClassByValueType(ValueType: TMVManagedValueType): TManagedValueClass;
+procedure InitValue(out Value: TAoBooleanValue; const Name: String = ''; const InitializeTo: TAoBoolean = nil);
+begin
+Value := TAoBooleanValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoBooleanValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoStringValue
+===============================================================================}
+
+procedure InitValue(out Value: TAoStringValue; const Name: String = ''; const InitializeTo: TAoString = nil);
+begin
+Value := TAoStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoStringValue); overload;
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    Auxiliary functions
+===============================================================================}
+
+Function ClassByValueType(ValueType: TManagedValueType): TManagedValueClass;
 begin
 case ValueType of
   // primitive values
@@ -940,8 +1022,8 @@ case ValueType of
   mvtObject:          Result := TObjectValue;
   mvtGUID:            Result := TGUIDValue;
   // array values
-(*
   mvtAoBoolean:       Result := TAoBooleanValue;
+(*  
   mvtAoInt8:          Result := TAoInt8Value;
   mvtAoUInt8:         Result := TAoUInt8Value;
   mvtAoInt16:         Result := TAoInt16Value;
@@ -964,11 +1046,12 @@ case ValueType of
   mvtAoUTF8String:    Result := TAoUTF8StringValue;
   mvtAoWideString:    Result := TAoWideStringValue;
   mvtAoUnicodeString: Result := TAoUnicodeStringValue;
-  mvtAoString:        Result := TAoStringValue;
-  mvtAoPointer:       Result := TAoPointerValue;
-  mvtAoObject:        Result := TAoObjectValue;
-  mvtAoGUID:          REsult := TAoGUIDValue;
 *)
+  mvtAoString:        Result := TAoStringValue;
+  //mvtAoPointer:       Result := TAoPointerValue;
+  //mvtAoObject:        Result := TAoObjectValue;
+ // mvtAoGUID:          REsult := TAoGUIDValue;
+
 else
   raise EMVInvalidValue.CreateFmt('ClassByValueType: Unknown value type (%d).',[Ord(ValueType)]);
 end;
@@ -976,7 +1059,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function CreateByValueType(ValueType: TMVManagedValueType; const Name: String = ''): TManagedValue;
+Function CreateByValueType(ValueType: TManagedValueType; const Name: String = ''): TManagedValue;
 begin
 Result := ClassByValueType(ValueType).Create(Name);
 end;
@@ -994,7 +1077,7 @@ end;
     TValuesManager - public methods
 -------------------------------------------------------------------------------}
 
-Function TValuesManager.NewValue(ValueType: TMVManagedValueType; const Name: String = ''): TMVManagedValueBase;
+Function TValuesManager.NewValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValue;
 begin
 Result := CreateByValueType(ValueType,Name);
 Add(Result);
@@ -1002,7 +1085,7 @@ end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-Function TValuesManager.NewValue(ValueClass: TManagedValueClass; const Name: String = ''): TMVManagedValueBase;
+Function TValuesManager.NewValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue;
 begin
 Result := ValueClass.Create(Name);
 Add(Result);
@@ -1154,7 +1237,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManager.NewShortStringValue(const Name: String = ''; InitTo: ShortString = ''): TShortStringValue;
+Function TValuesManager.NewShortStringValue(const Name: String = ''; const InitTo: ShortString = ''): TShortStringValue;
 begin
 Result := TShortStringValue(NewValue(mvtShortString,Name));
 Result.Initialize(InitTo,False);
@@ -1162,7 +1245,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManager.NewAnsiStringValue(const Name: String = ''; InitTo: AnsiString = ''): TAnsiStringValue;
+Function TValuesManager.NewAnsiStringValue(const Name: String = ''; const InitTo: AnsiString = ''): TAnsiStringValue;
 begin
 Result := TAnsiStringValue(NewValue(mvtAnsiString,Name));
 Result.Initialize(InitTo,False);
@@ -1170,7 +1253,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManager.NewUTF8StringValue(const Name: String = ''; InitTo: UTF8String = ''): TUTF8StringValue;
+Function TValuesManager.NewUTF8StringValue(const Name: String = ''; const InitTo: UTF8String = ''): TUTF8StringValue;
 begin
 Result := TUTF8StringValue(NewValue(mvtUTF8String,Name));
 Result.Initialize(InitTo,False);
@@ -1178,7 +1261,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManager.NewWideStringValue(const Name: String = ''; InitTo: WideString = ''): TWideStringValue;
+Function TValuesManager.NewWideStringValue(const Name: String = ''; const InitTo: WideString = ''): TWideStringValue;
 begin
 Result := TWideStringValue(NewValue(mvtWideString,Name));
 Result.Initialize(InitTo,False);
@@ -1186,7 +1269,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManager.NewUnicodeStringValue(const Name: String = ''; InitTo: UnicodeString = ''): TUnicodeStringValue;
+Function TValuesManager.NewUnicodeStringValue(const Name: String = ''; const InitTo: UnicodeString = ''): TUnicodeStringValue;
 begin
 Result := TUnicodeStringValue(NewValue(mvtUnicodeString,Name));
 Result.Initialize(InitTo,False);
@@ -1194,7 +1277,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManager.NewStringValue(const Name: String = ''; InitTo: String = ''): TStringValue;
+Function TValuesManager.NewStringValue(const Name: String = ''; const InitTo: String = ''): TStringValue;
 begin
 Result := TStringValue(NewValue(mvtString,Name));
 Result.Initialize(InitTo,False);
@@ -1231,14 +1314,29 @@ begin
 Result := NewGUIDValue(Name,StringToGUID('{00000000-0000-0000-0000-000000000000}'));
 end;
 
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoBooleanValue(const Name: String = ''; const InitTo: TAoBoolean = nil): TAoBooleanValue;
+begin
+Result := TAoBooleanValue(NewValue(mvtAoBoolean,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoStringValue(const Name: String = ''; const InitTo: TAoString = nil): TAoStringValue; 
+begin
+Result := TAoStringValue(NewValue(mvtAoString,Name));
+Result.Initialize(InitTo,False);
+end;
 
 {===============================================================================
     Global manager access functions - implementation
 ===============================================================================}
 
-Function FindManagedValue(const Name: String; out Value: TMVManagedValueBase): Boolean;
+Function FindManagedValue(const Name: String; out Value: TManagedValue): Boolean;
 var
-  GlobalManager:  TMVValuesManagerBase;
+  GlobalManager:  TValuesManagerBase;
 begin
 Value := nil;
 GlobalManager := GetGlobalValuesManager;
@@ -1252,8 +1350,8 @@ end;
 
 Function FindManagedValues(const Name: String; out Values: TValueArray): Integer;
 var
-  GlobalManager:  TMVValuesManagerBase;
-  NewValue:       TMVManagedValueBase;
+  GlobalManager:  TValuesManagerBase;
+  NewValue:       TManagedValue;
 begin
 SetLength(Values,0);
 GlobalManager := GetGlobalValuesManager;
@@ -1273,7 +1371,7 @@ end;
 
 Function ManagedValuesCount: Integer;
 var
-  GlobalManager:  TMVValuesManagerBase;
+  GlobalManager:  TValuesManagerBase;
 begin
 GlobalManager := GetGlobalValuesManager;
 If Assigned(GlobalManager) then
@@ -1286,7 +1384,7 @@ end;
 
 procedure ManagedValuesClear;
 var
-  GlobalManager:  TMVValuesManagerBase;
+  GlobalManager:  TValuesManagerBase;
 begin
 GlobalManager := GetGlobalValuesManager;
 If Assigned(GlobalManager) then

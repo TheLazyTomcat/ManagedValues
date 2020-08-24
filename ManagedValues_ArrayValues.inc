@@ -13,6 +13,7 @@
     Function GetItem(Index: Integer): TMVValueArrayItemType;
     procedure SetItem(Index: Integer;{$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType);
   protected
+    Function GetCurrentValuePtr: Pointer; override;
     // class info
     class Function GetValueType: TMVManagedValueType; override;
     class Function GetArrayItemType: TMVArrayItemType; override;
@@ -161,6 +162,13 @@ end;
 {-------------------------------------------------------------------------------
     TMVValueClass - protected methods
 -------------------------------------------------------------------------------}
+
+Function TMVValueClass.GetCurrentValuePtr: Pointer;
+begin
+Result := Addr(fCurrentValue);
+end;
+
+//------------------------------------------------------------------------------
 
 Function TMVValueClass.GetCapacity: Integer;
 begin
@@ -327,7 +335,7 @@ IsEqual := SameBaseValuesCnt(fCurrentValue,fInitialValue,fCurrentCount,Length(fI
 If IsEqual <> fEqualsToInitial then
   begin
     fEqualsToInitial := IsEqual;
-    DoEqualChange;
+    DoEqualsChange;
   end;
 end;
 
@@ -370,7 +378,11 @@ inherited Initialize(OnlyValues);
 fCurrentValue := ThreadSafeAssign(Value);
 fCurrentCount := Length(fCurrentValue);
 fInitialValue := ThreadSafeAssign(fCurrentValue);
-CheckAndSetEquality;
+If not fEqualsToInitial then
+  begin
+    fEqualsToInitial := True;
+    DoEqualsChange;
+  end;
 DoCurrentChange;
 end;
 
@@ -378,14 +390,26 @@ end;
 
 procedure TMVValueClass.InitialToCurrent;
 begin
-SetCurrentValue(fInitialValue);
+If not fEqualsToInitial then
+  begin
+    fCurrentValue := ThreadSafeAssign(fInitialValue);
+    fCurrentCount := Length(fCurrentValue);
+    fEqualsToInitial := True;
+    DoEqualsChange;
+    DoCurrentChange;
+  end;
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.CurrentToInitial;
 begin
-SetInitialValue(fCurrentValue);
+If not fEqualsToInitial then
+  begin
+    fInitialValue := ThreadSafeAssign(fCurrentValue,Low(fCurrentValue),fCurrentCount);
+    fEqualsToInitial := True;
+    DoEqualsChange;
+  end;
 end;
 
 //------------------------------------------------------------------------------
@@ -409,12 +433,10 @@ end;
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.Compare(Value: TMVManagedValueBase{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer;
-var
-  Temp: TMVValueArrayType;
 begin
 inherited Compare(Value);
-Temp := TMVValueClass(Value).CurrentValue;
-Result := CompareBaseValues(fCurrentValue,Temp,{$IFDEF MV_ArrayItem_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF});
+Result := CompareBaseValues(fCurrentValue,TMVValueClass(Value).CurrentValuePtr^,
+  {$IFDEF MV_ArrayItem_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF});
 end;
 
 //------------------------------------------------------------------------------
@@ -624,6 +646,8 @@ If fCurrentCount > 1 then
       fSortCompareArg := {$IFDEF MV_ArrayItem_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF};
       Sorter.Reversed := Reversed;
       Sorter.Sort(LowIndex,HighIndex);
+      CheckAndSetEquality;
+      DoCurrentChange;
     finally
       Sorter.Free;
     end;

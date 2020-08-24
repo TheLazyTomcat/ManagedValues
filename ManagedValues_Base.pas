@@ -38,6 +38,12 @@ type
     mvtWideChar,mvtUTF8Char,mvtUnicodeChar,mvtChar,mvtShortString,mvtAnsiString,
     mvtUTF8String,mvtWideString,mvtUnicodeString,mvtString,mvtPointer,mvtObject,
     mvtGUID,
+    // array values
+    mvtAoBoolean,mvtAoInt8,mvtAoUInt8,mvtAoInt16,mvtAoUInt16,mvtAoInt32,
+    mvtAoUInt32,mvtAoInt64,mvtAoUInt64,mvtAoFloat32,mvtAoFloat64,mvtAoDateTime,
+    mvtAoCurrency,mvtAoAnsiChar,mvtAoWideChar,mvtAoUTF8Char,mvtAoUnicodeChar,
+    mvtAoChar,mvtAoShortString,mvtAoAnsiString,mvtAoUTF8String,mvtAoWideString,
+    mvtAoUnicodeString,mvtAoString,mvtAoPointer,mvtAoObject,mvtAoGUID,
   {$IFDEF FPCDWM}{$PUSH}W3031{$ENDIF}
     // primitive value aliases
     mvtBool = mvtBoolean, mvtShortInt = mvtInt8, mvtByte = mvtUInt8,
@@ -55,17 +61,11 @@ type
    {$ELSEIF SizeOf(Integer) = 4}mvtInteger = mvtInt32,
    {$ELSEIF SizeOf(Integer) = 8}mvtInteger = mvtInt64,
    {$ELSE}{$MESSAGE FATAL 'Unssuported size of Integer type.'}{$IFEND}
-       {$IF SizeOf(Cardinal) = 2}mvtCardinal = mvtUInt16,
-   {$ELSEIF SizeOf(Cardinal) = 4}mvtCardinal = mvtUInt32,
-   {$ELSEIF SizeOf(Cardinal) = 8}mvtCardinal = mvtUInt64,
+       {$IF SizeOf(Cardinal) = 2}mvtCardinal = mvtUInt16
+   {$ELSEIF SizeOf(Cardinal) = 4}mvtCardinal = mvtUInt32
+   {$ELSEIF SizeOf(Cardinal) = 8}mvtCardinal = mvtUInt64
    {$ELSE}{$MESSAGE FATAL 'Unssuported size of Cardinal type.'}{$IFEND}
-  {$IFDEF FPCDWM}{$POP}W3031{$ENDIF}
-    // array values
-    mvtAoBoolean,mvtAoInt8,mvtAoUInt8,mvtAoInt16,mvtAoUInt16,mvtAoInt32,
-    mvtAoUInt32,mvtAoInt64,mvtAoUInt64,mvtAoFloat32,mvtAoFloat64,mvtAoDateTime,
-    mvtAoCurrency,mvtAoAnsiChar,mvtAoWideChar,mvtAoUTF8Char,mvtAoUnicodeChar,
-    mvtAoChar,mvtAoShortString,mvtAoAnsiString,mvtAoUTF8String,mvtAoWideString,
-    mvtAoUnicodeString,mvtAoString,mvtAoPointer,mvtAoObject,mvtAoGUID);
+  {$IFDEF FPCDWM}{$POP}W3031{$ENDIF});
 
 {===============================================================================
     TMVManagedValueBase - class declaration
@@ -88,6 +88,7 @@ type
     fOnEqualsChangeEvent:     TNotifyEvent;
     fOnEqualsChangeCallback:  TNotifyCallback;
     // getters, setters
+    Function GetCurrentValuePtr: Pointer; virtual; abstract;
     class Function GetValueType: TMVManagedValueType; virtual; abstract;
     Function GetGloballyManaged: Boolean; virtual;
     Function GetLocallyManaged: Boolean; virtual;
@@ -96,13 +97,14 @@ type
     procedure Finalize; virtual;
     // event calls
     procedure DoCurrentChange; virtual;
-    procedure DoEqualChange; virtual;
+    procedure DoEqualsChange; virtual;
     // compare methods
     class Function CompareBaseValues(const A,B; Arg: Boolean): Integer; virtual; abstract;  // override or reintroduce for specific type
     class Function SameBaseValues(const A,B; Arg: Boolean): Boolean; virtual;               // calls CompareBaseValues
     // auxiliary methods (pretty much macro methods)
     procedure CheckAndSetEquality; virtual; abstract;                                       // must be overridden
-    // protected properties (used by managers)
+    // protected properties (mostly used by managers)
+    property CurrentValuePtr: Pointer read GetCurrentValuePtr;
     property LocalManager: TObject read fLocalManager write fLocalManager;
     property OnValueChangeInternal: TNotifyEvent read fOnValueChangeInternal write fOnValueChangeInternal;
     property OnEqualsChangeInternal: TNotifyEvent read fOnEqualsChangeInternal write fOnEqualsChangeInternal;
@@ -280,6 +282,8 @@ type
     fOnStreamingCallback:     TMVStreamingCallback;
     // getters, setters
     Function GetValue(Index: Integer): TMVManagedValueBase; virtual;
+    Function GetReadCount: UInt64; virtual;
+    Function GetWriteCount: UInt64; virtual;
     // list management
     Function GetCapacity: Integer; override;
     procedure SetCapacity(Value: Integer); override;
@@ -335,6 +339,8 @@ type
     // properties
     property Values[Index: Integer]: TMVManagedValueBase read GetValue; default;
     property EqualsToInitial: Boolean read fEqualsToInit;
+    property ReadCount: UInt64 read GetReadCount;
+    property WriteCount: UInt64 read GetWriteCount;
     property OnValueChangeEvent: TObjectEvent read fOnValueChangeEvent write fOnValueChangeEvent;
     property OnValueChangeCallback: TObjectCallback read fOnValueChangeCallback write fOnValueChangeCallback;
     property OnValueChange: TObjectEvent read fOnValueChangeEvent write fOnValueChangeEvent;
@@ -726,7 +732,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-procedure TMVManagedValueBase.DoEqualChange;
+procedure TMVManagedValueBase.DoEqualsChange;
 begin
 If Assigned(fOnEqualsChangeInternal) then
   fOnEqualsChangeInternal(Self);
@@ -1092,6 +1098,28 @@ If CheckIndex(Index) then
   Result := fValues[Index]
 else
   raise EMVIndexOutOfBounds.CreateFmt('TMVValuesManagerBase.GetValue: Index (%d) out of bounds.',[Index]);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValuesManagerBase.GetReadCount: UInt64;
+var
+  i:  Integer;
+begin
+Result := 0;
+For i := LowIndex to HighIndex do
+  Result := Result + fValues[i].ReadCount;
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValuesManagerBase.GetWriteCount: UInt64;
+var
+  i:  Integer;
+begin
+Result := 0;
+For i := LowIndex to HighIndex do
+  Result := Result + fValues[i].WriteCount;
 end;
 
 //------------------------------------------------------------------------------

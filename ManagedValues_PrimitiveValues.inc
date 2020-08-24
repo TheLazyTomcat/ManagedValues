@@ -10,6 +10,7 @@
     procedure SetCurrentValue({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType);
     procedure SetInitialValue({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType);
   protected
+    Function GetCurrentValuePtr: Pointer; override;
     // class info methods
     class Function GetValueType: TMVManagedValueType; override;
     // init, final
@@ -92,6 +93,13 @@ end;
     TMVValueClass - protected methods
 -------------------------------------------------------------------------------}
 
+Function TMVValueClass.GetCurrentValuePtr: Pointer;
+begin
+Result := Addr(fCurrentValue);
+end;
+
+//------------------------------------------------------------------------------
+
 procedure TMVValueClass.Initialize;
 begin
 inherited;
@@ -109,7 +117,7 @@ IsEqual := SameBaseValues(fCurrentValue,fInitialValue,True);
 If IsEqual <> fEqualsToInitial then
   begin
     fEqualsToInitial := IsEqual;
-    DoEqualChange;
+    DoEqualsChange;
   end;
 end;
 
@@ -137,7 +145,11 @@ begin
 inherited Initialize(OnlyValues);
 fCurrentValue := {$IFNDEF MV_Value_AssignIsThreadSafe}ThreadSafeAssign{$ENDIF}(Value);
 fInitialValue := {$IFNDEF MV_Value_AssignIsThreadSafe}ThreadSafeAssign{$ENDIF}(fCurrentValue);
-CheckAndSetEquality;
+If not fEqualsToInitial then
+  begin
+    fEqualsToInitial := True;
+    DoEqualsChange;
+  end;
 DoCurrentChange;
 end;
 
@@ -145,14 +157,25 @@ end;
 
 procedure TMVValueClass.InitialToCurrent;
 begin
-SetCurrentValue(fInitialValue);
+If not fEqualsToInitial then
+  begin
+    fCurrentValue := {$IFNDEF MV_Value_AssignIsThreadSafe}ThreadSafeAssign{$ENDIF}(fInitialValue);
+    fEqualsToInitial := True;
+    DoEqualsChange;
+    DoCurrentChange;
+  end;
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.CurrentToInitial;
 begin
-SetInitialValue(fCurrentValue);
+If not fEqualsToInitial then
+  begin
+    fInitialValue := {$IFNDEF MV_Value_AssignIsThreadSafe}ThreadSafeAssign{$ENDIF}(fCurrentValue);
+    fEqualsToInitial := True;
+    DoEqualsChange;
+  end;
 end;
 
 //------------------------------------------------------------------------------
@@ -174,12 +197,10 @@ end;
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.Compare(Value: TMVManagedValueBase{$IFDEF MV_Value_CaseSensitivity}; CaseSensitive: Boolean{$ENDIF}): Integer;
-var
-  Temp: TMVValueBaseType;
 begin
 inherited Compare(Value);
-Temp := TMVValueClass(Value).CurrentValue;
-Result := CompareBaseValues(fCurrentValue,Temp,{$IFDEF MV_Value_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF});
+Result := CompareBaseValues(fCurrentValue,TMVValueClass(Value).CurrentValuePtr^,
+  {$IFDEF MV_Value_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF});
 end;
 
 //------------------------------------------------------------------------------

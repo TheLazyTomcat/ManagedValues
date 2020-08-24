@@ -138,7 +138,7 @@ Strings := TStringList.Create;
 try
   For i := LowIndex to HighIndex do
     Strings.Add(BoolToStr(fCurrentValue[i],True));
-  Result := Strings.Text;
+  Result := Strings.DelimitedText
 finally
   Strings.Free;
 end;
@@ -155,7 +155,7 @@ var
 begin
 Strings := TStringList.Create;
 try
-  Strings.Text := Str;
+  Strings.DelimitedText := Str;
   SetLength(Temp,Strings.Count);
   For i := 0 to Pred(Strings.Count) do
     Temp[i] := StrToBool(Strings[i]);
