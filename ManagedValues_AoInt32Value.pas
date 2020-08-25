@@ -89,76 +89,32 @@ Result := Integer(TMVValueArrayItemType(A) - TMVValueArrayItemType(B));
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 
-{-------------------------------------------------------------------------------
-    TMVAoInt32Value - specific public methods
--------------------------------------------------------------------------------}
+//------------------------------------------------------------------------------
 
-procedure TMVValueClass.SaveToStream(Stream: TStream);
-var
-  i:  Integer;
+class procedure TMVValueClass.ArrayItemStreamWrite(Stream: TStream; Value: TMVValueArrayItemType);
 begin
-Stream_WriteInt32(Stream,fCurrentCount);
-For i := LowIndex to HighIndex do
-  Stream_WriteInt32(Stream,fCurrentValue[i]);
+Stream_WriteInt32(Stream,Value);
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TMVValueClass.LoadFromStream(Stream: TStream; Init: Boolean = False);
-var
-  Temp: TMVValueArrayType;
-  i:    Integer;
+class Function TMVValueClass.ArrayItemStreamRead(Stream: TStream): TMVValueArrayItemType;
 begin
-// load into temp
-SetLength(Temp,Stream_ReadInt32(Stream));
-For i := Low(Temp) to High(Temp) do
-  Temp[i] := Stream_ReadInt32(Stream);
-// assign temp
-If Init then
-  Initialize(Temp,False)
-else
-  SetCurrentValue(Temp);
+Result := Stream_ReadInt32(Stream);
 end;
 
 //------------------------------------------------------------------------------
 
-Function TMVValueClass.AsString: String;
-var
-  Strings:  TStringList;
-  i:        Integer;
+class Function TMVValueClass.ArrayItemAsString(Value: TMVValueArrayItemType): String;
 begin
-Strings := TStringList.Create;
-try
-  For i := LowIndex to HighIndex do
-    Strings.Add(IntToStr(fCurrentValue[i]));
-  Result := Strings.DelimitedText
-finally
-  Strings.Free;
-end;
-inherited AsString;
+Result := IntToStr(Value);
 end;
 
 //------------------------------------------------------------------------------
 
-procedure TMVValueClass.FromString(const Str: String);
-var
-  Strings:  TStringList;
-  i:        Integer;
+class Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
 begin
-Strings := TStringList.Create;
-try
-  Strings.DelimitedText := Str;
-  SetLength(fCurrentValue,0);
-  SetLength(fCurrentValue,Strings.Count);
-  For i := 0 to Pred(Strings.Count) do
-    fCurrentValue[i] := StrToInt(Strings[i]);
-  fCurrentCount := Length(fCurrentValue);
-  CheckAndSetEquality;
-  DoCurrentChange;
-finally
-  Strings.Free;
-end;
-inherited;
+Result := StrToInt(Str);
 end;
 
 end.

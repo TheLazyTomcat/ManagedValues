@@ -37,10 +37,10 @@
     Function ArrayItemThreadSafeAssign({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType): TMVValueArrayItemType; virtual;
   {$ENDIF}
     // streaming, string conversion
-    //procedure StreamWriteItem(Stream: TStream; {$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType); virtual;
-    //Function StreamReadItem(Stream: TStream): TMVValueArrayItemType; virtual;
-    //Function ItemAsString({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType): String; virtual;
-    //Function ItemFromString(const Str: String): TMVValueArrayItemType; virtual;
+    class procedure ArrayItemStreamWrite(Stream: TStream; {$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType); virtual;
+    class Function ArrayItemStreamRead(Stream: TStream): TMVValueArrayItemType; virtual;
+    class Function ArrayItemAsString({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType): String; virtual;
+    class Function ArrayItemFromString(const Str: String): TMVValueArrayItemType; virtual;
     // utility
     procedure CheckAndSetEquality; override;  
   public
@@ -486,6 +486,76 @@ end;
 Function TMVValueClass.LowIndex: Integer;
 begin
 Result := Low(fCurrentValue);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.SaveToStream(Stream: TStream);
+var
+  i:  Integer;
+begin
+Stream_WriteInt32(Stream,fCurrentCount);
+For i := LowIndex to HighIndex do
+  ArrayItemStreamWrite(Stream,fCurrentValue[i]);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.LoadFromStream(Stream: TStream; Init: Boolean = False);
+var
+  Temp: TMVValueArrayType;
+  i:    Integer;
+begin
+// load into temp
+SetLength(Temp,Stream_ReadInt32(Stream));
+For i := Low(Temp) to High(Temp) do
+  Temp[i] := ArrayItemStreamRead(Stream);
+// assign temp
+If Init then
+  Initialize(Temp,False)
+else
+  SetCurrentValue(Temp);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.AsString: String;
+var
+  Strings:  TStringList;
+  i:        Integer;
+begin
+Strings := TStringList.Create;
+try
+  For i := LowIndex to HighIndex do
+    Strings.Add(ArrayItemAsString(fCurrentValue[i]));
+  Result := Strings.DelimitedText
+finally
+  Strings.Free;
+end;
+inherited AsString;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVValueClass.FromString(const Str: String);
+var
+  Strings:  TStringList;
+  i:        Integer;
+begin
+Strings := TStringList.Create;
+try
+  Strings.DelimitedText := Str;
+  SetLength(fCurrentValue,0);
+  SetLength(fCurrentValue,Strings.Count);
+  For i := 0 to Pred(Strings.Count) do
+    fCurrentValue[i] := ArrayItemFromString(Strings[i]);
+  fCurrentCount := Length(fCurrentValue);
+  CheckAndSetEquality;
+  DoCurrentChange;
+finally
+  Strings.Free;
+end;
+inherited;
 end;
 
 //------------------------------------------------------------------------------

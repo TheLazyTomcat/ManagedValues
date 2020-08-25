@@ -90,6 +90,34 @@ Result := Value;
 UniqueString(Result);
 end;
 
+//------------------------------------------------------------------------------
+
+class procedure TMVValueClass.ArrayItemStreamWrite(Stream: TStream; const Value: TMVValueArrayItemType);
+begin
+Stream_WriteString(Stream,Value);
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.ArrayItemStreamRead(Stream: TStream): TMVValueArrayItemType;
+begin
+Result := Stream_ReadString(Stream);
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.ArrayItemAsString(const Value: TMVValueArrayItemType): String;
+begin
+Result := Value;
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
+begin
+Result := Str;
+end;
+
 {-------------------------------------------------------------------------------
     TMVAoStringValue - specific public methods
 -------------------------------------------------------------------------------}  
@@ -101,76 +129,6 @@ begin
 Result := SizeOf(Int32);  // array length
 For i := LowIndex to HighIndex do
   Inc(Result,TMemSize(4 + Length(StrToUTF8(fCurrentValue[i]))));
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TMVValueClass.SaveToStream(Stream: TStream);
-var
-  i:  Integer;
-begin
-Stream_WriteInt32(Stream,fCurrentCount);
-For i := LowIndex to HighIndex do
-  Stream_WriteString(Stream,fCurrentValue[i]);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TMVValueClass.LoadFromStream(Stream: TStream; Init: Boolean = False);
-var
-  Temp: TMVValueArrayType;
-  i:    Integer;
-begin
-// load into temp
-SetLength(Temp,Stream_ReadInt32(Stream));
-For i := Low(Temp) to High(Temp) do
-  Temp[i] := Stream_ReadString(Stream);
-// assign temp
-If Init then
-  Initialize(Temp,False)
-else
-  SetCurrentValue(Temp);
-end;
-
-//------------------------------------------------------------------------------
-
-Function TMVValueClass.AsString: String;
-var
-  Strings:  TStringList;
-  i:        Integer;
-begin
-Strings := TStringList.Create;
-try
-  For i := LowIndex to HighIndex do
-    Strings.Add(fCurrentValue[i]);
-  Result := Strings.DelimitedText;
-finally
-  Strings.Free;
-end;
-inherited AsString;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TMVValueClass.FromString(const Str: String);
-var
-  Strings:  TStringList;
-  i:        Integer;
-begin
-Strings := TStringList.Create;
-try
-  Strings.DelimitedText := Str;
-  SetLength(fCurrentValue,0);
-  SetLength(fCurrentValue,Strings.Count);
-  For i := 0 to Pred(Strings.Count) do
-    fCurrentValue[i] := Strings[i];
-  fCurrentCount := Length(fCurrentValue);
-  CheckAndSetEquality;
-  DoCurrentChange;
-finally
-  Strings.Free;
-end;
-inherited;
 end;
 
 end.

@@ -94,6 +94,34 @@ else
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 
+//------------------------------------------------------------------------------
+
+class procedure TMVValueClass.ArrayItemStreamWrite(Stream: TStream; Value: TMVValueArrayItemType);
+begin
+Stream_WriteBool(Stream,Value);
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.ArrayItemStreamRead(Stream: TStream): TMVValueArrayItemType;
+begin
+Result := Stream_ReadBool(Stream);
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.ArrayItemAsString(Value: TMVValueArrayItemType): String;
+begin
+Result := BoolToStr(Value,True);
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
+begin
+Result := StrToBool(Str);
+end;
+
 {-------------------------------------------------------------------------------
     TMVAoBooleanValue - specific public methods
 -------------------------------------------------------------------------------}
@@ -102,76 +130,6 @@ Function TMVValueClass.StreamedSize: TMemSize;
 begin
 // each boolean item is saved as one byte
 Result := SizeOf(Int32){array length} + fCurrentCount;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TMVValueClass.SaveToStream(Stream: TStream);
-var
-  i:  Integer;
-begin
-Stream_WriteInt32(Stream,fCurrentCount);
-For i := LowIndex to HighIndex do
-  Stream_WriteBool(Stream,fCurrentValue[i]);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TMVValueClass.LoadFromStream(Stream: TStream; Init: Boolean = False);
-var
-  Temp: TMVValueArrayType;
-  i:    Integer;
-begin
-// load into temp
-SetLength(Temp,Stream_ReadInt32(Stream));
-For i := Low(Temp) to High(Temp) do
-  Temp[i] := Stream_ReadBool(Stream);
-// assign temp
-If Init then
-  Initialize(Temp,False)
-else
-  SetCurrentValue(Temp);
-end;
-
-//------------------------------------------------------------------------------
-
-Function TMVValueClass.AsString: String;
-var
-  Strings:  TStringList;
-  i:        Integer;
-begin
-Strings := TStringList.Create;
-try
-  For i := LowIndex to HighIndex do
-    Strings.Add(BoolToStr(fCurrentValue[i],True));
-  Result := Strings.DelimitedText
-finally
-  Strings.Free;
-end;
-inherited AsString;
-end;
-
-//------------------------------------------------------------------------------
-
-procedure TMVValueClass.FromString(const Str: String);
-var
-  Strings:  TStringList;
-  i:        Integer;
-begin
-Strings := TStringList.Create;
-try
-  Strings.DelimitedText := Str;
-  SetLength(fCurrentValue,0);
-  SetLength(fCurrentValue,Strings.Count);
-  For i := 0 to Pred(Strings.Count) do
-    fCurrentValue[i] := StrToBool(Strings[i]);
-  fCurrentCount := Length(fCurrentValue);
-  CheckAndSetEquality;
-  DoCurrentChange;
-finally
-  Strings.Free;
-end;
-inherited;
 end;
 
 end.
