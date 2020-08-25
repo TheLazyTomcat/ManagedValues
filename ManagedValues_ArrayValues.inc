@@ -36,6 +36,11 @@
   {$IFNDEF MV_ArrayItem_AssignIsThreadSafe}
     Function ArrayItemThreadSafeAssign({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType): TMVValueArrayItemType; virtual;
   {$ENDIF}
+    // streaming, string conversion
+    //procedure StreamWriteItem(Stream: TStream; {$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType); virtual;
+    //Function StreamReadItem(Stream: TStream): TMVValueArrayItemType; virtual;
+    //Function ItemAsString({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType): String; virtual;
+    //Function ItemFromString(const Str: String): TMVValueArrayItemType; virtual;
     // utility
     procedure CheckAndSetEquality; override;  
   public

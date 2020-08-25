@@ -75,7 +75,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFDEF FPCDWM}{$PUSH}W4055 {$IFNDEF MV_Value_CaseSensitivity}W5024{$ENDIF}{$ENDIF}
+{$IFDEF FPCDWM}{$PUSH}W4055 W5024{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If PtrUInt(TMVValueBaseType(A)) > PtrUInt(TMVValueBaseType(B)) then

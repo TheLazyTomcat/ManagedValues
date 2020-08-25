@@ -129,6 +129,10 @@ type
 {$IF SizeOf(LongInt) = 4}
   TLongIntValue = TInt32Value;
 {$IFEND}
+{$IFDEF 32bit}
+  TPtrIntValue    = TInt32Value;
+  TNativeIntValue = TInt32Value;
+{$ENDIF}
 
 procedure InitValue(out Value: TInt32Value; const Name: String = ''; InitializeTo: Int32 = 0); overload;
 procedure FinalValue(var Value: TInt32Value); overload;
@@ -139,13 +143,17 @@ procedure FinalValue(var Value: TInt32Value); overload;
 type
   TUInt32Value = class(TMVUInt32Value);
 
+  TDWordValue    = TUInt32Value;
 {$IF SizeOf(Cardinal) = 4}
   TCardinalValue = TUInt32Value;
 {$IFEND}
 {$IF SizeOf(LongWord) = 4}
   TLongWordValue = TUInt32Value;
 {$IFEND}
-  TDWordValue    = TUInt32Value;
+{$IFDEF 32bit}
+  TPtrUIntValue    = TUInt32Value;
+  TNativeUIntValue = TUInt32Value;
+{$ENDIF}
 
 procedure InitValue(out Value: TUInt32Value; const Name: String = ''; InitializeTo: UInt32 = 0); overload;
 procedure FinalValue(var Value: TUInt32Value); overload;
@@ -162,6 +170,10 @@ type
 {$IF SizeOf(LongInt) = 8}
   TLongIntValue = TInt64Value;
 {$IFEND}
+{$IFDEF 64bit}
+  TPtrIntValue    = TInt64Value;
+  TNativeIntValue = TInt64Value;
+{$ENDIF}
 
 procedure InitValue(out Value: TInt64Value; const Name: String = ''; InitializeTo: Int64 = 0); overload;
 procedure FinalValue(var Value: TInt64Value); overload;
@@ -180,6 +192,10 @@ type
 {$IF SizeOf(LongWord) = 8}
   TLongWordValue = TUInt64Value;
 {$IFEND}
+{$IFDEF 64bit}
+  TPtrUIntValue    = TUInt64Value;
+  TNativeUIntValue = TUInt64Value;
+{$ENDIF}
 
 procedure InitValue(out Value: TUInt64Value; const Name: String = ''; InitializeTo: UInt64 = 0); overload;
 procedure FinalValue(var Value: TUInt64Value); overload;

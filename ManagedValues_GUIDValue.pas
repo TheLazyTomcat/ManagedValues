@@ -73,7 +73,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFNDEF MV_Value_CaseSensitivity}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 var
   i:  Integer;
@@ -112,7 +112,7 @@ else
       end;
   end;
 end;
-{$IFNDEF MV_Value_CaseSensitivity}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 {-------------------------------------------------------------------------------
     TMVGUIDValue - specific public methods

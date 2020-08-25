@@ -65,6 +65,13 @@ type
     {$ELSEIF SizeOf(Cardinal) = 4}mvtCardinal = mvtUInt32,
     {$ELSEIF SizeOf(Cardinal) = 8}mvtCardinal = mvtUInt64,
     {$ELSE}{$MESSAGE FATAL 'Unssuported size of Cardinal type.'}{$IFEND}
+  {$IF Defined(CPU32bit)}
+    mvtPtrInt = mvtInt32, mvtPtrUInt = mvtUInt32, mvtNativeInt = mvtInt32,
+    mvtNativeUInt = mvtUInt32,
+  {$ELSEIF Defined(CPU64bit)}
+    mvtPtrInt = mvtInt64, mvtPtrUInt = mvtUInt64, mvtNativeInt = mvtInt64,
+    mvtNativeUInt = mvtUInt64,
+  {$ELSE}{$MESSAGE FATAL 'Unssuported CPU architecture.'}{$IFEND}
     // array value aliases - - - - - - - - - - - - - - - - - - - - - - - - - - -
     mvtAoBool = mvtAoBoolean, mvtArrayOfBoolean = mvtAoBoolean,
     mvtArraOfBool = mvtAoBoolean,

@@ -82,12 +82,12 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFNDEF MV_ArrayItem_CaseSensitivity}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := Integer(TMVValueArrayItemType(A) - TMVValueArrayItemType(B));
 end;
-{$IFNDEF MV_ArrayItem_CaseSensitivity}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 {-------------------------------------------------------------------------------
     TMVAoInt8Value - specific public methods
@@ -151,7 +151,7 @@ try
   SetLength(fCurrentValue,0);
   SetLength(fCurrentValue,Strings.Count);
   For i := 0 to Pred(Strings.Count) do
-    fCurrentValue[i] := Int8(StrToInt(Strings[i]));
+    fCurrentValue[i] := TMVValueArrayItemType(StrToInt(Strings[i]));
   fCurrentCount := Length(fCurrentValue);
   CheckAndSetEquality;
   DoCurrentChange;

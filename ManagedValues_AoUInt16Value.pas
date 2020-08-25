@@ -1,4 +1,4 @@
-unit ManagedValues_Int8Value;
+unit ManagedValues_AoUInt16Value;
 
 {$INCLUDE './ManagedValues_defs.inc'}
 
@@ -11,107 +11,153 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                  TMVInt8Value
+                                TMVAoUInt16Value
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVValueBaseType = Int8;
+  TMVValueArrayItemType = UInt16;
+  TMVAoUInt16           = array of TMVValueArrayItemType;
+  TMVValueArrayType     = TMVAoUInt16;
 
-{$UNDEF MV_Value_ConstParams}
-{$DEFINE MV_Value_AssignIsThreadSafe}
-{$UNDEF MV_Value_CaseSensitivity}
-{$UNDEF MV_Value_ComplexStreamedSize}
+{$UNDEF MV_ArrayItem_ConstParams}
+{$DEFINE MV_ArrayItem_AssignIsThreadSafe}
+{$UNDEF MV_ArrayItem_CaseSensitivity}
+{$UNDEF MV_ArrayItem_ComplexStreamedSize}
 
 {===============================================================================
-    TMVInt8Value - class declaration
+    TMVAoUInt16Value - class declaration
 ===============================================================================}
 type
-  TMVInt8Value = class(TMVIntegerManagedValue)
+  TMVAoUInt16Value = class(TMVAoIntegerManagedValue)
   {$DEFINE MV_ClassDeclaration}
-    {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
+    {$INCLUDE './ManagedValues_ArrayValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
 type
-  TMVValueClass = TMVInt8Value;
+  TMVValueClass = TMVAoUInt16Value;
 
 implementation
 
 uses
-  SysUtils,
-  BinaryStreaming; 
+  SysUtils, Math,
+  BinaryStreaming, ListSorters;
 
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
   {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
-{$ENDIF}
+{$ENDIF}  
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                  TMVInt8Value                                  
+                                TMVAoUInt16Value
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
-  MV_LOCAL_DEFAULT_VALUE = 0;
-
+  MV_LOCAL_DEFAULT_ITEM_VALUE = 0;
+  
 {===============================================================================
-    TMVInt8Value - class implementation
+    TMVAoUInt16Value - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
-  {$INCLUDE './ManagedValues_PrimitiveValues.inc'}
+  {$INCLUDE './ManagedValues_ArrayValues.inc'}
 {$UNDEF MV_ClassImplementation}
 
 {-------------------------------------------------------------------------------
-    TMVInt8Value - specific protected methods
+    TMVAoUInt16Value - specific protected methods
 -------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
-Result := mvtInt8;
+Result := mvtAoUInt16;
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
+begin
+Result := aitUInt16;
 end;
 
 //------------------------------------------------------------------------------
 
 {$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
-class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
+class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
-Result := Integer(TMVValueBaseType(A) - TMVValueBaseType(B));
-end;  
+Result := Integer(TMVValueArrayItemType(A) - TMVValueArrayItemType(B));
+end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 {-------------------------------------------------------------------------------
-    TMVInt8Value - specific public methods
+    TMVAoUInt16Value - specific public methods
 -------------------------------------------------------------------------------}
 
 procedure TMVValueClass.SaveToStream(Stream: TStream);
+var
+  i:  Integer;
 begin
-Stream_WriteInt8(Stream,fCurrentValue);
+Stream_WriteInt32(Stream,fCurrentCount);
+For i := LowIndex to HighIndex do
+  Stream_WriteUInt16(Stream,fCurrentValue[i]);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.LoadFromStream(Stream: TStream; Init: Boolean = False);
+var
+  Temp: TMVValueArrayType;
+  i:    Integer;
 begin
+// load into temp
+SetLength(Temp,Stream_ReadInt32(Stream));
+For i := Low(Temp) to High(Temp) do
+  Temp[i] := Stream_ReadUInt16(Stream);
+// assign temp
 If Init then
-  Initialize(Stream_ReadInt8(Stream),False)
+  Initialize(Temp,False)
 else
-  SetCurrentValue(Stream_ReadInt8(Stream));
+  SetCurrentValue(Temp);
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.AsString: String;
+var
+  Strings:  TStringList;
+  i:        Integer;
 begin
-Result := IntToStr(fCurrentValue);
+Strings := TStringList.Create;
+try
+  For i := LowIndex to HighIndex do
+    Strings.Add(IntToStr(fCurrentValue[i]));
+  Result := Strings.DelimitedText
+finally
+  Strings.Free;
+end;
 inherited AsString;
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValueClass.FromString(const Str: String);
+var
+  Strings:  TStringList;
+  i:        Integer;
 begin
-SetCurrentValue(TMVValueBaseType(StrToInt(Str)));
+Strings := TStringList.Create;
+try
+  Strings.DelimitedText := Str;
+  SetLength(fCurrentValue,0);
+  SetLength(fCurrentValue,Strings.Count);
+  For i := 0 to Pred(Strings.Count) do
+    fCurrentValue[i] := TMVValueArrayItemType(StrToInt(Strings[i]));
+  fCurrentCount := Length(fCurrentValue);
+  CheckAndSetEquality;
+  DoCurrentChange;
+finally
+  Strings.Free;
+end;
 inherited;
 end;
 

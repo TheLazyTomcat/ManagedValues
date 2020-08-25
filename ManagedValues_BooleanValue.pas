@@ -73,7 +73,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFNDEF MV_Value_CaseSensitivity}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 If TMVValueBaseType(A) and not TMVValueBaseType(B) then
@@ -83,7 +83,7 @@ else If not TMVValueBaseType(A) and TMVValueBaseType(B) then
 else
   Result := 0;
 end; 
-{$IFNDEF MV_Value_CaseSensitivity}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 {-------------------------------------------------------------------------------
     TMVBooleanValue - specific public methods

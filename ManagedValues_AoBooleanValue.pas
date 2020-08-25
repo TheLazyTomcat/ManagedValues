@@ -82,7 +82,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFNDEF MV_ArrayItem_CaseSensitivity}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
 If TMVValueArrayItemType(A) and not TMVValueArrayItemType(B) then
@@ -92,7 +92,7 @@ else If not TMVValueArrayItemType(A) and TMVValueArrayItemType(B) then
 else
   Result := 0;
 end;
-{$IFNDEF MV_ArrayItem_CaseSensitivity}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 {-------------------------------------------------------------------------------
     TMVAoBooleanValue - specific public methods

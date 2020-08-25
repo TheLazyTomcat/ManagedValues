@@ -73,12 +73,12 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFNDEF MV_Value_CaseSensitivity}{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}{$ENDIF}
+{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := Integer(TMVValueBaseType(A) - TMVValueBaseType(B));
 end;  
-{$IFNDEF MV_Value_CaseSensitivity}{$IFDEF FPCDWM}{$POP}{$ENDIF}{$ENDIF}
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 {-------------------------------------------------------------------------------
     TMVUInt16Value - specific public methods
@@ -111,7 +111,7 @@ end;
 
 procedure TMVValueClass.FromString(const Str: String);
 begin
-SetCurrentValue(UInt16(StrToInt(Str)));
+SetCurrentValue(TMVValueBaseType(StrToInt(Str)));
 inherited;
 end;
 
