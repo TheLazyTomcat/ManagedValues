@@ -1,4 +1,4 @@
-unit ManagedValues_AoAnsiCharValue;
+unit ManagedValues_AoWideCharValue;
 
 {$INCLUDE './ManagedValues_defs.inc'}
 
@@ -11,13 +11,13 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                               TMVAoAnsiCharValue
+                               TMVAoWideCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVValueArrayItemType = AnsiChar;
-  TMVAoAnsiChar         = array of TMVValueArrayItemType;
-  TMVValueArrayType     = TMVAoAnsiChar;
+  TMVValueArrayItemType = WideChar;
+  TMVAoWideChar         = array of TMVValueArrayItemType;
+  TMVValueArrayType     = TMVAoWideChar;
 
 {$UNDEF MV_ArrayItem_ConstParams}
 {$DEFINE MV_ArrayItem_AssignIsThreadSafe}
@@ -25,17 +25,17 @@ type
 {$UNDEF MV_ArrayItem_ComplexStreamedSize}
 
 {===============================================================================
-    TMVAoAnsiCharValue - class declaration
+    TMVAoWideCharValue - class declaration
 ===============================================================================}
 type
-  TMVAoAnsiCharValue = class(TMVAoCharManagedValue)
+  TMVAoWideCharValue = class(TMVAoCharManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_ArrayValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
 type
-  TMVValueClass = TMVAoAnsiCharValue;
+  TMVValueClass = TMVAoWideCharValue;
 
 implementation
 
@@ -45,14 +45,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                               TMVAoAnsiCharValue
+                               TMVAoWideCharValue                                
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_ITEM_VALUE = TMVValueArrayItemType(#0);
   
 {===============================================================================
-    TMVAoAnsiCharValue - class implementation
+    TMVAoWideCharValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -60,56 +60,56 @@ const
 {$UNDEF MV_ClassImplementation}
 
 {-------------------------------------------------------------------------------
-    TMVAoAnsiCharValue - specific protected methods
+    TMVAoWideCharValue - specific protected methods
 -------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
-Result := mvtAoAnsiChar;
+Result := mvtAoWideChar;
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
 begin
-Result := aitAnsiChar;
+Result := aitWideChar;
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
-Result := AnsiStringCompare(TMVValueArrayItemType(A),TMVValueArrayItemType(B),Arg);
+Result := WideStringCompare(TMVValueArrayItemType(A),TMVValueArrayItemType(B),Arg);
 end;
 
 //------------------------------------------------------------------------------
 
 class procedure TMVValueClass.ArrayItemStreamWrite(Stream: TStream; Value: TMVValueArrayItemType);
 begin
-Stream_WriteAnsiChar(Stream,Value);
+Stream_WriteWideChar(Stream,Value);
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.ArrayItemStreamRead(Stream: TStream): TMVValueArrayItemType;
 begin
-Result := Stream_ReadAnsiChar(Stream);
+Result := Stream_ReadWideChar(Stream);
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ArrayItemAsString(Value: TMVValueArrayItemType): String;
 begin
-Result := AnsiToStr(Value);
+Result := WideToStr(Value);
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
 var
-  Temp: AnsiString;
+  Temp: WideString;
 begin
-Temp := StrToAnsi(Str);
+Temp := StrToWide(Str);
 If Length(Temp) > 0 then
   Result := Temp[1]
 else

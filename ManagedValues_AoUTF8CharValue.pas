@@ -45,7 +45,7 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                TMVAoUTF8CharValue
+                               TMVAoUTF8CharValue                                
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
@@ -107,7 +107,7 @@ end;
 
 Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
 var
-  Temp: AnsiString;
+  Temp: UTF8String;
 begin
 Temp := StrToUTF8(Str);
 If Length(Temp) > 0 then

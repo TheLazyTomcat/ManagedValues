@@ -45,11 +45,11 @@ uses
 ===============================================================================}
 
 type
-  TManagedValueType = TMVManagedValueType;
+  TManagedValueType = TMVManagedValueType;  // this is somewhat pointless as the individual values cannot be accessed from this unit, but meh...
 
   TManagedValue = TMVManagedValueBase;
 
-  TArrayManagedValue = TMVArrayManagedValue;
+  TArrayManagedValue = TMVArrayManagedValue;  // in case someone wants only array values and nice name ;)
 
   TManagedValueClass = class of TManagedValue;
 

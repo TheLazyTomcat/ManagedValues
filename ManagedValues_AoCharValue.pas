@@ -1,4 +1,4 @@
-unit ManagedValues_AoAnsiCharValue;
+unit ManagedValues_AoCharValue;
 
 {$INCLUDE './ManagedValues_defs.inc'}
 
@@ -11,13 +11,13 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                               TMVAoAnsiCharValue
+                                 TMVAoCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVValueArrayItemType = AnsiChar;
-  TMVAoAnsiChar         = array of TMVValueArrayItemType;
-  TMVValueArrayType     = TMVAoAnsiChar;
+  TMVValueArrayItemType = Char;
+  TMVAoChar             = array of TMVValueArrayItemType;
+  TMVValueArrayType     = TMVAoChar;
 
 {$UNDEF MV_ArrayItem_ConstParams}
 {$DEFINE MV_ArrayItem_AssignIsThreadSafe}
@@ -25,17 +25,17 @@ type
 {$UNDEF MV_ArrayItem_ComplexStreamedSize}
 
 {===============================================================================
-    TMVAoAnsiCharValue - class declaration
+    TMVAoCharValue - class declaration
 ===============================================================================}
 type
-  TMVAoAnsiCharValue = class(TMVAoCharManagedValue)
+  TMVAoCharValue = class(TMVAoCharManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_ArrayValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
 type
-  TMVValueClass = TMVAoAnsiCharValue;
+  TMVValueClass = TMVAoCharValue;
 
 implementation
 
@@ -45,14 +45,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                               TMVAoAnsiCharValue
+                                 TMVAoCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
   MV_LOCAL_DEFAULT_ITEM_VALUE = TMVValueArrayItemType(#0);
   
 {===============================================================================
-    TMVAoAnsiCharValue - class implementation
+    TMVAoCharValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -60,58 +60,55 @@ const
 {$UNDEF MV_ClassImplementation}
 
 {-------------------------------------------------------------------------------
-    TMVAoAnsiCharValue - specific protected methods
+    TMVAoCharValue - specific protected methods
 -------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
-Result := mvtAoAnsiChar;
+Result := mvtAoChar;
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
 begin
-Result := aitAnsiChar;
+Result := aitChar;
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
-Result := AnsiStringCompare(TMVValueArrayItemType(A),TMVValueArrayItemType(B),Arg);
+Result := StringCompare(TMVValueArrayItemType(A),TMVValueArrayItemType(B),Arg);
 end;
 
 //------------------------------------------------------------------------------
 
 class procedure TMVValueClass.ArrayItemStreamWrite(Stream: TStream; Value: TMVValueArrayItemType);
 begin
-Stream_WriteAnsiChar(Stream,Value);
+Stream_WriteChar(Stream,Value);
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.ArrayItemStreamRead(Stream: TStream): TMVValueArrayItemType;
 begin
-Result := Stream_ReadAnsiChar(Stream);
+Result := Stream_ReadChar(Stream);
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ArrayItemAsString(Value: TMVValueArrayItemType): String;
 begin
-Result := AnsiToStr(Value);
+Result := Value;
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
-var
-  Temp: AnsiString;
 begin
-Temp := StrToAnsi(Str);
-If Length(Temp) > 0 then
-  Result := Temp[1]
+If Length(Str) > 0 then
+  Result := Str[1]
 else
   Result := MV_LOCAL_DEFAULT_ITEM_VALUE
 end;
