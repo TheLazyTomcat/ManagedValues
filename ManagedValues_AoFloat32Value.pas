@@ -1,4 +1,4 @@
-unit ManagedValues_AoUInt8Value;
+unit ManagedValues_AoFloat32Value;
 
 {$INCLUDE './ManagedValues_defs.inc'}
 
@@ -11,13 +11,13 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                TMVAoUInt8Value
+                               TMVAoFloat32Value
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVValueArrayItemType = UInt8;
-  TMVAoUInt8            = array of TMVValueArrayItemType;
-  TMVValueArrayType     = TMVAoUInt8;
+  TMVValueArrayItemType = Float32;
+  TMVAoFloat32          = array of TMVValueArrayItemType;
+  TMVValueArrayType     = TMVAoFloat32;
 
 {$UNDEF MV_ArrayItem_ConstParams}
 {$DEFINE MV_ArrayItem_AssignIsThreadSafe}
@@ -25,17 +25,17 @@ type
 {$UNDEF MV_ArrayItem_ComplexStreamedSize}
 
 {===============================================================================
-    TMVAoUInt8Value - class declaration
+    TMVAoFloat32Value - class declaration
 ===============================================================================}
 type
-  TMVAoUInt8Value = class(TMVAoIntegerManagedValue)
+  TMVAoFloat32Value = class(TMVAoRealManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_ArrayValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
 type
-  TMVValueClass = TMVAoUInt8Value;
+  TMVValueClass = TMVAoFloat32Value;
 
 implementation
 
@@ -50,14 +50,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                TMVAoUInt8Value
+                                TMVAoFloat32Value
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
-  MV_LOCAL_DEFAULT_ITEM_VALUE = 0;
+  MV_LOCAL_DEFAULT_ITEM_VALUE = 0.0;
   
 {===============================================================================
-    TMVAoUInt8Value - class implementation
+    TMVAoFloat32Value - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -65,19 +65,19 @@ const
 {$UNDEF MV_ClassImplementation}
 
 {-------------------------------------------------------------------------------
-    TMVAoUInt8Value - specific protected methods
+    TMVAoFloat32Value - specific protected methods
 -------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
-Result := mvtAoUInt8;
+Result := mvtAoFloat32;
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
 begin
-Result := aitUInt8;
+Result := aitFloat32;
 end;
 
 //------------------------------------------------------------------------------
@@ -85,7 +85,12 @@ end;
 {$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
-Result := Integer(TMVValueArrayItemType(A) - TMVValueArrayItemType(B));
+If TMVValueArrayItemType(A) > TMVValueArrayItemType(B) then
+  Result := +1
+else If TMVValueArrayItemType(A) < TMVValueArrayItemType(B) then
+  Result := -1
+else
+  Result := 0;
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 
@@ -93,28 +98,28 @@ end;
 
 class procedure TMVValueClass.ArrayItemStreamWrite(Stream: TStream; Value: TMVValueArrayItemType);
 begin
-Stream_WriteUInt8(Stream,Value);
+Stream_WriteFloat32(Stream,Value);
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.ArrayItemStreamRead(Stream: TStream): TMVValueArrayItemType;
 begin
-Result := Stream_ReadUInt8(Stream);
+Result := Stream_ReadFloat32(Stream);
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ArrayItemAsString(Value: TMVValueArrayItemType): String;
 begin
-Result := IntToStr(Value);
+Result := FloatToStr(Value,fFormatSettings);
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
 begin
-Result := TMVValueArrayItemType(StrToInt(Str));
+Result := StrToFloat(Str,fFormatSettings);
 end;
 
 end.

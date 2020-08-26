@@ -106,14 +106,14 @@ end;
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.ArrayItemAsString(const Value: TMVValueArrayItemType): String;
+Function TMVValueClass.ArrayItemAsString(const Value: TMVValueArrayItemType): String;
 begin
 Result := Value;
 end;
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
+Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
 begin
 Result := Str;
 end;

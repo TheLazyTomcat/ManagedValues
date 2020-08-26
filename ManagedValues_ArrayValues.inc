@@ -39,8 +39,9 @@
     // streaming, string conversion
     class procedure ArrayItemStreamWrite(Stream: TStream; {$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType); virtual;
     class Function ArrayItemStreamRead(Stream: TStream): TMVValueArrayItemType; virtual;
-    class Function ArrayItemAsString({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType): String; virtual;
-    class Function ArrayItemFromString(const Str: String): TMVValueArrayItemType; virtual;
+    // following two cannot be class methods because in some instances, they use fFormatSettings field
+    Function ArrayItemAsString({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType): String; virtual;
+    Function ArrayItemFromString(const Str: String): TMVValueArrayItemType; virtual;
     // utility
     procedure CheckAndSetEquality; override;  
   public

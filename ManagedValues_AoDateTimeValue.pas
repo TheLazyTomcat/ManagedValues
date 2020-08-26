@@ -1,4 +1,4 @@
-unit ManagedValues_AoUInt8Value;
+unit ManagedValues_AoDateTimeValue;
 
 {$INCLUDE './ManagedValues_defs.inc'}
 
@@ -11,13 +11,13 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                TMVAoUInt8Value
+                               TMVAoDateTimeValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVValueArrayItemType = UInt8;
-  TMVAoUInt8            = array of TMVValueArrayItemType;
-  TMVValueArrayType     = TMVAoUInt8;
+  TMVValueArrayItemType = TDateTime;
+  TMVAoDateTime         = array of TMVValueArrayItemType;
+  TMVValueArrayType     = TMVAoDateTime;
 
 {$UNDEF MV_ArrayItem_ConstParams}
 {$DEFINE MV_ArrayItem_AssignIsThreadSafe}
@@ -25,17 +25,17 @@ type
 {$UNDEF MV_ArrayItem_ComplexStreamedSize}
 
 {===============================================================================
-    TMVAoUInt8Value - class declaration
+    TMVAoDateTimeValue - class declaration
 ===============================================================================}
 type
-  TMVAoUInt8Value = class(TMVAoIntegerManagedValue)
+  TMVAoDateTimeValue = class(TMVAoRealManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_ArrayValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
 type
-  TMVValueClass = TMVAoUInt8Value;
+  TMVValueClass = TMVAoDateTimeValue;
 
 implementation
 
@@ -50,14 +50,14 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                TMVAoUInt8Value
+                                TMVAoDateTimeValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
-  MV_LOCAL_DEFAULT_ITEM_VALUE = 0;
+  MV_LOCAL_DEFAULT_ITEM_VALUE = 0.0;
   
 {===============================================================================
-    TMVAoUInt8Value - class implementation
+    TMVAoDateTimeValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -65,19 +65,19 @@ const
 {$UNDEF MV_ClassImplementation}
 
 {-------------------------------------------------------------------------------
-    TMVAoUInt8Value - specific protected methods
+    TMVAoDateTimeValue - specific protected methods
 -------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
-Result := mvtAoUInt8;
+Result := mvtAoDateTime;
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
 begin
-Result := aitUInt8;
+Result := aitDateTime;
 end;
 
 //------------------------------------------------------------------------------
@@ -85,7 +85,12 @@ end;
 {$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
-Result := Integer(TMVValueArrayItemType(A) - TMVValueArrayItemType(B));
+If TMVValueArrayItemType(A) > TMVValueArrayItemType(B) then
+  Result := +1
+else If TMVValueArrayItemType(A) < TMVValueArrayItemType(B) then
+  Result := -1
+else
+  Result := 0;
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 
@@ -93,28 +98,28 @@ end;
 
 class procedure TMVValueClass.ArrayItemStreamWrite(Stream: TStream; Value: TMVValueArrayItemType);
 begin
-Stream_WriteUInt8(Stream,Value);
+Stream_WriteDateTime(Stream,Value);
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.ArrayItemStreamRead(Stream: TStream): TMVValueArrayItemType;
 begin
-Result := Stream_ReadUInt8(Stream);
+Result := Stream_ReadDateTime(Stream);
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ArrayItemAsString(Value: TMVValueArrayItemType): String;
 begin
-Result := IntToStr(Value);
+Result := DateTimeToStr(Value,fFormatSettings);
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
 begin
-Result := TMVValueArrayItemType(StrToInt(Str));
+Result := StrToDateTime(Str,fFormatSettings);
 end;
 
 end.

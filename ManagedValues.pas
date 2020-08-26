@@ -492,7 +492,8 @@ Function FindManagedValue(const Name: String; out Value: TManagedValue): Boolean
 Function FindManagedValues(const Name: String; out Values: TValueArray): Integer;
 
 Function ManagedValuesCount: Integer;
-procedure ManagedValuesClear;   // Use with extreme caution!
+procedure ManagedValuesClearAbandoned;  // removes all values that are not locally managed
+procedure ManagedValuesClear;           // Use with extreme caution!
 
 implementation
 
@@ -1062,8 +1063,8 @@ case ValueType of
   mvtDateTime:        Result := TDateTimeValue;
   mvtCurrency:        Result := TCurrencyValue;
   mvtAnsiChar:        Result := TAnsiCharValue;
-  mvtWideChar:        Result := TWideCharValue;
   mvtUTF8Char:        Result := TUTF8CharValue;
+  mvtWideChar:        Result := TWideCharValue;
   mvtUnicodeChar:     Result := TUnicodeCharValue;
   mvtChar:            Result := TCharValue;
   mvtShortString:     Result := TShortStringValue;
@@ -1090,8 +1091,8 @@ case ValueType of
   //mvtAoDateTime:      Result := TAoDateTimeValue;
   //mvtAoCurrency:      Result := TAoCurrencyValue;
   //mvtAoAnsiChar:      Result := TAoAnsiCharValue;
+  //mvtAoUTF8Char:      Result := TAoUTF8CharValue;  
   //mvtAoWideChar:      Result := TAoWideCharValue;
-  //mvtAoUTF8Char:      Result := TAoUTF8CharValue;
   //mvtAoUnicodeChar:   Result := TAoUnicodeCharValue;
   //mvtAoChar:          Result := TAoCharValue;
   //mvtAoShortString:   Result := TAoShortStringValue;
@@ -1438,6 +1439,20 @@ If Assigned(GlobalManager) then
   Result := GlobalManager.Count
 else
   Result := 0;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure ManagedValuesClearAbandoned;
+var
+  GlobalManager:  TValuesManagerBase;
+  i:              Integer;
+begin
+GlobalManager := GetGlobalValuesManager;
+If Assigned(GlobalManager) then
+  For i := GlobalManager.HighIndex downto GlobalManager.LowIndex do
+    If not GLobalManager[i].LocallyManaged then
+      GlobalManager.Delete(i);
 end;
 
 //------------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-unit ManagedValues_AoUInt8Value;
+unit ManagedValues_AoAnsiCharValue;
 
 {$INCLUDE './ManagedValues_defs.inc'}
 
@@ -11,53 +11,48 @@ uses
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                TMVAoUInt8Value
+                               TMVAoAnsiCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 type
-  TMVValueArrayItemType = UInt8;
-  TMVAoUInt8            = array of TMVValueArrayItemType;
-  TMVValueArrayType     = TMVAoUInt8;
+  TMVValueArrayItemType = AnsiChar;
+  TMVAoAnsiChar         = array of TMVValueArrayItemType;
+  TMVValueArrayType     = TMVAoAnsiChar;
 
 {$UNDEF MV_ArrayItem_ConstParams}
 {$DEFINE MV_ArrayItem_AssignIsThreadSafe}
-{$UNDEF MV_ArrayItem_CaseSensitivity}
+{$DEFINE MV_ArrayItem_CaseSensitivity}
 {$UNDEF MV_ArrayItem_ComplexStreamedSize}
 
 {===============================================================================
-    TMVAoUInt8Value - class declaration
+    TMVAoAnsiCharValue - class declaration
 ===============================================================================}
 type
-  TMVAoUInt8Value = class(TMVAoIntegerManagedValue)
+  TMVAoAnsiCharValue = class(TMVAoCharManagedValue)
   {$DEFINE MV_ClassDeclaration}
     {$INCLUDE './ManagedValues_ArrayValues.inc'}
   {$UNDEF MV_ClassDeclaration}
   end;
 
 type
-  TMVValueClass = TMVAoUInt8Value;
+  TMVValueClass = TMVAoAnsiCharValue;
 
 implementation
 
 uses
-  SysUtils, Math,
-  BinaryStreaming, ListSorters;
-
-{$IFDEF FPC_DisableWarns}
-  {$DEFINE FPCDWM}
-  {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
-{$ENDIF}  
+  Math,
+  BinaryStreaming, ListSorters, StrRect;
 
 {===============================================================================
 --------------------------------------------------------------------------------
-                                TMVAoUInt8Value
+                                TMVAoAnsiCharValue
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
-  MV_LOCAL_DEFAULT_ITEM_VALUE = 0;
+  MV_LOCAL_DEFAULT_ITEM_VALUE = TMVValueArrayItemType(#0);
   
 {===============================================================================
-    TMVAoUInt8Value - class implementation
+    TMVAoAnsiCharValue - class implementation
 ===============================================================================}
 
 {$DEFINE MV_ClassImplementation}
@@ -65,56 +60,60 @@ const
 {$UNDEF MV_ClassImplementation}
 
 {-------------------------------------------------------------------------------
-    TMVAoUInt8Value - specific protected methods
+    TMVAoAnsiCharValue - specific protected methods
 -------------------------------------------------------------------------------}
 
 class Function TMVValueClass.GetValueType: TMVManagedValueType;
 begin
-Result := mvtAoUInt8;
+Result := mvtAoAnsiChar;
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
 begin
-Result := aitUInt8;
+Result := aitAnsiChar;
 end;
 
 //------------------------------------------------------------------------------
 
-{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
-Result := Integer(TMVValueArrayItemType(A) - TMVValueArrayItemType(B));
+Result := AnsiStringCompare(TMVValueArrayItemType(A),TMVValueArrayItemType(B),Arg);
 end;
-{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
 class procedure TMVValueClass.ArrayItemStreamWrite(Stream: TStream; Value: TMVValueArrayItemType);
 begin
-Stream_WriteUInt8(Stream,Value);
+Stream_WriteAnsiChar(Stream,Value);
 end;
 
 //------------------------------------------------------------------------------
 
 class Function TMVValueClass.ArrayItemStreamRead(Stream: TStream): TMVValueArrayItemType;
 begin
-Result := Stream_ReadUInt8(Stream);
+Result := Stream_ReadAnsiChar(Stream);
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ArrayItemAsString(Value: TMVValueArrayItemType): String;
 begin
-Result := IntToStr(Value);
+Result := AnsiToStr(Value);
 end;
 
 //------------------------------------------------------------------------------
 
 Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
+var
+  Temp: AnsiString;
 begin
-Result := TMVValueArrayItemType(StrToInt(Str));
+Temp := StrToAnsi(Str);
+If Length(Temp) > 0 then
+  Result := Temp[1]
+else
+  Result := MV_LOCAL_DEFAULT_ITEM_VALUE
 end;
 
 end.

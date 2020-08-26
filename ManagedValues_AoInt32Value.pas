@@ -105,14 +105,14 @@ end;
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.ArrayItemAsString(Value: TMVValueArrayItemType): String;
+Function TMVValueClass.ArrayItemAsString(Value: TMVValueArrayItemType): String;
 begin
 Result := IntToStr(Value);
 end;
 
 //------------------------------------------------------------------------------
 
-class Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
+Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
 begin
 Result := StrToInt(Str);
 end;
