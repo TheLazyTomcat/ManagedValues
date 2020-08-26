@@ -38,11 +38,29 @@ uses
   // arrays
   ManagedValues_AoBooleanValue,
   ManagedValues_AoInt8Value,
+  ManagedValues_AoUInt8Value,
+  ManagedValues_AoInt16Value,
+  ManagedValues_AoUInt16Value,
+  ManagedValues_AoInt32Value,
+  ManagedValues_AoUInt32Value,
+  ManagedValues_AoInt64Value,
+  ManagedValues_AoUInt64Value,
+  ManagedValues_AoFloat32Value,
+  ManagedValues_AoFloat64Value,
+  ManagedValues_AoDateTimeValue,
+  ManagedValues_AoCurrencyValue,
+  ManagedValues_AoAnsiCharValue,
+  ManagedValues_AoUTF8CharValue,
+  ManagedValues_AoWideCharValue,
+  ManagedValues_AoUnicodeCharValue,
+  ManagedValues_AoCharValue,  
   ManagedValues_AoStringValue;
 
 {===============================================================================
     Common
 ===============================================================================}
+
+{$message 'fill-up aliases'}
 
 type
   TManagedValueType = TMVManagedValueType;  // this is somewhat pointless as the individual values cannot be accessed from this unit, but meh...
@@ -411,6 +429,206 @@ procedure InitValue(out Value: TAoInt8Value; const Name: String = ''; const Init
 procedure FinalValue(var Value: TAoInt8Value); overload;
 
 {===============================================================================
+    TAoUInt8Value
+===============================================================================}
+type
+  TAoUInt8 = TMVAoUInt8;
+
+  TAoUInt8Value = class(TMVAoUInt8Value);
+
+  TArrayOfUInt8 = TAoUInt8;
+  TAoByte       = TAoUInt8;
+  TArrayOfByte  = TAoUInt8;
+
+  TArrayOfUInt8Value = TAoUInt8Value;
+  TAoByteValue       = TAoUInt8Value;
+  TArrayOfByteValue  = TAoUInt8Value;
+
+procedure InitValue(out Value: TAoUInt8Value; const Name: String = ''; const InitializeTo: TAoUInt8 = nil); overload;
+procedure FinalValue(var Value: TAoUInt8Value); overload;
+
+{===============================================================================
+    TAoInt16Value
+===============================================================================}
+type
+  TAoInt16 = TMVAoInt16;
+
+  TAoInt16Value = class(TMVAoInt16Value);
+
+  TArrayOfInt16    = TAoInt16;
+  TAoSmalInt       = TAoInt16;
+  TArrayOfSmallInt = TAoInt16;
+
+  TArrayOfInt16Value   = TAoInt16Value;
+  TAoSmalIntValue      = TAoInt16Value;
+  TArrayOfSmalIntValue = TAoInt16Value;
+
+procedure InitValue(out Value: TAoInt16Value; const Name: String = ''; const InitializeTo: TAoInt16 = nil); overload;
+procedure FinalValue(var Value: TAoInt16Value); overload;
+
+{===============================================================================
+    TAoUInt16Value
+===============================================================================}
+type
+  TAoUInt16 = TMVAoUInt16;
+
+  TAoUInt16Value = class(TMVAoUInt16Value);
+
+  TArrayOfUInt16 = TAoUInt16;
+  TAoWord        = TAoUInt16;
+  TArrayOfWord   = TAoUInt16;
+
+  TArrayOfUInt16Value = TAoUInt16Value;
+  TAoWordValue        = TAoUInt16Value;
+  TArrayOfWordValue   = TAoUInt16Value;
+
+procedure InitValue(out Value: TAoUInt16Value; const Name: String = ''; const InitializeTo: TAoUInt16 = nil); overload;
+procedure FinalValue(var Value: TAoUInt16Value); overload;
+
+{===============================================================================
+    TAoInt32Value
+===============================================================================}
+type
+  TAoInt32 = TMVAoInt32;
+
+  TAoInt32Value = class(TMVAoInt32Value);
+
+procedure InitValue(out Value: TAoInt32Value; const Name: String = ''; const InitializeTo: TAoInt32 = nil); overload;
+procedure FinalValue(var Value: TAoInt32Value); overload;
+
+{===============================================================================
+    TAoUInt32Value
+===============================================================================}
+type
+  TAoUInt32 = TMVAoUInt32;
+
+  TAoUInt32Value = class(TMVAoUInt32Value);
+
+procedure InitValue(out Value: TAoUInt32Value; const Name: String = ''; const InitializeTo: TAoUInt32 = nil); overload;
+procedure FinalValue(var Value: TAoUInt32Value); overload;
+
+{===============================================================================
+    TAoInt64Value
+===============================================================================}
+type
+  TAoInt64 = TMVAoInt64;
+
+  TAoInt64Value = class(TMVAoInt64Value);
+
+procedure InitValue(out Value: TAoInt64Value; const Name: String = ''; const InitializeTo: TAoInt64 = nil); overload;
+procedure FinalValue(var Value: TAoInt64Value); overload;
+
+{===============================================================================
+    TAoUInt64Value
+===============================================================================}
+type
+  TAoUInt64 = TMVAoUInt64;
+
+  TAoUInt64Value = class(TMVAoUInt64Value);
+
+procedure InitValue(out Value: TAoUInt64Value; const Name: String = ''; const InitializeTo: TAoUInt64 = nil); overload;
+procedure FinalValue(var Value: TAoUInt64Value); overload;
+
+{===============================================================================
+    TAoFloat32Value
+===============================================================================}
+type
+  TAoFloat32 = TMVAoFloat32;
+
+  TAoFloat32Value = class(TMVAoFloat32Value);
+
+procedure InitValue(out Value: TAoFloat32Value; const Name: String = ''; const InitializeTo: TAoFloat32 = nil); overload;
+procedure FinalValue(var Value: TAoFloat32Value); overload;
+
+{===============================================================================
+    TAoFloat64Value
+===============================================================================}
+type
+  TAoFloat64 = TMVAoFloat64;
+
+  TAoFloat64Value = class(TMVAoFloat64Value);
+
+procedure InitValue(out Value: TAoFloat64Value; const Name: String = ''; const InitializeTo: TAoFloat64 = nil); overload;
+procedure FinalValue(var Value: TAoFloat64Value); overload;
+
+{===============================================================================
+    TAoDateTimeValue
+===============================================================================}
+type
+  TAoDateTime = TMVAoDateTime;
+
+  TAoDateTimeValue = class(TMVAoDateTimeValue);
+
+procedure InitValue(out Value: TAoDateTimeValue; const Name: String = ''; const InitializeTo: TAoDateTime = nil); overload;
+procedure FinalValue(var Value: TAoDateTimeValue); overload;
+
+{===============================================================================
+    TAoCurrencyValue
+===============================================================================}
+type
+  TAoCurrency = TMVAoCurrency;
+
+  TAoCurrencyValue = class(TMVAoCurrencyValue);
+
+procedure InitValue(out Value: TAoCurrencyValue; const Name: String = ''; const InitializeTo: TAoCurrency = nil); overload;
+procedure FinalValue(var Value: TAoCurrencyValue); overload;
+
+{===============================================================================
+    TAoAnsiCharValue
+===============================================================================}
+type
+  TAoAnsiChar = TMVAoAnsiChar;
+
+  TAoAnsiCharValue = class(TMVAoAnsiCharValue);
+
+procedure InitValue(out Value: TAoAnsiCharValue; const Name: String = ''; const InitializeTo: TAoAnsiChar = nil); overload;
+procedure FinalValue(var Value: TAoAnsiCharValue); overload;
+
+{===============================================================================
+    TAoUTF8CharValue
+===============================================================================}
+type
+  TAoUTF8Char = TMVAoUTF8Char;
+
+  TAoUTF8CharValue = class(TMVAoUTF8CharValue);
+
+procedure InitValue(out Value: TAoUTF8CharValue; const Name: String = ''; const InitializeTo: TAoUTF8Char = nil); overload;
+procedure FinalValue(var Value: TAoUTF8CharValue); overload;
+
+{===============================================================================
+    TAoWideCharValue
+===============================================================================}
+type
+  TAoWideChar = TMVAoWideChar;
+
+  TAoWideCharValue = class(TMVAoWideCharValue);
+
+procedure InitValue(out Value: TAoWideCharValue; const Name: String = ''; const InitializeTo: TAoWideChar = nil); overload;
+procedure FinalValue(var Value: TAoWideCharValue); overload;
+
+{===============================================================================
+    TAoUnicodeCharValue
+===============================================================================}
+type
+  TAoUnicodeChar = TMVAoUnicodeChar;
+
+  TAoUnicodeCharValue = class(TMVAoUnicodeCharValue);
+
+procedure InitValue(out Value: TAoUnicodeCharValue; const Name: String = ''; const InitializeTo: TAoUnicodeChar = nil); overload;
+procedure FinalValue(var Value: TAoUnicodeCharValue); overload;
+
+{===============================================================================
+    TAoCharValue
+===============================================================================}
+type
+  TAoChar = TMVAoChar;
+
+  TAoCharValue = class(TMVAoCharValue);
+
+procedure InitValue(out Value: TAoCharValue; const Name: String = ''; const InitializeTo: TAoChar = nil); overload;
+procedure FinalValue(var Value: TAoCharValue); overload;
+
+{===============================================================================
     TAoStringValue
 ===============================================================================}
 type
@@ -478,6 +696,22 @@ type
     // arrays
     Function NewAoBooleanValue(const Name: String = ''; const InitTo: TAoBoolean = nil): TAoBooleanValue; virtual;
     Function NewAoInt8Value(const Name: String = ''; const InitTo: TAoInt8 = nil): TAoInt8Value; virtual;
+    Function NewAoUInt8Value(const Name: String = ''; const InitTo: TAoUInt8 = nil): TAoUInt8Value; virtual;
+    Function NewAoInt16Value(const Name: String = ''; const InitTo: TAoInt16 = nil): TAoInt16Value; virtual;
+    Function NewAoUInt16Value(const Name: String = ''; const InitTo: TAoUInt16 = nil): TAoUInt16Value; virtual;
+    Function NewAoInt32Value(const Name: String = ''; const InitTo: TAoInt32 = nil): TAoInt32Value; virtual;
+    Function NewAoUInt32Value(const Name: String = ''; const InitTo: TAoUInt32 = nil): TAoUInt32Value; virtual;
+    Function NewAoInt64Value(const Name: String = ''; const InitTo: TAoInt64 = nil): TAoInt64Value; virtual;
+    Function NewAoUInt64Value(const Name: String = ''; const InitTo: TAoUInt64 = nil): TAoUInt64Value; virtual;
+    Function NewAoFloat32Value(const Name: String = ''; const InitTo: TAoFloat32 = nil): TAoFloat32Value; virtual;
+    Function NewAoFloat64Value(const Name: String = ''; const InitTo: TAoFloat64 = nil): TAoFloat64Value; virtual;
+    Function NewAoDateTimeValue(const Name: String = ''; const InitTo: TAoDateTime = nil): TAoDateTimeValue; virtual;
+    Function NewAoCurrencyValue(const Name: String = ''; const InitTo: TAoCurrency = nil): TAoCurrencyValue; virtual;
+    Function NewAoAnsiCharValue(const Name: String = ''; const InitTo: TAoAnsiChar = nil): TAoAnsiCharValue; virtual;
+    Function NewAoUTF8CharValue(const Name: String = ''; const InitTo: TAoUTF8Char = nil): TAoUTF8CharValue; virtual;
+    Function NewAoWideCharValue(const Name: String = ''; const InitTo: TAoWideChar = nil): TAoWideCharValue; virtual;
+    Function NewAoUnicodeCharValue(const Name: String = ''; const InitTo: TAoUnicodeChar = nil): TAoUnicodeCharValue; virtual;
+    Function NewAoCharValue(const Name: String = ''; const InitTo: TAoChar = nil): TAoCharValue; virtual;
     Function NewAoStringValue(const Name: String = ''; const InitTo: TAoString = nil): TAoStringValue; virtual;
   end;
 
@@ -1025,6 +1259,278 @@ If Assigned(Value) then
 end;
 
 {===============================================================================
+    TAoUInt8Value
+===============================================================================}
+
+procedure InitValue(out Value: TAoUInt8Value; const Name: String = ''; const InitializeTo: TAoUInt8 = nil);
+begin
+Value := TAoUInt8Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUInt8Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoInt16Value
+===============================================================================}
+
+procedure InitValue(out Value: TAoInt16Value; const Name: String = ''; const InitializeTo: TAoInt16 = nil);
+begin
+Value := TAoInt16Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoInt16Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoUInt16Value
+===============================================================================}
+
+procedure InitValue(out Value: TAoUInt16Value; const Name: String = ''; const InitializeTo: TAoUInt16 = nil);
+begin
+Value := TAoUInt16Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUInt16Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoInt32Value
+===============================================================================}
+
+procedure InitValue(out Value: TAoInt32Value; const Name: String = ''; const InitializeTo: TAoInt32 = nil);
+begin
+Value := TAoInt32Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoInt32Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoUInt32Value
+===============================================================================}
+
+procedure InitValue(out Value: TAoUInt32Value; const Name: String = ''; const InitializeTo: TAoUInt32 = nil);
+begin
+Value := TAoUInt32Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUInt32Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoInt64Value
+===============================================================================}
+
+procedure InitValue(out Value: TAoInt64Value; const Name: String = ''; const InitializeTo: TAoInt64 = nil);
+begin
+Value := TAoInt64Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoInt64Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoUInt64Value
+===============================================================================}
+
+procedure InitValue(out Value: TAoUInt64Value; const Name: String = ''; const InitializeTo: TAoUInt64 = nil);
+begin
+Value := TAoUInt64Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUInt64Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoFloat32Value
+===============================================================================}
+
+procedure InitValue(out Value: TAoFloat32Value; const Name: String = ''; const InitializeTo: TAoFloat32 = nil);
+begin
+Value := TAoFloat32Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoFloat32Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoFloat64Value
+===============================================================================}
+
+procedure InitValue(out Value: TAoFloat64Value; const Name: String = ''; const InitializeTo: TAoFloat64 = nil);
+begin
+Value := TAoFloat64Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoFloat64Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoDateTimeValue
+===============================================================================}
+
+procedure InitValue(out Value: TAoDateTimeValue; const Name: String = ''; const InitializeTo: TAoDateTime = nil);
+begin
+Value := TAoDateTimeValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoDateTimeValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoCurrencyValue
+===============================================================================}
+
+procedure InitValue(out Value: TAoCurrencyValue; const Name: String = ''; const InitializeTo: TAoCurrency = nil);
+begin
+Value := TAoCurrencyValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoCurrencyValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoAnsiCharValue
+===============================================================================}
+
+procedure InitValue(out Value: TAoAnsiCharValue; const Name: String = ''; const InitializeTo: TAoAnsiChar = nil);
+begin
+Value := TAoAnsiCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoAnsiCharValue); 
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoUTF8CharValue
+===============================================================================}
+
+procedure InitValue(out Value: TAoUTF8CharValue; const Name: String = ''; const InitializeTo: TAoUTF8Char = nil);
+begin
+Value := TAoUTF8CharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUTF8CharValue); 
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoWideCharValue
+===============================================================================}
+
+procedure InitValue(out Value: TAoWideCharValue; const Name: String = ''; const InitializeTo: TAoWideChar = nil);
+begin
+Value := TAoWideCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoWideCharValue); 
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoUnicodeCharValue
+===============================================================================}
+
+procedure InitValue(out Value: TAoUnicodeCharValue; const Name: String = ''; const InitializeTo: TAoUnicodeChar = nil);
+begin
+Value := TAoUnicodeCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUnicodeCharValue); 
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
+    TAoCharValue
+===============================================================================}
+
+procedure InitValue(out Value: TAoCharValue; const Name: String = ''; const InitializeTo: TAoChar = nil);
+begin
+Value := TAoCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoCharValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{===============================================================================
     TAoStringValue
 ===============================================================================}
 
@@ -1079,22 +1585,22 @@ case ValueType of
   // array values
   mvtAoBoolean:       Result := TAoBooleanValue;
   mvtAoInt8:          Result := TAoInt8Value;
-  //mvtAoUInt8:         Result := TAoUInt8Value;
-  //mvtAoInt16:         Result := TAoInt16Value;
-  //mvtAoUInt16:        Result := TAoUInt16Value;
-  //mvtAoInt32:         Result := TAoInt32Value;
-  //mvtAoUInt32:        Result := TAoUInt32Value;
-  //mvtAoInt64:         Result := TAoInt64Value;
-  //mvtAoUInt64:        Result := TAoUInt64Value;
-  //mvtAoFloat32:       Result := TAoFloat32Value;
-  //mvtAoFloat64:       Result := TAoFloat64Value;
-  //mvtAoDateTime:      Result := TAoDateTimeValue;
-  //mvtAoCurrency:      Result := TAoCurrencyValue;
-  //mvtAoAnsiChar:      Result := TAoAnsiCharValue;
-  //mvtAoUTF8Char:      Result := TAoUTF8CharValue;  
-  //mvtAoWideChar:      Result := TAoWideCharValue;
-  //mvtAoUnicodeChar:   Result := TAoUnicodeCharValue;
-  //mvtAoChar:          Result := TAoCharValue;
+  mvtAoUInt8:         Result := TAoUInt8Value;
+  mvtAoInt16:         Result := TAoInt16Value;
+  mvtAoUInt16:        Result := TAoUInt16Value;
+  mvtAoInt32:         Result := TAoInt32Value;
+  mvtAoUInt32:        Result := TAoUInt32Value;
+  mvtAoInt64:         Result := TAoInt64Value;
+  mvtAoUInt64:        Result := TAoUInt64Value;
+  mvtAoFloat32:       Result := TAoFloat32Value;
+  mvtAoFloat64:       Result := TAoFloat64Value;
+  mvtAoDateTime:      Result := TAoDateTimeValue;
+  mvtAoCurrency:      Result := TAoCurrencyValue;
+  mvtAoAnsiChar:      Result := TAoAnsiCharValue;
+  mvtAoUTF8Char:      Result := TAoUTF8CharValue;
+  mvtAoWideChar:      Result := TAoWideCharValue;
+  mvtAoUnicodeChar:   Result := TAoUnicodeCharValue;
+  mvtAoChar:          Result := TAoCharValue;
   //mvtAoShortString:   Result := TAoShortStringValue;
   //mvtAoAnsiString:    Result := TAoAnsiStringValue;
   //mvtAoUTF8String:    Result := TAoUTF8StringValue;
@@ -1385,7 +1891,135 @@ end;
 
 //------------------------------------------------------------------------------
 
-Function TValuesManager.NewAoStringValue(const Name: String = ''; const InitTo: TAoString = nil): TAoStringValue; 
+Function TValuesManager.NewAoUInt8Value(const Name: String = ''; const InitTo: TAoUInt8 = nil): TAoUInt8Value;
+begin
+Result := TAoUInt8Value(NewValue(mvtAoUInt8,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoInt16Value(const Name: String = ''; const InitTo: TAoInt16 = nil): TAoInt16Value;
+begin
+Result := TAoInt16Value(NewValue(mvtAoInt16,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoUInt16Value(const Name: String = ''; const InitTo: TAoUInt16 = nil): TAoUInt16Value;
+begin
+Result := TAoUInt16Value(NewValue(mvtAoUInt16,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoInt32Value(const Name: String = ''; const InitTo: TAoInt32 = nil): TAoInt32Value;
+begin
+Result := TAoInt32Value(NewValue(mvtAoInt32,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoUInt32Value(const Name: String = ''; const InitTo: TAoUInt32 = nil): TAoUInt32Value;
+begin
+Result := TAoUInt32Value(NewValue(mvtAoUInt32,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoInt64Value(const Name: String = ''; const InitTo: TAoInt64 = nil): TAoInt64Value;
+begin
+Result := TAoInt64Value(NewValue(mvtAoInt64,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoUInt64Value(const Name: String = ''; const InitTo: TAoUInt64 = nil): TAoUInt64Value;
+begin
+Result := TAoUInt64Value(NewValue(mvtAoUInt64,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoFloat32Value(const Name: String = ''; const InitTo: TAoFloat32 = nil): TAoFloat32Value;
+begin
+Result := TAoFloat32Value(NewValue(mvtAoFloat32,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoFloat64Value(const Name: String = ''; const InitTo: TAoFloat64 = nil): TAoFloat64Value;
+begin
+Result := TAoFloat64Value(NewValue(mvtAoFloat64,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoDateTimeValue(const Name: String = ''; const InitTo: TAoDateTime = nil): TAoDateTimeValue;
+begin
+Result := TAoDateTimeValue(NewValue(mvtAoDateTime,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoCurrencyValue(const Name: String = ''; const InitTo: TAoCurrency = nil): TAoCurrencyValue;
+begin
+Result := TAoCurrencyValue(NewValue(mvtAoCurrency,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoAnsiCharValue(const Name: String = ''; const InitTo: TAoAnsiChar = nil): TAoAnsiCharValue;
+begin
+Result := TAoAnsiCharValue(NewValue(mvtAoAnsiChar,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoUTF8CharValue(const Name: String = ''; const InitTo: TAoUTF8Char = nil): TAoUTF8CharValue;
+begin
+Result := TAoUTF8CharValue(NewValue(mvtAoUTF8Char,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoWideCharValue(const Name: String = ''; const InitTo: TAoWideChar = nil): TAoWideCharValue;
+begin
+Result := TAoWideCharValue(NewValue(mvtAoWideChar,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoUnicodeCharValue(const Name: String = ''; const InitTo: TAoUnicodeChar = nil): TAoUnicodeCharValue;
+begin
+Result := TAoUnicodeCharValue(NewValue(mvtAoUnicodeChar,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoCharValue(const Name: String = ''; const InitTo: TAoChar = nil): TAoCharValue;
+begin
+Result := TAoCharValue(NewValue(mvtAoChar,Name));
+Result.Initialize(InitTo,False);
+end;
+
+//------------------------------------------------------------------------------
+
+Function TValuesManager.NewAoStringValue(const Name: String = ''; const InitTo: TAoString = nil): TAoStringValue;
 begin
 Result := TAoStringValue(NewValue(mvtAoString,Name));
 Result.Initialize(InitTo,False);
