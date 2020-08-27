@@ -241,6 +241,7 @@ type
     procedure Clear; virtual; abstract;
     procedure Sort; virtual;
     // properties common to all arrays
+    property ArrayItemType: TMVArrayItemType read GetArrayItemType;
     property CurrentCapacity: Integer read GetCapacity write SetCapacity;
     property CurrentCount: Integer read GetCount write SetCount;
     property InitialCount: Integer read GetInitialCount;

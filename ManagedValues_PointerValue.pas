@@ -104,9 +104,9 @@ end;
 procedure TMVValueClass.LoadFromStream(Stream: TStream; Init: Boolean = False);
 begin
 If Init then
-  Initialize(Pointer(Stream_ReadUInt64(Stream)),False)
+  Initialize(TMVValueBaseType(Stream_ReadUInt64(Stream)),False)
 else
-  SetCurrentValue(Pointer(Stream_ReadUInt64(Stream)));
+  SetCurrentValue(TMVValueBaseType(Stream_ReadUInt64(Stream)));
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
 
@@ -114,7 +114,7 @@ end;
 
 Function TMVValueClass.AsString: String;
 begin
-Result := Format('0x%p',[fCurrentValue]);
+Result := Format('0x%p',[fCurrentValue],fFormatSettings);
 inherited AsString;
 end;
 
@@ -123,7 +123,7 @@ end;
 {$IFDEF FPCDWM}{$PUSH}W4055 W4056{$ENDIF}
 procedure TMVValueClass.FromString(const Str: String);
 begin
-SetCurrentValue(Pointer(StrToInt64(Str)));
+SetCurrentValue(TMVValueBaseType(StrToInt64(Str)));
 inherited;
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}

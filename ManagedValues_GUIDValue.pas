@@ -135,7 +135,7 @@ begin
 Temp.D1 := Stream_ReadUInt32(Stream);
 Temp.D2 := Stream_ReadUInt16(Stream);
 Temp.D3 := Stream_ReadUInt16(Stream);
-Stream_ReadBuffer(STream,Temp.D4,SizeOf(Temp.D4));
+Stream_ReadBuffer(Stream,Temp.D4,SizeOf(Temp.D4));
 If Init then
   Initialize(Temp,False)
 else
