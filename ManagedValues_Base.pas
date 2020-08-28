@@ -38,19 +38,29 @@ type
     mvtUTF8Char,mvtWideChar,mvtUnicodeChar,mvtChar,mvtShortString,mvtAnsiString,
     mvtUTF8String,mvtWideString,mvtUnicodeString,mvtString,mvtPointer,mvtObject,
     mvtGUID,
+
     // array values  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     mvtAoBoolean,mvtAoInt8,mvtAoUInt8,mvtAoInt16,mvtAoUInt16,mvtAoInt32,
     mvtAoUInt32,mvtAoInt64,mvtAoUInt64,mvtAoFloat32,mvtAoFloat64,mvtAoDateTime,
     mvtAoCurrency,mvtAoAnsiChar,mvtAoUTF8Char,mvtAoWideChar,mvtAoUnicodeChar,
     mvtAoChar,mvtAoShortString,mvtAoAnsiString,mvtAoUTF8String,mvtAoWideString,
     mvtAoUnicodeString,mvtAoString,mvtAoPointer,mvtAoObject,mvtAoGUID,
+
   {$IFDEF FPCDWM}{$PUSH}W3031{$ENDIF}
     // primitive value aliases - - - - - - - - - - - - - - - - - - - - - - - - -
-    mvtBool = mvtBoolean, mvtShortInt = mvtInt8, mvtByte = mvtUInt8,
-    mvtSmalInt = mvtInt16, mvtWord = mvtUInt16, mvtDWord = mvtUInt32,
-    mvtQWord = mvtUInt64, mvtQuadWord = mvtUInt64, mvtSingle = mvtFloat32,
-    mvtDouble = mvtFloat64,mvtFloat = mvtFloat64, mvtReal = mvtFloat64,
-    mvtDate = mvtDateTime, mvtTime = mvtDateTime,
+    mvtBool = mvtBoolean,
+    mvtShortInt = mvtInt8,
+    mvtByte = mvtUInt8,
+    mvtSmalInt = mvtInt16,
+    mvtWord = mvtUInt16,
+    mvtDWord = mvtUInt32,
+    mvtQWord = mvtUInt64, mvtQuadWord = mvtUInt64,
+    mvtSingle = mvtFloat32,
+    mvtDouble = mvtFloat64, mvtFloat = mvtFloat64, mvtReal = mvtFloat64,
+    mvtDate = mvtDateTime,
+    mvtTime = mvtDateTime,
+
+    // size-dependent primitive value aliases  - - - - - - - - - - - - - - - - -  
         {$IF SizeOf(LongInt) = 4}mvtLongInt = mvtInt32,
     {$ELSEIF SizeOf(LongInt) = 8}mvtLongInt = mvtInt64,
     {$ELSE}{$MESSAGE FATAL 'Unssuported size of LongInt type.'}{$IFEND}
@@ -65,20 +75,76 @@ type
     {$ELSEIF SizeOf(Cardinal) = 4}mvtCardinal = mvtUInt32,
     {$ELSEIF SizeOf(Cardinal) = 8}mvtCardinal = mvtUInt64,
     {$ELSE}{$MESSAGE FATAL 'Unssuported size of Cardinal type.'}{$IFEND}
-  {$IF Defined(CPU32bit)}
+  {$IF SizeOf(Pointer) = 4}
     mvtPtrInt = mvtInt32, mvtPtrUInt = mvtUInt32, mvtNativeInt = mvtInt32,
     mvtNativeUInt = mvtUInt32,
-  {$ELSEIF Defined(CPU64bit)}
+  {$ELSEIF SizeOf(Pointer) = 8}
     mvtPtrInt = mvtInt64, mvtPtrUInt = mvtUInt64, mvtNativeInt = mvtInt64,
     mvtNativeUInt = mvtUInt64,
   {$ELSE}{$MESSAGE FATAL 'Unssuported CPU architecture.'}{$IFEND}
+  
     // array value aliases - - - - - - - - - - - - - - - - - - - - - - - - - - -
-    mvtAoBool = mvtAoBoolean, mvtArrayOfBoolean = mvtAoBoolean,
-    mvtArraOfBool = mvtAoBoolean,
+    mvtAoBool = mvtAoBoolean, mvtArrayOfBoolean = mvtAoBoolean, mvtArraOfBool = mvtAoBoolean,
+    mvtArrayOfInt8 = mvtAoInt8, mvtAoShortInt = mvtAoInt8, mvtArrayOfShortInt = mvtAoInt8,
+    mvtArrayOfUInt8 = mvtAoUInt8, mvtAoByte = mvtAoUInt8, mvtArrayOfByte = mvtAoUInt8,
+    mvtArrayOfInt16 = mvtAoInt16, mvtAoSmallInt = mvtAoInt16, mvtArrayOfSmallInt = mvtAoInt16,
+    mvtArrayOfUInt16 = mvtAoUInt16, mvtAoWord = mvtAoUInt16, mvtArrayOfWord = mvtAoUInt16,
+    mvtArrayOfInt32 = mvtAoInt32,
+    mvtArrayOfUInt32 = mvtAoUInt32, mvtAoDWord = mvtAoUInt32, mvtArrayOfDWord = mvtAoUInt32,
+    mvtArrayOfInt64 = mvtAoInt64,
+    mvtArrayOfUInt64 = mvtAoUInt64, mvtAoQword = mvtAoUInt64, mvtArrayOfQword = mvtAoUInt64,
+      mvtAoQuadWord = mvtAoUInt64, mvtArrayOfQuadWord = mvtAoUInt64,
+    mvtArrayOfFloat32 = mvtAoFloat32, mvtAoSingle = mvtAoFloat32, mvtArrayOfSingle = mvtAoFloat32,
+    mvtArrayOfFloat64 = mvtAoFloat64, mvtAoDouble = mvtAoFloat64, mvtArrayOfDouble = mvtAoFloat64,
+      mvtAoFloat = mvtAoFloat64, mvtArrayOfFloat = mvtAoFloat64, mvtAoReal = mvtAoFloat64,
+    mvtArrayOfReal = mvtAoFloat64,
+    mvtArrayOfDateTime = mvtAoDateTime, mvtAoDate = mvtAoDateTime, mvtArrayOfDate = mvtAoDateTime,
+      mvtAoTime = mvtAoDateTime, mvtArrayOfTime = mvtAoDateTime,
+    mvtArrayOfCurrency = mvtAoCurrency,
+    mvtArrayOfAnsiChar = mvtAoAnsiChar,
+    mvtArrayOfUTF8Char = mvtAoUTF8Char,
+    mvtArrayOfWideChar = mvtAoWideChar,
+    mvtArrayOfUnicodeChar = mvtAoUnicodeChar,
+    mvtArrayOfChar = mvtAoChar,
+    mvtArrayOfShortString = mvtAoShortString,
+    mvtArrayOfAnsiString = mvtAoAnsiString,
+    mvtArrayOfUTF8String = mvtAoUTF8String,
+    mvtArrayOfWideString = mvtAoWideString,
+    mvtArrayOfUnicodeString = mvtAoUnicodeString,
+    mvtArrayOfString = mvtAoString,
+    mvtArrayOfPointer = mvtAoPointer,
+    mvtArrayOfObject = mvtAoObject,
+    mvtArrayOfGUID = mvtAoGUID,
 
-    mvtArrayOfString = mvtAoString
+    // size-dependent array value aliases  - - - - - - - - - - - - - - - - - - - 
+        {$IF SizeOf(LongInt) = 4}mvtAoLongInt = mvtAoInt32, mvtArrayOfLongInt = mvtAoInt32,
+    {$ELSEIF SizeOf(LongInt) = 8}mvtAoLongInt = mvtAoInt64, mvtArrayOfLongInt = mvtAoInt64,
+    {$ELSE}{$MESSAGE FATAL 'Unssuported size of LongInt type.'}{$IFEND}
+        {$IF SizeOf(LongWord) = 4}mvtAoLongWord = mvtAoUInt32, mvtArrayOfLongWord = mvtAoUInt32,
+    {$ELSEIF SizeOf(LongWord) = 8}mvtAoLongWord = mvtAoUInt64, mvtArrayOfLongWord = mvtAoUInt64,
+    {$ELSE}{$MESSAGE FATAL 'Unssuported size of LongWord type.'}{$IFEND}
+        {$IF SizeOf(Integer) = 2}mvtAoInteger = mvtAoInt16, mvtArrayOfInteger = mvtAoInt16,
+    {$ELSEIF SizeOf(Integer) = 4}mvtAoInteger = mvtAoInt32, mvtArrayOfInteger = mvtAoInt32,
+    {$ELSEIF SizeOf(Integer) = 8}mvtAoInteger = mvtAoInt64, mvtArrayOfInteger = mvtAoInt64,
+    {$ELSE}{$MESSAGE FATAL 'Unssuported size of Integer type.'}{$IFEND}
+        {$IF SizeOf(Cardinal) = 2}mvtAoCardinal = mvtAoUInt16, mvtArrayOfCardinal = mvtAoUInt16,
+    {$ELSEIF SizeOf(Cardinal) = 4}mvtAoCardinal = mvtAoUInt32, mvtArrayOfCardinal = mvtAoUInt32,
+    {$ELSEIF SizeOf(Cardinal) = 8}mvtAoCardinal = mvtAoUInt64, mvtArrayOfCardinal = mvtAoUInt64,
+    {$ELSE}{$MESSAGE FATAL 'Unssuported size of Cardinal type.'}{$IFEND}
+  {$IF SizeOf(Pointer) = 4}
+    mvtAoPtrInt = mvtAoInt32, mvtArrayOfPtrInt = mvtAoInt32,
+    mvtAoPtrUInt = mvtAoUInt32, mvtArrayOfPtrUInt = mvtAoUInt32,
+    mvtAoNativeInt = mvtAoInt32, mvtArrayOfNativeInt = mvtAoInt32,
+    mvtAoNativeUInt = mvtAoUInt32, mvtArrayOfNativeUInt = mvtAoUInt32
+  {$ELSEIF SizeOf(Pointer) = 8}
+    mvtAoPtrInt = mvtAoInt64, mvtArrayOfPtrInt = mvtAoInt64,
+    mvtAoPtrUInt = mvtAoUInt64, mvtArraOfPtrUInt = mvtAoUInt64,
+    mvtAoNativeInt = mvtAoInt64, mvtArrayOfNativeInt = mvtAoInt64,
+    mvtAoNativeUInt = mvtAoUInt64, mvtArrayOfNativeUInt = mvtAoUInt64
+  {$ELSE}{$MESSAGE FATAL 'Unssuported CPU architecture.'}{$IFEND}
+  {$IFDEF FPCDWM}{$POP}{$ENDIF});
 
-  {$IFDEF FPCDWM}{$POP}W3031{$ENDIF});
+{$message 'add array of managed values? (special, implemented over a manager)'}  
 
 {===============================================================================
     TMVManagedValueBase - class declaration

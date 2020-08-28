@@ -67,9 +67,6 @@ uses
 {===============================================================================
     Common
 ===============================================================================}
-
-{$message 'fill-up aliases'}
-
 type
   // this is somewhat pointless as the individual values cannot be accessed from this unit, but meh...
   TManagedValueType = TMVManagedValueType;
@@ -127,8 +124,9 @@ type
   TInt16Value = class(TMVInt16Value);
 
   TSmallIntValue = TInt16Value;
+
 {$IF SizeOf(Integer) = 2}
-  TIntegerValue  = TInt16Value;
+  TIntegerValue = TInt16Value;
 {$IFEND}
 
 procedure InitValue(out Value: TInt16Value; const Name: String = ''; InitializeTo: Int16 = 0); overload;
@@ -142,6 +140,10 @@ type
 
   TWordValue = TUInt16Value;
 
+{$IF SizeOf(Cardinal) = 2}
+  TCardinalValue = TUInt16Value;
+{$IFEND}
+
 procedure InitValue(out Value: TUInt16Value; const Name: String = ''; InitializeTo: UInt16 = 0); overload;
 procedure FinalValue(var Value: TUInt16Value); overload;
 
@@ -151,16 +153,18 @@ procedure FinalValue(var Value: TUInt16Value); overload;
 type
   TInt32Value = class(TMVInt32Value);
 
-{$IF SizeOf(Integer) = 4}
-  TIntegerValue = TInt32Value;
-{$IFEND}
 {$IF SizeOf(LongInt) = 4}
   TLongIntValue = TInt32Value;
 {$IFEND}
-{$IFDEF 32bit}
+
+{$IF SizeOf(Integer) = 4}
+  TIntegerValue = TInt32Value;
+{$IFEND}
+
+{$IF SizeOf(Pointer) = 4}
   TPtrIntValue    = TInt32Value;
   TNativeIntValue = TInt32Value;
-{$ENDIF}
+{$IFEND}
 
 procedure InitValue(out Value: TInt32Value; const Name: String = ''; InitializeTo: Int32 = 0); overload;
 procedure FinalValue(var Value: TInt32Value); overload;
@@ -172,16 +176,19 @@ type
   TUInt32Value = class(TMVUInt32Value);
 
   TDWordValue    = TUInt32Value;
+
 {$IF SizeOf(Cardinal) = 4}
   TCardinalValue = TUInt32Value;
 {$IFEND}
+
 {$IF SizeOf(LongWord) = 4}
   TLongWordValue = TUInt32Value;
 {$IFEND}
-{$IFDEF 32bit}
+
+{$IF SizeOf(Pointer) = 4}
   TPtrUIntValue    = TUInt32Value;
   TNativeUIntValue = TUInt32Value;
-{$ENDIF}
+{$IFEND}
 
 procedure InitValue(out Value: TUInt32Value; const Name: String = ''; InitializeTo: UInt32 = 0); overload;
 procedure FinalValue(var Value: TUInt32Value); overload;
@@ -195,13 +202,15 @@ type
 {$IF SizeOf(Integer) = 8}
   TIntegerValue = TInt64Value;
 {$IFEND}
+
 {$IF SizeOf(LongInt) = 8}
   TLongIntValue = TInt64Value;
 {$IFEND}
-{$IFDEF 64bit}
+
+{$IF SizeOf(Pointer) = 8}
   TPtrIntValue    = TInt64Value;
   TNativeIntValue = TInt64Value;
-{$ENDIF}
+{$IFEND}
 
 procedure InitValue(out Value: TInt64Value; const Name: String = ''; InitializeTo: Int64 = 0); overload;
 procedure FinalValue(var Value: TInt64Value); overload;
@@ -214,16 +223,19 @@ type
 
   TQWordValue    = TUInt64Value;
   TQuadWordValue = TUInt64Value;
+
 {$IF SizeOf(Cardinal) = 8}
   TCardinalValue = TUInt64Value;
 {$IFEND}
+
 {$IF SizeOf(LongWord) = 8}
   TLongWordValue = TUInt64Value;
 {$IFEND}
-{$IFDEF 64bit}
+
+{$IF SizeOf(Pointer) = 8}
   TPtrUIntValue    = TUInt64Value;
   TNativeUIntValue = TUInt64Value;
-{$ENDIF}
+{$IFEND}
 
 procedure InitValue(out Value: TUInt64Value; const Name: String = ''; InitializeTo: UInt64 = 0); overload;
 procedure FinalValue(var Value: TUInt64Value); overload;
@@ -408,12 +420,12 @@ type
 
   TAoBooleanValue = class(TMVAoBooleanValue);
 
-  TAoBool         = TAoBoolean;
   TArrayOfBoolean = TAoBoolean;
+  TAoBool         = TAoBoolean;
   TArrayOfBool    = TAoBoolean;
 
+  TArrayOfBooleanValue = TAoBooleanValue;  
   TAoBoolValue         = TAoBooleanValue;
-  TArrayOfBooleanValue = TAoBooleanValue;
   TArrayOfBoolValue    = TAoBooleanValue;
 
 procedure InitValue(out Value: TAoBooleanValue; const Name: String = ''; const InitializeTo: TAoBoolean = nil); overload;
@@ -427,11 +439,11 @@ type
 
   TAoInt8Value = class(TMVAoInt8Value);
 
-  TArrayOfInt8     = TAoInt8;
+  TArrayOfInt8     = TAoInt8;  
   TAoShortInt      = TAoInt8;
   TArrayOfShortInt = TAoInt8;
 
-  TArrayOfInt8Value     = TAoInt8Value;
+  TArrayOfInt8Value     = TAoInt8Value;  
   TAoShortIntValue      = TAoInt8Value;
   TArrayOfShortIntValue = TAoInt8Value;
 
@@ -466,12 +478,22 @@ type
   TAoInt16Value = class(TMVAoInt16Value);
 
   TArrayOfInt16    = TAoInt16;
-  TAoSmalInt       = TAoInt16;
+  TAoSmallInt      = TAoInt16;
   TArrayOfSmallInt = TAoInt16;
 
-  TArrayOfInt16Value   = TAoInt16Value;
-  TAoSmalIntValue      = TAoInt16Value;
-  TArrayOfSmalIntValue = TAoInt16Value;
+{$IF SizeOf(Integer) = 2}
+  TAoInteger      = TAoInt16;
+  TArrayOfInteger = TAoInt16;
+{$IFEND}
+
+  TArrayOfInt16Value    = TAoInt16Value;
+  TAoSmallIntValue      = TAoInt16Value;
+  TArrayOfSmallIntValue = TAoInt16Value;
+
+{$IF SizeOf(Integer) = 2}
+  TAoIntegerValue      = TAoInt16Value;
+  TArrayOfIntegerValue = TAoInt16Value;
+{$IFEND}
 
 procedure InitValue(out Value: TAoInt16Value; const Name: String = ''; const InitializeTo: TAoInt16 = nil); overload;
 procedure FinalValue(var Value: TAoInt16Value); overload;
@@ -488,9 +510,19 @@ type
   TAoWord        = TAoUInt16;
   TArrayOfWord   = TAoUInt16;
 
+{$IF SizeOf(Integer) = 2}
+  TAoCardinal      = TAoUInt16;
+  TArrayOfCardinal = TAoUInt16;
+{$IFEND}
+
   TArrayOfUInt16Value = TAoUInt16Value;
   TAoWordValue        = TAoUInt16Value;
   TArrayOfWordValue   = TAoUInt16Value;
+
+{$IF SizeOf(Integer) = 2}
+  TAoCardinalValue      = TAoUInt16Value;
+  TArrayOfCardinalValue = TAoUInt16Value;
+{$IFEND}
 
 procedure InitValue(out Value: TAoUInt16Value; const Name: String = ''; const InitializeTo: TAoUInt16 = nil); overload;
 procedure FinalValue(var Value: TAoUInt16Value); overload;
@@ -503,6 +535,44 @@ type
 
   TAoInt32Value = class(TMVAoInt32Value);
 
+  TArrayOfInt32 = TAoInt32;
+
+{$IF SizeOf(LongInt) = 4}
+  TAoLongInt      = TAoInt32;
+  TArrayOfLongInt = TAoInt32;
+{$IFEND}
+
+{$IF SizeOf(Integer) = 4}
+  TAoInteger      = TAoInt32;
+  TArrayOfInteger = TAoInt32;
+{$IFEND}
+
+{$IF SizeOf(Pointer) = 4}
+  TAoPtrInt         = TAoInt32;
+  TArrayOfPtrInt    = TAoInt32;
+  TAoNativeInt      = TAoInt32;
+  TArrayOfNativeInt = TAoInt32;
+{$IFEND}
+
+  TArrayOfInt32Value = TAoInt32Value;
+
+{$IF SizeOf(LongInt) = 4}
+  TAoLongIntValue      = TAoInt32Value;
+  TArrayOfLongIntValue = TAoInt32Value;
+{$IFEND}
+
+{$IF SizeOf(Integer) = 4}
+  TAoIntegerValue      = TAoInt32Value;
+  TArrayOfIntegerValue = TAoInt32Value;
+{$IFEND}
+
+{$IF SizeOf(Pointer) = 4}
+  TAoPtrIntValue         = TAoInt32Value;
+  TArrayOfPtrIntValue    = TAoInt32Value;
+  TAoNativeIntValue      = TAoInt32Value;
+  TArrayOfNativeIntValue = TAoInt32Value;
+{$IFEND}
+
 procedure InitValue(out Value: TAoInt32Value; const Name: String = ''; const InitializeTo: TAoInt32 = nil); overload;
 procedure FinalValue(var Value: TAoInt32Value); overload;
 
@@ -513,6 +583,44 @@ type
   TAoUInt32 = TMVAoUInt32;
 
   TAoUInt32Value = class(TMVAoUInt32Value);
+
+  TArrayOfUInt32 = TMVAoUInt32;
+
+{$IF SizeOf(LongWord) = 4}
+  TAoLongWord      = TAoUInt32;
+  TArrayOfLongWord = TAoUInt32;
+{$IFEND}
+
+{$IF SizeOf(Cardinal) = 4}
+  TAoCardinal      = TAoUInt32;
+  TArrayOfCardinal = TAoUInt32;
+{$IFEND}
+
+{$IF SizeOf(Pointer) = 4}
+  TAoPtrUInt         = TAoUInt32;
+  TArrayOfPtrUInt    = TAoUInt32;
+  TAoNativeUInt      = TAoUInt32;
+  TArrayOfNativeUInt = TAoUInt32;
+{$IFEND}
+
+  TArrayOfUInt32Value = TAoUInt32Value;
+
+{$IF SizeOf(LongWord) = 4}
+  TAoLongWordValue      = TAoUInt32Value;
+  TArrayOfLongWordValue = TAoUInt32Value;
+{$IFEND}
+
+{$IF SizeOf(Cardinal) = 4}
+  TAoCardinalValue      = TAoUInt32Value;
+  TArrayOfCardinalValue = TAoUInt32Value;
+{$IFEND}
+
+{$IF SizeOf(Pointer) = 4}
+  TAoPtrUIntValue         = TAoUInt32Value;
+  TArrayOfPtrUIntValue    = TAoUInt32Value;
+  TAoNativeUIntValue      = TAoUInt32Value;
+  TArrayOfNativeUIntValue = TAoUInt32Value;
+{$IFEND}
 
 procedure InitValue(out Value: TAoUInt32Value; const Name: String = ''; const InitializeTo: TAoUInt32 = nil); overload;
 procedure FinalValue(var Value: TAoUInt32Value); overload;
@@ -525,6 +633,44 @@ type
 
   TAoInt64Value = class(TMVAoInt64Value);
 
+  TArrayOfInt64 = TAoInt64;
+
+{$IF SizeOf(LongInt) = 8}
+  TAoLongInt      = TAoInt64;
+  TArrayOfLongInt = TAoInt64;
+{$IFEND}
+
+{$IF SizeOf(Integer) = 8}
+  TAoInteger      = TAoInt64;
+  TArrayOfInteger = TAoInt64;
+{$IFEND}
+
+{$IF SizeOf(Pointer) = 8}
+  TAoPtrInt         = TAoInt64;
+  TArrayOfPtrInt    = TAoInt64;
+  TAoNativeInt      = TAoInt64;
+  TArrayOfNativeInt = TAoInt64;
+{$IFEND}
+
+  TArrayOfInt64Value = TAoInt64Value;
+
+{$IF SizeOf(LongInt) = 8}
+  TAoLongIntValue      = TAoInt64Value;
+  TArrayOfLongIntValue = TAoInt64Value;
+{$IFEND}
+
+{$IF SizeOf(Integer) = 8}
+  TAoIntegerValue      = TAoInt64Value;
+  TArrayOfIntegerValue = TAoInt64Value;
+{$IFEND}
+
+{$IF SizeOf(Pointer) = 8}
+  TAoPtrIntValue         = TAoInt64Value;
+  TArrayOfPtrIntValue    = TAoInt64Value;
+  TAoNativeIntValue      = TAoInt64Value;
+  TArrayOfNativeIntValue = TAoInt64Value;
+{$IFEND}
+
 procedure InitValue(out Value: TAoInt64Value; const Name: String = ''; const InitializeTo: TAoInt64 = nil); overload;
 procedure FinalValue(var Value: TAoInt64Value); overload;
 
@@ -535,6 +681,52 @@ type
   TAoUInt64 = TMVAoUInt64;
 
   TAoUInt64Value = class(TMVAoUInt64Value);
+
+  TArrayOfUInt64   = TAoUInt64;
+  TAoQword         = TAoUInt64;
+  TArrayOfQWord    = TAoUInt64;
+  TAoQuadWord      = TAoUInt64;
+  TArrayOfQuadWord = TAoUInt64;
+
+{$IF SizeOf(LongWord) = 8}
+  TAoLongWord      = TAoUInt64;
+  TArrayOfLongWord = TAoUInt64;
+{$IFEND}
+
+{$IF SizeOf(Cardinal) = 8}
+  TAoCardinal      = TAoUInt64;
+  TArrayOfCardinal = TAoUInt64;
+{$IFEND}
+
+{$IF SizeOf(Pointer) = 8}
+  TAoPtrUInt         = TAoUInt64;
+  TArrayOfPtrUInt    = TAoUInt64;
+  TAoNativeUInt      = TAoUInt64;
+  TArrayOfNativeUInt = TAoUInt64;
+{$IFEND}
+
+  TArrayOfUInt64Value   = TAoUInt64Value;
+  TAoQwordValue         = TAoUInt64Value;
+  TArrayOfQWordValue    = TAoUInt64Value;
+  TAoQuadWordValue      = TAoUInt64Value;
+  TArrayOfQuadWordValue = TAoUInt64Value;
+
+{$IF SizeOf(LongWord) = 8}
+  TAoLongWordValue      = TAoUInt64Value;
+  TArrayOfLongWordValue = TAoUInt64Value;
+{$IFEND}
+
+{$IF SizeOf(Cardinal) = 8}
+  TAoCardinalValue      = TAoUInt64Value;
+  TArrayOfCardinalValue = TAoUInt64Value;
+{$IFEND}
+
+{$IF SizeOf(Pointer) = 8}
+  TAoPtrUIntValue         = TAoUInt64Value;
+  TArrayOfPtrUIntValue    = TAoUInt64Value;
+  TAoNativeUIntValue      = TAoUInt64Value;
+  TArrayOfNativeUIntValue = TAoUInt64Value;
+{$IFEND}
 
 procedure InitValue(out Value: TAoUInt64Value; const Name: String = ''; const InitializeTo: TAoUInt64 = nil); overload;
 procedure FinalValue(var Value: TAoUInt64Value); overload;
@@ -547,6 +739,14 @@ type
 
   TAoFloat32Value = class(TMVAoFloat32Value);
 
+  TArrayOfFloat32 = TAoFloat32;
+  TAoSingle       = TAoFloat32;
+  TArrayOfSingle  = TAoFloat32;
+
+  TArrayOfFloat32Value = TAoFloat32Value;
+  TAoSingleValue       = TAoFloat32Value;
+  TArrayOfSingleValue  = TAoFloat32Value;
+
 procedure InitValue(out Value: TAoFloat32Value; const Name: String = ''; const InitializeTo: TAoFloat32 = nil); overload;
 procedure FinalValue(var Value: TAoFloat32Value); overload;
 
@@ -557,6 +757,22 @@ type
   TAoFloat64 = TMVAoFloat64;
 
   TAoFloat64Value = class(TMVAoFloat64Value);
+
+  TArrayOfFloat64 = TAoFloat64;
+  TAoDouble       = TAoFloat64;
+  TArrayOfDouble  = TAoFloat64;
+  TAoFloat        = TAoFloat64;
+  TArrayOfFloat   = TAoFloat64;
+  TAoReal         = TAoFloat64;
+  TArrayOfReal    = TAoFloat64;
+
+  TArrayOfFloat64Value = TAoFloat64Value;
+  TAoDoubleValue       = TAoFloat64Value;
+  TArrayOfDoubleValue  = TAoFloat64Value;
+  TAoFloatValue        = TAoFloat64Value;
+  TArrayOfFloatValue   = TAoFloat64Value;
+  TAoRealValue         = TAoFloat64Value;
+  TArrayOfRealValue    = TAoFloat64Value;
 
 procedure InitValue(out Value: TAoFloat64Value; const Name: String = ''; const InitializeTo: TAoFloat64 = nil); overload;
 procedure FinalValue(var Value: TAoFloat64Value); overload;
@@ -569,6 +785,18 @@ type
 
   TAoDateTimeValue = class(TMVAoDateTimeValue);
 
+  TArrayOfDateTime = TAoDateTime;
+  TAoDate          = TAoDateTime;
+  TArrayOfDate     = TAoDateTime;
+  TAoTime          = TAoDateTime;
+  TArrayOfTime     = TAoDateTime;
+
+  TArrayOfDateTimeValue = TAoDateTimeValue;
+  TAoDateValue          = TAoDateTimeValue;
+  TArrayOfDateValue     = TAoDateTimeValue;
+  TAoTimeValue          = TAoDateTimeValue;
+  TArrayOfTimeValue     = TAoDateTimeValue;
+
 procedure InitValue(out Value: TAoDateTimeValue; const Name: String = ''; const InitializeTo: TAoDateTime = nil); overload;
 procedure FinalValue(var Value: TAoDateTimeValue); overload;
 
@@ -579,6 +807,10 @@ type
   TAoCurrency = TMVAoCurrency;
 
   TAoCurrencyValue = class(TMVAoCurrencyValue);
+
+  TArrayOfCurrency = TAoCurrency;
+
+  TArrayOfCurrencyValue = TAoCurrencyValue;
 
 procedure InitValue(out Value: TAoCurrencyValue; const Name: String = ''; const InitializeTo: TAoCurrency = nil); overload;
 procedure FinalValue(var Value: TAoCurrencyValue); overload;
@@ -591,6 +823,10 @@ type
 
   TAoAnsiCharValue = class(TMVAoAnsiCharValue);
 
+  TArrayOfAnsiChar = TAoAnsiChar;
+
+  TArrayOfAnsiCharValue = TAoAnsiCharValue;
+
 procedure InitValue(out Value: TAoAnsiCharValue; const Name: String = ''; const InitializeTo: TAoAnsiChar = nil); overload;
 procedure FinalValue(var Value: TAoAnsiCharValue); overload;
 
@@ -601,6 +837,10 @@ type
   TAoUTF8Char = TMVAoUTF8Char;
 
   TAoUTF8CharValue = class(TMVAoUTF8CharValue);
+
+  TArrayOfUTF8Char = TAoUTF8Char;
+
+  TArrayOfUTF8CharValue = TAoUTF8CharValue;
 
 procedure InitValue(out Value: TAoUTF8CharValue; const Name: String = ''; const InitializeTo: TAoUTF8Char = nil); overload;
 procedure FinalValue(var Value: TAoUTF8CharValue); overload;
@@ -613,6 +853,10 @@ type
 
   TAoWideCharValue = class(TMVAoWideCharValue);
 
+  TArrayOfWideChar = TAoWideChar;
+
+  TArrayOfWideCharValue = TAoWideCharValue;
+
 procedure InitValue(out Value: TAoWideCharValue; const Name: String = ''; const InitializeTo: TAoWideChar = nil); overload;
 procedure FinalValue(var Value: TAoWideCharValue); overload;
 
@@ -623,6 +867,10 @@ type
   TAoUnicodeChar = TMVAoUnicodeChar;
 
   TAoUnicodeCharValue = class(TMVAoUnicodeCharValue);
+
+  TArrayOfUnicodeChar = TAoUnicodeChar;
+
+  TArrayOfUnicodeCharValue = TAoUnicodeCharValue;
 
 procedure InitValue(out Value: TAoUnicodeCharValue; const Name: String = ''; const InitializeTo: TAoUnicodeChar = nil); overload;
 procedure FinalValue(var Value: TAoUnicodeCharValue); overload;
@@ -635,6 +883,10 @@ type
 
   TAoCharValue = class(TMVAoCharValue);
 
+  TArrayOfChar = TAoChar;
+
+  TArrayOfCharValue = TAoCharValue;
+
 procedure InitValue(out Value: TAoCharValue; const Name: String = ''; const InitializeTo: TAoChar = nil); overload;
 procedure FinalValue(var Value: TAoCharValue); overload;
 
@@ -645,6 +897,10 @@ type
   TAoShortString = TMVAoShortString;
 
   TAoShortStringValue = class(TMVAoShortStringValue);
+
+  TArrayOfShortString = TAoShortString;
+
+  TArrayOfShortStringValue = TAoShortStringValue;
 
 procedure InitValue(out Value: TAoShortStringValue; const Name: String = ''; const InitializeTo: TAoShortString = nil); overload;
 procedure FinalValue(var Value: TAoShortStringValue); overload;
@@ -657,6 +913,10 @@ type
 
   TAoAnsiStringValue = class(TMVAoAnsiStringValue);
 
+  TArrayOfAnsiString = TAoAnsiString;
+
+  TArrayOfAnsiStringValue = TAoAnsiStringValue;
+
 procedure InitValue(out Value: TAoAnsiStringValue; const Name: String = ''; const InitializeTo: TAoAnsiString = nil); overload;
 procedure FinalValue(var Value: TAoAnsiStringValue); overload;
 
@@ -667,6 +927,10 @@ type
   TAoUTF8String = TMVAoUTF8String;
 
   TAoUTF8StringValue = class(TMVAoUTF8StringValue);
+
+  TArrayOfUTF8String = TAoUTF8String;
+
+  TArrayOfUTF8StringValue = TAoUTF8StringValue;
 
 procedure InitValue(out Value: TAoUTF8StringValue; const Name: String = ''; const InitializeTo: TAoUTF8String = nil); overload;
 procedure FinalValue(var Value: TAoUTF8StringValue); overload;
@@ -679,6 +943,10 @@ type
 
   TAoWideStringValue = class(TMVAoWideStringValue);
 
+  TArrayOfWideString = TAoWideString;
+
+  TArrayOfWideStringValue = TAoWideStringValue;
+
 procedure InitValue(out Value: TAoWideStringValue; const Name: String = ''; const InitializeTo: TAoWideString = nil); overload;
 procedure FinalValue(var Value: TAoWideStringValue); overload;
 
@@ -689,6 +957,10 @@ type
   TAoUnicodeString = TMVAoUnicodeString;
 
   TAoUnicodeStringValue = class(TMVAoUnicodeStringValue);
+
+  TArrayOfUnicodeString = TAoUnicodeString;
+
+  TArrayOfUnicodeStringValue = TAoUnicodeStringValue;
 
 procedure InitValue(out Value: TAoUnicodeStringValue; const Name: String = ''; const InitializeTo: TAoUnicodeString = nil); overload;
 procedure FinalValue(var Value: TAoUnicodeStringValue); overload;
@@ -716,6 +988,10 @@ type
 
   TAoPointerValue = class(TMVAoPointerValue);
 
+  TArrayOfPointer = TAoPointer;
+
+  TArrayOfPointerValue = TAoPointerValue;
+
 procedure InitValue(out Value: TAoPointerValue; const Name: String = ''; const InitializeTo: TAoPointer = nil); overload;
 procedure FinalValue(var Value: TAoPointerValue); overload;
 
@@ -727,6 +1003,10 @@ type
 
   TAoObjectValue = class(TMVAoObjectValue);
 
+  TArrayOfObject = TAoObject;
+
+  TArrayOfObjectValue = TAoObjectValue;
+
 procedure InitValue(out Value: TAoObjectValue; const Name: String = ''; const InitializeTo: TAoObject = nil); overload;
 procedure FinalValue(var Value: TAoObjectValue); overload;
 
@@ -737,6 +1017,10 @@ type
   TAoGUID = TMVAoGUID;
 
   TAoGUIDValue = class(TMVAoGUIDValue);
+
+  TArrayOfGUID = TAoGUID;
+
+  TArrayOfGUIDValue = TAoGUIDValue;  
 
 procedure InitValue(out Value: TAoGUIDValue; const Name: String = ''; const InitializeTo: TAoGUID = nil); overload;
 procedure FinalValue(var Value: TAoGUIDValue); overload;

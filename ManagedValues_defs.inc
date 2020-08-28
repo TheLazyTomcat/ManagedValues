@@ -1,11 +1,3 @@
-{$IF Defined(CPU64) or Defined(CPU64BITS)}
-  {$DEFINE CPU64bit}
-{$ELSEIF Defined(CPU16)}
-  {$MESSAGE FATAL '16bit CPU not supported'}
-{$ELSE}
-  {$DEFINE CPU32bit}
-{$IFEND}
-
 {$IF Defined(WINDOWS) or Defined(MSWINDOWS)}
   {$DEFINE Windows}
 {$ELSEIF Defined(LINUX) and Defined(FPC)}
