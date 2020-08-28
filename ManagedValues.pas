@@ -65,8 +65,16 @@ uses
   ManagedValues_AoGUIDValue;
 
 {===============================================================================
-    Common
+--------------------------------------------------------------------------------
+                         Aliases nad utility functions
+--------------------------------------------------------------------------------
 ===============================================================================}
+{===============================================================================
+    Aliases nad utility functions - declaration
+===============================================================================}
+{-------------------------------------------------------------------------------
+    Common types
+-------------------------------------------------------------------------------}
 type
   // this is somewhat pointless as the individual values cannot be accessed from this unit, but meh...
   TManagedValueType = TMVManagedValueType;
@@ -80,13 +88,15 @@ type
 
   TValuesManagerBase = TMVValuesManagerBase;
 
+Function ClassFromValueType(ValueType: TManagedValueType): TManagedValueClass;
+
 Function CreateValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValue; overload;
 Function CreateValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue; overload;
 procedure FreeValue(var Value: TManagedValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TBooleanValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TBooleanValue = class(TMVBooleanValue);
   
@@ -95,9 +105,9 @@ type
 procedure InitValue(out Value: TBooleanValue; const Name: String = ''; InitializeTo: Boolean = False); overload;
 procedure FinalValue(var Value: TBooleanValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TInt8Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TInt8Value = class(TMVInt8Value);
 
@@ -106,9 +116,9 @@ type
 procedure InitValue(out Value: TInt8Value; const Name: String = ''; InitializeTo: Int8 = 0); overload;
 procedure FinalValue(var Value: TInt8Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TUInt8Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TUInt8Value = class(TMVUInt8Value);
 
@@ -117,9 +127,9 @@ type
 procedure InitValue(out Value: TUInt8Value; const Name: String = ''; InitializeTo: UInt8 = 0); overload;
 procedure FinalValue(var Value: TUInt8Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TInt16Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TInt16Value = class(TMVInt16Value);
 
@@ -132,9 +142,9 @@ type
 procedure InitValue(out Value: TInt16Value; const Name: String = ''; InitializeTo: Int16 = 0); overload;
 procedure FinalValue(var Value: TInt16Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TUInt16Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TUInt16Value = class(TMVUInt16Value);
 
@@ -147,9 +157,9 @@ type
 procedure InitValue(out Value: TUInt16Value; const Name: String = ''; InitializeTo: UInt16 = 0); overload;
 procedure FinalValue(var Value: TUInt16Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TInt32Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TInt32Value = class(TMVInt32Value);
 
@@ -169,9 +179,9 @@ type
 procedure InitValue(out Value: TInt32Value; const Name: String = ''; InitializeTo: Int32 = 0); overload;
 procedure FinalValue(var Value: TInt32Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TUInt32Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TUInt32Value = class(TMVUInt32Value);
 
@@ -193,9 +203,9 @@ type
 procedure InitValue(out Value: TUInt32Value; const Name: String = ''; InitializeTo: UInt32 = 0); overload;
 procedure FinalValue(var Value: TUInt32Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TInt64Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TInt64Value = class(TMVInt64Value);
 
@@ -215,9 +225,9 @@ type
 procedure InitValue(out Value: TInt64Value; const Name: String = ''; InitializeTo: Int64 = 0); overload;
 procedure FinalValue(var Value: TInt64Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TUInt64Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TUInt64Value = class(TMVUInt64Value);
 
@@ -240,9 +250,9 @@ type
 procedure InitValue(out Value: TUInt64Value; const Name: String = ''; InitializeTo: UInt64 = 0); overload;
 procedure FinalValue(var Value: TUInt64Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TFloat32Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TFloat32Value = class(TMVFloat32Value);
 
@@ -251,9 +261,9 @@ type
 procedure InitValue(out Value: TFloat32Value; const Name: String = ''; InitializeTo: Float32 = 0.0); overload;
 procedure FinalValue(var Value: TFloat32Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TFloat64Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TFloat64Value = class(TMVFloat64Value);
 
@@ -264,9 +274,9 @@ type
 procedure InitValue(out Value: TFloat64Value; const Name: String = ''; InitializeTo: Float64 = 0.0); overload;
 procedure FinalValue(var Value: TFloat64Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TDateTimeValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TDateTimeValue = class(TMVDateTimeValue);
 
@@ -276,135 +286,135 @@ type
 procedure InitValue(out Value: TDateTimeValue; const Name: String = ''; InitializeTo: TDateTime = 0.0); overload;
 procedure FinalValue(var Value: TDateTimeValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TCurrencyValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TCurrencyValue = class(TMVCurrencyValue);
 
 procedure InitValue(out Value: TCurrencyValue; const Name: String = ''; InitializeTo: Currency = 0.0); overload;
 procedure FinalValue(var Value: TCurrencyValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAnsiCharValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAnsiCharValue = class(TMVAnsiCharValue);
 
 procedure InitValue(out Value: TAnsiCharValue; const Name: String = ''; InitializeTo: AnsiChar = #0); overload;
 procedure FinalValue(var Value: TAnsiCharValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TUTF8CharValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TUTF8CharValue = class(TMVUTF8CharValue);
 
 procedure InitValue(out Value: TUTF8CharValue; const Name: String = ''; InitializeTo: UTF8Char = #0); overload;
 procedure FinalValue(var Value: TUTF8CharValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TWideCharValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TWideCharValue = class(TMVWideCharValue);
 
 procedure InitValue(out Value: TWideCharValue; const Name: String = ''; InitializeTo: WideChar = #0); overload;
 procedure FinalValue(var Value: TWideCharValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TUnicodeCharValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TUnicodeCharValue = class(TMVUnicodeCharValue);
 
 procedure InitValue(out Value: TUnicodeCharValue; const Name: String = ''; InitializeTo: UnicodeChar = #0); overload;
 procedure FinalValue(var Value: TUnicodeCharValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TCharValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TCharValue = class(TMVCharValue);
 
 procedure InitValue(out Value: TCharValue; const Name: String = ''; InitializeTo: Char = #0); overload;
 procedure FinalValue(var Value: TCharValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TShortStringValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TShortStringValue = class(TMVShortStringValue);
 
 procedure InitValue(out Value: TShortStringValue; const Name: String = ''; const InitializeTo: ShortString = ''); overload;
 procedure FinalValue(var Value: TShortStringValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAnsiStringValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAnsiStringValue = class(TMVAnsiStringValue);
 
 procedure InitValue(out Value: TAnsiStringValue; const Name: String = ''; const InitializeTo: AnsiString = ''); overload;
 procedure FinalValue(var Value: TAnsiStringValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TUTF8StringValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TUTF8StringValue = class(TMVUTF8StringValue);
 
 procedure InitValue(out Value: TUTF8StringValue; const Name: String = ''; const InitializeTo: UTF8String = ''); overload;
 procedure FinalValue(var Value: TUTF8StringValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TWideStringValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TWideStringValue = class(TMVWideStringValue);
 
 procedure InitValue(out Value: TWideStringValue; const Name: String = ''; const InitializeTo: WideString = ''); overload;
 procedure FinalValue(var Value: TWideStringValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TUnicodeStringValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TUnicodeStringValue = class(TMVUnicodeStringValue);
 
 procedure InitValue(out Value: TUnicodeStringValue; const Name: String = ''; const InitializeTo: UnicodeString = ''); overload;
 procedure FinalValue(var Value: TUnicodeStringValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TStringValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TStringValue = class(TMVStringValue);
 
 procedure InitValue(out Value: TStringValue; const Name: String = ''; const InitializeTo: String = ''); overload;
 procedure FinalValue(var Value: TStringValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TPointerValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TPointerValue = class(TMVPointerValue);
 
 procedure InitValue(out Value: TPointerValue; const Name: String = ''; InitializeTo: Pointer = nil); overload;
 procedure FinalValue(var Value: TPointerValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TObjectValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TObjectValue = class(TMVObjectValue);
 
 procedure InitValue(out Value: TObjectValue; const Name: String = ''; InitializeTo: TObject = nil); overload;
 procedure FinalValue(var Value: TObjectValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TGUIDValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TGUIDValue = class(TMVGUIDValue);
 
@@ -412,9 +422,9 @@ procedure InitValue(out Value: TGUIDValue; const Name: String; InitializeTo: TGU
 procedure InitValue(out Value: TGUIDValue; const Name: String = ''); overload;
 procedure FinalValue(var Value: TGUIDValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoBooleanValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoBoolean = TMVAoBoolean;
 
@@ -431,9 +441,9 @@ type
 procedure InitValue(out Value: TAoBooleanValue; const Name: String = ''; const InitializeTo: TAoBoolean = nil); overload;
 procedure FinalValue(var Value: TAoBooleanValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoInt8Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoInt8 = TMVAoInt8;
 
@@ -450,9 +460,9 @@ type
 procedure InitValue(out Value: TAoInt8Value; const Name: String = ''; const InitializeTo: TAoInt8 = nil); overload;
 procedure FinalValue(var Value: TAoInt8Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoUInt8Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoUInt8 = TMVAoUInt8;
 
@@ -469,9 +479,9 @@ type
 procedure InitValue(out Value: TAoUInt8Value; const Name: String = ''; const InitializeTo: TAoUInt8 = nil); overload;
 procedure FinalValue(var Value: TAoUInt8Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoInt16Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoInt16 = TMVAoInt16;
 
@@ -498,9 +508,9 @@ type
 procedure InitValue(out Value: TAoInt16Value; const Name: String = ''; const InitializeTo: TAoInt16 = nil); overload;
 procedure FinalValue(var Value: TAoInt16Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoUInt16Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoUInt16 = TMVAoUInt16;
 
@@ -527,9 +537,9 @@ type
 procedure InitValue(out Value: TAoUInt16Value; const Name: String = ''; const InitializeTo: TAoUInt16 = nil); overload;
 procedure FinalValue(var Value: TAoUInt16Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoInt32Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoInt32 = TMVAoInt32;
 
@@ -576,9 +586,9 @@ type
 procedure InitValue(out Value: TAoInt32Value; const Name: String = ''; const InitializeTo: TAoInt32 = nil); overload;
 procedure FinalValue(var Value: TAoInt32Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoUInt32Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoUInt32 = TMVAoUInt32;
 
@@ -625,9 +635,9 @@ type
 procedure InitValue(out Value: TAoUInt32Value; const Name: String = ''; const InitializeTo: TAoUInt32 = nil); overload;
 procedure FinalValue(var Value: TAoUInt32Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoInt64Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoInt64 = TMVAoInt64;
 
@@ -674,9 +684,9 @@ type
 procedure InitValue(out Value: TAoInt64Value; const Name: String = ''; const InitializeTo: TAoInt64 = nil); overload;
 procedure FinalValue(var Value: TAoInt64Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoUInt64Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoUInt64 = TMVAoUInt64;
 
@@ -731,9 +741,9 @@ type
 procedure InitValue(out Value: TAoUInt64Value; const Name: String = ''; const InitializeTo: TAoUInt64 = nil); overload;
 procedure FinalValue(var Value: TAoUInt64Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoFloat32Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoFloat32 = TMVAoFloat32;
 
@@ -750,9 +760,9 @@ type
 procedure InitValue(out Value: TAoFloat32Value; const Name: String = ''; const InitializeTo: TAoFloat32 = nil); overload;
 procedure FinalValue(var Value: TAoFloat32Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoFloat64Value
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoFloat64 = TMVAoFloat64;
 
@@ -777,9 +787,9 @@ type
 procedure InitValue(out Value: TAoFloat64Value; const Name: String = ''; const InitializeTo: TAoFloat64 = nil); overload;
 procedure FinalValue(var Value: TAoFloat64Value); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoDateTimeValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoDateTime = TMVAoDateTime;
 
@@ -800,9 +810,9 @@ type
 procedure InitValue(out Value: TAoDateTimeValue; const Name: String = ''; const InitializeTo: TAoDateTime = nil); overload;
 procedure FinalValue(var Value: TAoDateTimeValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoCurrencyValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoCurrency = TMVAoCurrency;
 
@@ -815,9 +825,9 @@ type
 procedure InitValue(out Value: TAoCurrencyValue; const Name: String = ''; const InitializeTo: TAoCurrency = nil); overload;
 procedure FinalValue(var Value: TAoCurrencyValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoAnsiCharValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoAnsiChar = TMVAoAnsiChar;
 
@@ -830,9 +840,9 @@ type
 procedure InitValue(out Value: TAoAnsiCharValue; const Name: String = ''; const InitializeTo: TAoAnsiChar = nil); overload;
 procedure FinalValue(var Value: TAoAnsiCharValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoUTF8CharValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoUTF8Char = TMVAoUTF8Char;
 
@@ -845,9 +855,9 @@ type
 procedure InitValue(out Value: TAoUTF8CharValue; const Name: String = ''; const InitializeTo: TAoUTF8Char = nil); overload;
 procedure FinalValue(var Value: TAoUTF8CharValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoWideCharValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoWideChar = TMVAoWideChar;
 
@@ -860,9 +870,9 @@ type
 procedure InitValue(out Value: TAoWideCharValue; const Name: String = ''; const InitializeTo: TAoWideChar = nil); overload;
 procedure FinalValue(var Value: TAoWideCharValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoUnicodeCharValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoUnicodeChar = TMVAoUnicodeChar;
 
@@ -875,9 +885,9 @@ type
 procedure InitValue(out Value: TAoUnicodeCharValue; const Name: String = ''; const InitializeTo: TAoUnicodeChar = nil); overload;
 procedure FinalValue(var Value: TAoUnicodeCharValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoCharValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoChar = TMVAoChar;
 
@@ -890,9 +900,9 @@ type
 procedure InitValue(out Value: TAoCharValue; const Name: String = ''; const InitializeTo: TAoChar = nil); overload;
 procedure FinalValue(var Value: TAoCharValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoShortStringValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoShortString = TMVAoShortString;
 
@@ -905,9 +915,9 @@ type
 procedure InitValue(out Value: TAoShortStringValue; const Name: String = ''; const InitializeTo: TAoShortString = nil); overload;
 procedure FinalValue(var Value: TAoShortStringValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoAnsiStringValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoAnsiString = TMVAoAnsiString;
 
@@ -920,9 +930,9 @@ type
 procedure InitValue(out Value: TAoAnsiStringValue; const Name: String = ''; const InitializeTo: TAoAnsiString = nil); overload;
 procedure FinalValue(var Value: TAoAnsiStringValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoUTF8StringValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoUTF8String = TMVAoUTF8String;
 
@@ -935,9 +945,9 @@ type
 procedure InitValue(out Value: TAoUTF8StringValue; const Name: String = ''; const InitializeTo: TAoUTF8String = nil); overload;
 procedure FinalValue(var Value: TAoUTF8StringValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoWideStringValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoWideString = TMVAoWideString;
 
@@ -950,9 +960,9 @@ type
 procedure InitValue(out Value: TAoWideStringValue; const Name: String = ''; const InitializeTo: TAoWideString = nil); overload;
 procedure FinalValue(var Value: TAoWideStringValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoUnicodeStringValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoUnicodeString = TMVAoUnicodeString;
 
@@ -965,9 +975,9 @@ type
 procedure InitValue(out Value: TAoUnicodeStringValue; const Name: String = ''; const InitializeTo: TAoUnicodeString = nil); overload;
 procedure FinalValue(var Value: TAoUnicodeStringValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoStringValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoString = TMVAoString;
 
@@ -980,9 +990,9 @@ type
 procedure InitValue(out Value: TAoStringValue; const Name: String = ''; const InitializeTo: TAoString = nil); overload;
 procedure FinalValue(var Value: TAoStringValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoPointerValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoPointer = TMVAoPointer;
 
@@ -995,9 +1005,9 @@ type
 procedure InitValue(out Value: TAoPointerValue; const Name: String = ''; const InitializeTo: TAoPointer = nil); overload;
 procedure FinalValue(var Value: TAoPointerValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoObjectValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoObject = TMVAoObject;
 
@@ -1010,9 +1020,9 @@ type
 procedure InitValue(out Value: TAoObjectValue; const Name: String = ''; const InitializeTo: TAoObject = nil); overload;
 procedure FinalValue(var Value: TAoObjectValue); overload;
 
-{===============================================================================
+{-------------------------------------------------------------------------------
     TAoGUIDValue
-===============================================================================}
+-------------------------------------------------------------------------------}
 type
   TAoGUID = TMVAoGUID;
 
@@ -1025,13 +1035,6 @@ type
 procedure InitValue(out Value: TAoGUIDValue; const Name: String = ''; const InitializeTo: TAoGUID = nil); overload;
 procedure FinalValue(var Value: TAoGUIDValue); overload;
 
-{===============================================================================
-    Auxiliary functions
-===============================================================================}
-
-Function ClassByValueType(ValueType: TManagedValueType): TManagedValueClass;
-
-Function CreateByValueType(ValueType: TManagedValueType; const Name: String = ''): TManagedValue;
 
 {===============================================================================
 --------------------------------------------------------------------------------
@@ -1106,7 +1109,12 @@ type
   end;
 
 {===============================================================================
-    Global manager access functions - declaration
+--------------------------------------------------------------------------------
+                                 Global manager
+--------------------------------------------------------------------------------
+===============================================================================}
+{===============================================================================
+    Global manager - declaration
 ===============================================================================}
 
 type
@@ -1125,959 +1133,18 @@ uses
   SysUtils;
 
 {===============================================================================
-    Common
+--------------------------------------------------------------------------------
+                         Aliases nad utility functions
+--------------------------------------------------------------------------------
 ===============================================================================}
-
-Function CreateValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValue;
-begin
-Result := CreateByValueType(ValueType,Name);
-end;
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-Function CreateValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue;
-begin
-Result := ValueClass.Create(Name);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FreeValue(var Value: TManagedValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
 {===============================================================================
-    TBooleanValue
+    Aliases nad utility functions - implementation
 ===============================================================================}
-
-procedure InitValue(out Value: TBooleanValue; const Name: String = ''; InitializeTo: Boolean = False);
-begin
-Value := TBooleanValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TBooleanValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TInt8Value
-===============================================================================}
-
-procedure InitValue(out Value: TInt8Value; const Name: String = ''; InitializeTo: Int8 = 0);
-begin
-Value := TInt8Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TInt8Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TUInt8Value
-===============================================================================}
-
-procedure InitValue(out Value: TUInt8Value; const Name: String = ''; InitializeTo: UInt8 = 0);
-begin
-Value := TUInt8Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TUInt8Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TInt16Value
-===============================================================================}
-
-procedure InitValue(out Value: TInt16Value; const Name: String = ''; InitializeTo: Int16 = 0);
-begin
-Value := TInt16Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TInt16Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TUInt16Value
-===============================================================================}
-
-procedure InitValue(out Value: TUInt16Value; const Name: String = ''; InitializeTo: UInt16 = 0);
-begin
-Value := TUInt16Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TUInt16Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TInt32Value
-===============================================================================}
-
-procedure InitValue(out Value: TInt32Value; const Name: String = ''; InitializeTo: Int32 = 0);
-begin
-Value := TInt32Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TInt32Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TUInt32Value
-===============================================================================}
-
-procedure InitValue(out Value: TUInt32Value; const Name: String = ''; InitializeTo: UInt32 = 0);
-begin
-Value := TUInt32Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TUInt32Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TInt64Value
-===============================================================================}
-
-procedure InitValue(out Value: TInt64Value; const Name: String = ''; InitializeTo: Int64 = 0);
-begin
-Value := TInt64Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TInt64Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TUInt64Value
-===============================================================================}
-
-procedure InitValue(out Value: TUInt64Value; const Name: String = ''; InitializeTo: UInt64 = 0);
-begin
-Value := TUInt64Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TUInt64Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TFloat32Value
-===============================================================================}
-
-procedure InitValue(out Value: TFloat32Value; const Name: String = ''; InitializeTo: Float32 = 0.0);
-begin
-Value := TFloat32Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TFloat32Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TFloat64Value
-===============================================================================}
-
-procedure InitValue(out Value: TFloat64Value; const Name: String = ''; InitializeTo: Float64 = 0.0);
-begin
-Value := TFloat64Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TFloat64Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TDateTimeValue
-===============================================================================}
-
-procedure InitValue(out Value: TDateTimeValue; const Name: String = ''; InitializeTo: TDateTime = 0.0);
-begin
-Value := TDateTimeValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TDateTimeValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TCurrencyValue
-===============================================================================}
-
-procedure InitValue(out Value: TCurrencyValue; const Name: String = ''; InitializeTo: Currency = 0.0);
-begin
-Value := TCurrencyValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TCurrencyValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAnsiCharValue
-===============================================================================}
-
-procedure InitValue(out Value: TAnsiCharValue; const Name: String = ''; InitializeTo: AnsiChar = #0);
-begin
-Value := TAnsiCharValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAnsiCharValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TUTF8CharValue
-===============================================================================}
-
-procedure InitValue(out Value: TUTF8CharValue; const Name: String = ''; InitializeTo: UTF8Char = #0);
-begin
-Value := TUTF8CharValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TUTF8CharValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TWideCharValue
-===============================================================================}
-
-procedure InitValue(out Value: TWideCharValue; const Name: String = ''; InitializeTo: WideChar = #0);
-begin
-Value := TWideCharValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TWideCharValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TUnicodeCharValue
-===============================================================================}
-
-procedure InitValue(out Value: TUnicodeCharValue; const Name: String = ''; InitializeTo: UnicodeChar = #0);
-begin
-Value := TUnicodeCharValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TUnicodeCharValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TCharValue
-===============================================================================}
-
-procedure InitValue(out Value: TCharValue; const Name: String = ''; InitializeTo: Char = #0);
-begin
-Value := TCharValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TCharValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TShortStringValue
-===============================================================================}
-
-procedure InitValue(out Value: TShortStringValue; const Name: String = ''; const InitializeTo: ShortString = '');
-begin
-Value := TShortStringValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TShortStringValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAnsiStringValue
-===============================================================================}
-
-procedure InitValue(out Value: TAnsiStringValue; const Name: String = ''; const InitializeTo: AnsiString = '');
-begin
-Value := TAnsiStringValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAnsiStringValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TUTF8StringValue
-===============================================================================}
-
-procedure InitValue(out Value: TUTF8StringValue; const Name: String = ''; const InitializeTo: UTF8String = '');
-begin
-Value := TUTF8StringValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TUTF8StringValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TWideStringValue
-===============================================================================}
-
-procedure InitValue(out Value: TWideStringValue; const Name: String = ''; const InitializeTo: WideString = '');
-begin
-Value := TWideStringValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TWideStringValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TUnicodeStringValue
-===============================================================================}
-
-procedure InitValue(out Value: TUnicodeStringValue; const Name: String = ''; const InitializeTo: UnicodeString = '');
-begin
-Value := TUnicodeStringValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TUnicodeStringValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TStringValue
-===============================================================================}
-
-procedure InitValue(out Value: TStringValue; const Name: String = ''; const InitializeTo: String = '');
-begin
-Value := TStringValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TStringValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TPointerValue
-===============================================================================}
-
-procedure InitValue(out Value: TPointerValue; const Name: String = ''; InitializeTo: Pointer = nil);
-begin
-Value := TPointerValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TPointerValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TObjectValue
-===============================================================================}
-
-procedure InitValue(out Value: TObjectValue; const Name: String = ''; InitializeTo: TObject = nil);
-begin
-Value := TObjectValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TObjectValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TGUIDValue
-===============================================================================}
-
-procedure InitValue(out Value: TGUIDValue; const Name: String; InitializeTo: TGUID);
-begin
-Value := TGUIDValue.CreateAndInit(Name,InitializeTo);
-end;
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-procedure InitValue(out Value: TGUIDValue; const Name: String = '');
-begin
-InitValue(Value,Name,StringToGUID('{00000000-0000-0000-0000-000000000000}'));
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TGUIDValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoBooleanValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoBooleanValue; const Name: String = ''; const InitializeTo: TAoBoolean = nil);
-begin
-Value := TAoBooleanValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoBooleanValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoInt8Value
-===============================================================================}
-
-procedure InitValue(out Value: TAoInt8Value; const Name: String = ''; const InitializeTo: TAoInt8 = nil);
-begin
-Value := TAoInt8Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoInt8Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoUInt8Value
-===============================================================================}
-
-procedure InitValue(out Value: TAoUInt8Value; const Name: String = ''; const InitializeTo: TAoUInt8 = nil);
-begin
-Value := TAoUInt8Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoUInt8Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoInt16Value
-===============================================================================}
-
-procedure InitValue(out Value: TAoInt16Value; const Name: String = ''; const InitializeTo: TAoInt16 = nil);
-begin
-Value := TAoInt16Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoInt16Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoUInt16Value
-===============================================================================}
-
-procedure InitValue(out Value: TAoUInt16Value; const Name: String = ''; const InitializeTo: TAoUInt16 = nil);
-begin
-Value := TAoUInt16Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoUInt16Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoInt32Value
-===============================================================================}
-
-procedure InitValue(out Value: TAoInt32Value; const Name: String = ''; const InitializeTo: TAoInt32 = nil);
-begin
-Value := TAoInt32Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoInt32Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoUInt32Value
-===============================================================================}
-
-procedure InitValue(out Value: TAoUInt32Value; const Name: String = ''; const InitializeTo: TAoUInt32 = nil);
-begin
-Value := TAoUInt32Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoUInt32Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoInt64Value
-===============================================================================}
-
-procedure InitValue(out Value: TAoInt64Value; const Name: String = ''; const InitializeTo: TAoInt64 = nil);
-begin
-Value := TAoInt64Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoInt64Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoUInt64Value
-===============================================================================}
-
-procedure InitValue(out Value: TAoUInt64Value; const Name: String = ''; const InitializeTo: TAoUInt64 = nil);
-begin
-Value := TAoUInt64Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoUInt64Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoFloat32Value
-===============================================================================}
-
-procedure InitValue(out Value: TAoFloat32Value; const Name: String = ''; const InitializeTo: TAoFloat32 = nil);
-begin
-Value := TAoFloat32Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoFloat32Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoFloat64Value
-===============================================================================}
-
-procedure InitValue(out Value: TAoFloat64Value; const Name: String = ''; const InitializeTo: TAoFloat64 = nil);
-begin
-Value := TAoFloat64Value.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoFloat64Value);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoDateTimeValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoDateTimeValue; const Name: String = ''; const InitializeTo: TAoDateTime = nil);
-begin
-Value := TAoDateTimeValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoDateTimeValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoCurrencyValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoCurrencyValue; const Name: String = ''; const InitializeTo: TAoCurrency = nil);
-begin
-Value := TAoCurrencyValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoCurrencyValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoAnsiCharValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoAnsiCharValue; const Name: String = ''; const InitializeTo: TAoAnsiChar = nil);
-begin
-Value := TAoAnsiCharValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoAnsiCharValue); 
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoUTF8CharValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoUTF8CharValue; const Name: String = ''; const InitializeTo: TAoUTF8Char = nil);
-begin
-Value := TAoUTF8CharValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoUTF8CharValue); 
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoWideCharValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoWideCharValue; const Name: String = ''; const InitializeTo: TAoWideChar = nil);
-begin
-Value := TAoWideCharValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoWideCharValue); 
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoUnicodeCharValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoUnicodeCharValue; const Name: String = ''; const InitializeTo: TAoUnicodeChar = nil);
-begin
-Value := TAoUnicodeCharValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoUnicodeCharValue); 
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoCharValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoCharValue; const Name: String = ''; const InitializeTo: TAoChar = nil);
-begin
-Value := TAoCharValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoCharValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoShortStringValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoShortStringValue; const Name: String = ''; const InitializeTo: TAoShortString = nil);
-begin
-Value := TAoShortStringValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoShortStringValue); 
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoAnsiStringValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoAnsiStringValue; const Name: String = ''; const InitializeTo: TAoAnsiString = nil);
-begin
-Value := TAoAnsiStringValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoAnsiStringValue); 
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoUTF8StringValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoUTF8StringValue; const Name: String = ''; const InitializeTo: TAoUTF8String = nil);
-begin
-Value := TAoUTF8StringValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoUTF8StringValue); 
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoWideStringValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoWideStringValue; const Name: String = ''; const InitializeTo: TAoWideString = nil);
-begin
-Value := TAoWideStringValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoWideStringValue); 
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoUnicodeStringValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoUnicodeStringValue; const Name: String = ''; const InitializeTo: TAoUnicodeString = nil);
-begin
-Value := TAoUnicodeStringValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoUnicodeStringValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoStringValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoStringValue; const Name: String = ''; const InitializeTo: TAoString = nil);
-begin
-Value := TAoStringValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoStringValue); overload;
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoPointerValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoPointerValue; const Name: String = ''; const InitializeTo: TAoPointer = nil);
-begin
-Value := TAoPointerValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoPointerValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoObjectValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoObjectValue; const Name: String = ''; const InitializeTo: TAoObject = nil);
-begin
-Value := TAoObjectValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoObjectValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    TAoGUIDValue
-===============================================================================}
-
-procedure InitValue(out Value: TAoGUIDValue; const Name: String = ''; const InitializeTo: TAoGUID = nil);
-begin
-Value := TAoGUIDValue.CreateAndInit(Name,InitializeTo);
-end;
-
-//------------------------------------------------------------------------------
-
-procedure FinalValue(var Value: TAoGUIDValue);
-begin
-If Assigned(Value) then
-  FreeAndNil(Value);
-end;
-
-{===============================================================================
-    Auxiliary functions
-===============================================================================}
-
-Function ClassByValueType(ValueType: TManagedValueType): TManagedValueClass;
+{-------------------------------------------------------------------------------
+    Common types
+-------------------------------------------------------------------------------}
+
+Function ClassFromValueType(ValueType: TManagedValueType): TManagedValueClass;
 begin
 case ValueType of
   // primitive values
@@ -2135,18 +1202,958 @@ case ValueType of
   mvtAoString:        Result := TAoStringValue;
   mvtAoPointer:       Result := TAoPointerValue;
   mvtAoObject:        Result := TAoObjectValue;
-  mvtAoGUID:          REsult := TAoGUIDValue;
+  mvtAoGUID:          Result := TAoGUIDValue;
 
 else
-  raise EMVInvalidValue.CreateFmt('ClassByValueType: Unknown value type (%d).',[Ord(ValueType)]);
+  raise EMVInvalidValue.CreateFmt('ClassFromValueType: Unknown value type (%d).',[Ord(ValueType)]);
 end;
 end;
 
 //------------------------------------------------------------------------------
 
-Function CreateByValueType(ValueType: TManagedValueType; const Name: String = ''): TManagedValue;
+Function CreateValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValue;
 begin
-Result := ClassByValueType(ValueType).Create(Name);
+Result := CreateValue(ValueType,Name);
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+Function CreateValue(ValueClass: TManagedValueClass; const Name: String = ''): TManagedValue;
+begin
+Result := ValueClass.Create(Name);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FreeValue(var Value: TManagedValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TBooleanValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TBooleanValue; const Name: String = ''; InitializeTo: Boolean = False);
+begin
+Value := TBooleanValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TBooleanValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TInt8Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TInt8Value; const Name: String = ''; InitializeTo: Int8 = 0);
+begin
+Value := TInt8Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TInt8Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TUInt8Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TUInt8Value; const Name: String = ''; InitializeTo: UInt8 = 0);
+begin
+Value := TUInt8Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TUInt8Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TInt16Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TInt16Value; const Name: String = ''; InitializeTo: Int16 = 0);
+begin
+Value := TInt16Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TInt16Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TUInt16Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TUInt16Value; const Name: String = ''; InitializeTo: UInt16 = 0);
+begin
+Value := TUInt16Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TUInt16Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TInt32Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TInt32Value; const Name: String = ''; InitializeTo: Int32 = 0);
+begin
+Value := TInt32Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TInt32Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TUInt32Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TUInt32Value; const Name: String = ''; InitializeTo: UInt32 = 0);
+begin
+Value := TUInt32Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TUInt32Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TInt64Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TInt64Value; const Name: String = ''; InitializeTo: Int64 = 0);
+begin
+Value := TInt64Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TInt64Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TUInt64Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TUInt64Value; const Name: String = ''; InitializeTo: UInt64 = 0);
+begin
+Value := TUInt64Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TUInt64Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TFloat32Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TFloat32Value; const Name: String = ''; InitializeTo: Float32 = 0.0);
+begin
+Value := TFloat32Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TFloat32Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TFloat64Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TFloat64Value; const Name: String = ''; InitializeTo: Float64 = 0.0);
+begin
+Value := TFloat64Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TFloat64Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TDateTimeValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TDateTimeValue; const Name: String = ''; InitializeTo: TDateTime = 0.0);
+begin
+Value := TDateTimeValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TDateTimeValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TCurrencyValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TCurrencyValue; const Name: String = ''; InitializeTo: Currency = 0.0);
+begin
+Value := TCurrencyValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TCurrencyValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAnsiCharValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAnsiCharValue; const Name: String = ''; InitializeTo: AnsiChar = #0);
+begin
+Value := TAnsiCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAnsiCharValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TUTF8CharValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TUTF8CharValue; const Name: String = ''; InitializeTo: UTF8Char = #0);
+begin
+Value := TUTF8CharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TUTF8CharValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TWideCharValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TWideCharValue; const Name: String = ''; InitializeTo: WideChar = #0);
+begin
+Value := TWideCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TWideCharValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TUnicodeCharValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TUnicodeCharValue; const Name: String = ''; InitializeTo: UnicodeChar = #0);
+begin
+Value := TUnicodeCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TUnicodeCharValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TCharValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TCharValue; const Name: String = ''; InitializeTo: Char = #0);
+begin
+Value := TCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TCharValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TShortStringValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TShortStringValue; const Name: String = ''; const InitializeTo: ShortString = '');
+begin
+Value := TShortStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TShortStringValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAnsiStringValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAnsiStringValue; const Name: String = ''; const InitializeTo: AnsiString = '');
+begin
+Value := TAnsiStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAnsiStringValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TUTF8StringValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TUTF8StringValue; const Name: String = ''; const InitializeTo: UTF8String = '');
+begin
+Value := TUTF8StringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TUTF8StringValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TWideStringValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TWideStringValue; const Name: String = ''; const InitializeTo: WideString = '');
+begin
+Value := TWideStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TWideStringValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TUnicodeStringValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TUnicodeStringValue; const Name: String = ''; const InitializeTo: UnicodeString = '');
+begin
+Value := TUnicodeStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TUnicodeStringValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TStringValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TStringValue; const Name: String = ''; const InitializeTo: String = '');
+begin
+Value := TStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TStringValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TPointerValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TPointerValue; const Name: String = ''; InitializeTo: Pointer = nil);
+begin
+Value := TPointerValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TPointerValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TObjectValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TObjectValue; const Name: String = ''; InitializeTo: TObject = nil);
+begin
+Value := TObjectValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TObjectValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TGUIDValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TGUIDValue; const Name: String; InitializeTo: TGUID);
+begin
+Value := TGUIDValue.CreateAndInit(Name,InitializeTo);
+end;
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+procedure InitValue(out Value: TGUIDValue; const Name: String = '');
+begin
+InitValue(Value,Name,StringToGUID('{00000000-0000-0000-0000-000000000000}'));
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TGUIDValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoBooleanValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoBooleanValue; const Name: String = ''; const InitializeTo: TAoBoolean = nil);
+begin
+Value := TAoBooleanValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoBooleanValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoInt8Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoInt8Value; const Name: String = ''; const InitializeTo: TAoInt8 = nil);
+begin
+Value := TAoInt8Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoInt8Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoUInt8Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoUInt8Value; const Name: String = ''; const InitializeTo: TAoUInt8 = nil);
+begin
+Value := TAoUInt8Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUInt8Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoInt16Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoInt16Value; const Name: String = ''; const InitializeTo: TAoInt16 = nil);
+begin
+Value := TAoInt16Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoInt16Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoUInt16Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoUInt16Value; const Name: String = ''; const InitializeTo: TAoUInt16 = nil);
+begin
+Value := TAoUInt16Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUInt16Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoInt32Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoInt32Value; const Name: String = ''; const InitializeTo: TAoInt32 = nil);
+begin
+Value := TAoInt32Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoInt32Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoUInt32Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoUInt32Value; const Name: String = ''; const InitializeTo: TAoUInt32 = nil);
+begin
+Value := TAoUInt32Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUInt32Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoInt64Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoInt64Value; const Name: String = ''; const InitializeTo: TAoInt64 = nil);
+begin
+Value := TAoInt64Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoInt64Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoUInt64Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoUInt64Value; const Name: String = ''; const InitializeTo: TAoUInt64 = nil);
+begin
+Value := TAoUInt64Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUInt64Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoFloat32Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoFloat32Value; const Name: String = ''; const InitializeTo: TAoFloat32 = nil);
+begin
+Value := TAoFloat32Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoFloat32Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoFloat64Value
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoFloat64Value; const Name: String = ''; const InitializeTo: TAoFloat64 = nil);
+begin
+Value := TAoFloat64Value.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoFloat64Value);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoDateTimeValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoDateTimeValue; const Name: String = ''; const InitializeTo: TAoDateTime = nil);
+begin
+Value := TAoDateTimeValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoDateTimeValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoCurrencyValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoCurrencyValue; const Name: String = ''; const InitializeTo: TAoCurrency = nil);
+begin
+Value := TAoCurrencyValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoCurrencyValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoAnsiCharValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoAnsiCharValue; const Name: String = ''; const InitializeTo: TAoAnsiChar = nil);
+begin
+Value := TAoAnsiCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoAnsiCharValue); 
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoUTF8CharValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoUTF8CharValue; const Name: String = ''; const InitializeTo: TAoUTF8Char = nil);
+begin
+Value := TAoUTF8CharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUTF8CharValue); 
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoWideCharValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoWideCharValue; const Name: String = ''; const InitializeTo: TAoWideChar = nil);
+begin
+Value := TAoWideCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoWideCharValue); 
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoUnicodeCharValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoUnicodeCharValue; const Name: String = ''; const InitializeTo: TAoUnicodeChar = nil);
+begin
+Value := TAoUnicodeCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUnicodeCharValue); 
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoCharValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoCharValue; const Name: String = ''; const InitializeTo: TAoChar = nil);
+begin
+Value := TAoCharValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoCharValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoShortStringValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoShortStringValue; const Name: String = ''; const InitializeTo: TAoShortString = nil);
+begin
+Value := TAoShortStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoShortStringValue); 
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoAnsiStringValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoAnsiStringValue; const Name: String = ''; const InitializeTo: TAoAnsiString = nil);
+begin
+Value := TAoAnsiStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoAnsiStringValue); 
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoUTF8StringValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoUTF8StringValue; const Name: String = ''; const InitializeTo: TAoUTF8String = nil);
+begin
+Value := TAoUTF8StringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUTF8StringValue); 
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoWideStringValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoWideStringValue; const Name: String = ''; const InitializeTo: TAoWideString = nil);
+begin
+Value := TAoWideStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoWideStringValue); 
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoUnicodeStringValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoUnicodeStringValue; const Name: String = ''; const InitializeTo: TAoUnicodeString = nil);
+begin
+Value := TAoUnicodeStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoUnicodeStringValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoStringValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoStringValue; const Name: String = ''; const InitializeTo: TAoString = nil);
+begin
+Value := TAoStringValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoStringValue); overload;
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoPointerValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoPointerValue; const Name: String = ''; const InitializeTo: TAoPointer = nil);
+begin
+Value := TAoPointerValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoPointerValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoObjectValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoObjectValue; const Name: String = ''; const InitializeTo: TAoObject = nil);
+begin
+Value := TAoObjectValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoObjectValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
+end;
+
+{-------------------------------------------------------------------------------
+    TAoGUIDValue
+-------------------------------------------------------------------------------}
+
+procedure InitValue(out Value: TAoGUIDValue; const Name: String = ''; const InitializeTo: TAoGUID = nil);
+begin
+Value := TAoGUIDValue.CreateAndInit(Name,InitializeTo);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure FinalValue(var Value: TAoGUIDValue);
+begin
+If Assigned(Value) then
+  FreeAndNil(Value);
 end;
 
 
@@ -2164,7 +2171,7 @@ end;
 
 Function TValuesManager.NewValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValue;
 begin
-Result := CreateByValueType(ValueType,Name);
+Result := CreateValue(ValueType,Name);
 Add(Result);
 end;
 
@@ -2620,7 +2627,12 @@ Result.Initialize(InitTo,False);
 end;
 
 {===============================================================================
-    Global manager access functions - implementation
+--------------------------------------------------------------------------------
+                                 Global manager
+--------------------------------------------------------------------------------
+===============================================================================}
+{===============================================================================
+    Global manager - implementation
 ===============================================================================}
 
 Function FindManagedValue(const Name: String; out Value: TManagedValue): Boolean;
