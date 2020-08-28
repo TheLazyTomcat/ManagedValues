@@ -1213,7 +1213,7 @@ end;
 
 Function CreateValue(ValueType: TManagedValueType; const Name: String = ''): TManagedValue;
 begin
-Result := CreateValue(ValueType,Name);
+Result := ClassFromValueType(ValueType).Create(Name);
 end;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

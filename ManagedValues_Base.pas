@@ -144,8 +144,6 @@ type
   {$ELSE}{$MESSAGE FATAL 'Unssuported CPU architecture.'}{$IFEND}
   {$IFDEF FPCDWM}{$POP}{$ENDIF});
 
-{$message 'add array of managed values? (special, implemented over a manager)'}  
-
 {===============================================================================
     TMVManagedValueBase - class declaration
 ===============================================================================}

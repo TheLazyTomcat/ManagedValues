@@ -45,6 +45,8 @@ uses
 
 {$IFDEF FPC_DisableWarns}
   {$DEFINE FPCDWM}
+  {$DEFINE W4055:={$WARN 4055 OFF}} // Conversion between ordinals and pointers is not portable
+  {$DEFINE W4056:={$WARN 4056 OFF}} // Conversion between ordinals and pointers is not portable
   {$DEFINE W5024:={$WARN 5024 OFF}} // Parameter "$1" not used
 {$ENDIF}  
 
@@ -82,7 +84,7 @@ end;
 
 //------------------------------------------------------------------------------
 
-{$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
+{$IFDEF FPCDWM}{$PUSH}W4055 W5024{$ENDIF}
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
 If PtrUInt(Pointer(TMVValueArrayItemType(A))) > PtrUInt(Pointer(TMVValueArrayItemType(B))) then
@@ -96,17 +98,21 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W4055 W4056{$ENDIF}
 class procedure TMVValueClass.ArrayItemStreamWrite(Stream: TStream; Value: TMVValueArrayItemType);
 begin
 Stream_WriteUInt64(Stream,UInt64(Pointer(Value)));
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W4055 W4056{$ENDIF}
 class Function TMVValueClass.ArrayItemStreamRead(Stream: TStream): TMVValueArrayItemType;
 begin
 Result := TMVValueArrayItemType(Pointer(Stream_ReadUInt64(Stream)));
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 //------------------------------------------------------------------------------
 
@@ -117,9 +123,11 @@ end;
 
 //------------------------------------------------------------------------------
 
+{$IFDEF FPCDWM}{$PUSH}W4055 W4056{$ENDIF}
 Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
 begin
 Result := TMVValueArrayItemType(Pointer(StrToInt64(Str)));
 end;
+{$IFDEF FPCDWM}{$POP}{$ENDIF}
 
 end.
