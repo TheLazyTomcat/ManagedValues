@@ -1,3 +1,102 @@
+{-------------------------------------------------------------------------------
+
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+-------------------------------------------------------------------------------}
+{===============================================================================
+
+  Managed Values
+
+    Managed Values is a small framework that provides a set of classes which
+    are meant to be used in place of normal variables or fields in situations,
+    where there is a need for tracking of changes in relation to initial value.
+
+    Special class is implemented for each type (they all have common ancestor),
+    which means the actual value must be stored or read using the provided
+    properties (implementing operator overloads is problematic).
+    It also means each variable or field must be initialized (the value object
+    must be instantiated) before use and freed when not used anymore. It is
+    enough to pass uninstantiated variable to InitValue function provided here
+    and free it using function FinalValue.
+
+    If you want to track changes in multiple values automatically, pool them in
+    a local (user-created) values manger (class TValuesManager). You can then
+    use its method to track the entire list for changes.
+    The manager can also be used to directly instantiate new values using
+    its methods.
+
+    WARNING - any managed value can be pooled only in one local manager, if you
+              try to add it to another, an EMVAlreadyManaged exception will be
+              raised.
+
+    NOTE - local managers do not own the pooled values, if you remove one from
+           there, it will NOT be automatically freed.
+
+    When symbol MV_GlobalManager is defined, an implicit (hidden) global manager
+    is created and all created values are pooled in there. Also, all values
+    being freed are automatically removed from it.
+    At the end of program run, when this global manager is freed, all values
+    still pooled in it are also freed. This means you do not actually have to
+    free your variables when you are using them for the entire lifespan of your
+    application.
+
+    When you want to utilize any managed value type, it is usually enough to
+    add reference to this unit (ManagedValues.pas) to uses clause.
+    Sometimes it might be necessary to add ManagedValues_Base, but it should
+    not be necessary to add any of the specific implementation unit, as all the
+    classes are forwarded in ManagedValues.
+
+    Currently, manged values for following basic types are implemented:
+
+      Boolean, Int8 (SmallInt), UInt8 (Byte), Int16 (ShortInt), UInt16 (Word),
+      Int32 (LongInt, Integer), UInt32 (LongWord, Cardinal), Int64, UInt64,
+      Float32 (Single), Float64 (Double), TDateTime, Currency, AnsiChar,
+      UTF8Char, WideChar, UnicodeChar, Char, ShortString, AnsiString,
+      UTF8String, WideString, UnicodeString, String, Pointer, Object, TGUID
+
+    Values for the following complex types are also implemented (at this moment
+    only dynamic arrays:
+
+      (dynamic) array of Boolean, array of Int8, array of UInt8, array of Int16,
+      array of UInt16, array of Int32, array of UInt32, array of Int64,
+      array of UInt64, array of Float32, array of Float64, array of TDateTime,
+      array of Currency, array of AnsiChar, array of UTF8Char,
+      array of WideChar, array of UnicodeChar, array of Char,
+      array of ShortString, array of AnsiString, array of UTF8String,
+      array of WideString, array of UnicodeString, array of String,
+      array of Poínter, array of TObject, array of TGUID
+
+  Version 1.0 alpha (2020-08-29) - requires extensive testing
+
+  Last changed 2020-08-29
+
+  ©2020 František Milt
+
+  Contacts:
+    František Milt: frantisek.milt@gmail.com
+
+  Support:
+    If you find this code useful, please consider supporting its author(s) by
+    making a small donation using the following link(s):
+
+      https://www.paypal.me/FMilt
+
+  Changelog:
+    For detailed changelog and history please refer to this git repository:
+
+      github.com/TheLazyTomcat/ManagedValues
+
+  Dependencies:
+    AuxTypes        - github.com/TheLazyTomcat/Lib.AuxTypes
+    AuxClasses      - github.com/TheLazyTomcat/Lib.AuxClasses
+    BinaryStreaming - github.com/TheLazyTomcat/Lib.BinaryStreaming
+    StrRect         - github.com/TheLazyTomcat/Lib.StrRect
+    UInt64Utils     - github.com/TheLazyTomcat/Lib.UInt64Utils
+    ListSorters     - github.com/TheLazyTomcat/Lib.ListSorters
+
+===============================================================================}
 unit ManagedValues;
 
 {$INCLUDE './ManagedValues_defs.inc'}

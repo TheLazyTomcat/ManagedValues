@@ -23,6 +23,17 @@
 {$ENDIF}
 {$H+}
 
+{
+  MV_GlobalManager
+
+  When defined, the implicit global manager is created and used.
+
+  Defined by default.
+}
+{$DEFINE MV_GlobalManager}
+
+// do NOT touch following --  --  --  --  --  --  --  --  --  --  --  --  --  --
+
 {$UNDEF MV_Value_ConstParams}
 {$UNDEF MV_Value_AssignIsThreadSafe}
 {$UNDEF MV_Value_CaseSensitivity}
@@ -35,5 +46,3 @@
 
 {$UNDEF MV_ClassDeclaration}
 {$UNDEF MV_ClassImplementation}
-
-{$DEFINE MV_GlobalManager}
