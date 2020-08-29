@@ -15,7 +15,7 @@
 
   Version 1.0 alpha (2020-08-29) - requires extensive testing 
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 
@@ -1368,7 +1368,10 @@ begin
 Include(fUpdated,vmuEquals);
 If fUpdateCounter <= 0 then
   begin
-    CheckAndSetEquality;
+    If (Sender as TMVManagedValueBase).EqualsToInitial then
+      CheckAndSetEquality
+    else
+      fEqualsToInit := False;
     If Assigned(fOnEqualsChangeEvent) then
       fOnEqualsChangeEvent(Self,Sender);
     If Assigned(fOnEqualsChangeCallback) then
