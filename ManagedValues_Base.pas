@@ -97,7 +97,7 @@ type
     mvtArrayOfFloat32 = mvtAoFloat32, mvtAoSingle = mvtAoFloat32, mvtArrayOfSingle = mvtAoFloat32,
     mvtArrayOfFloat64 = mvtAoFloat64, mvtAoDouble = mvtAoFloat64, mvtArrayOfDouble = mvtAoFloat64,
       mvtAoFloat = mvtAoFloat64, mvtArrayOfFloat = mvtAoFloat64, mvtAoReal = mvtAoFloat64,
-    mvtArrayOfReal = mvtAoFloat64,
+      mvtArrayOfReal = mvtAoFloat64,
     mvtArrayOfDateTime = mvtAoDateTime, mvtAoDate = mvtAoDateTime, mvtArrayOfDate = mvtAoDateTime,
       mvtAoTime = mvtAoDateTime, mvtArrayOfTime = mvtAoDateTime,
     mvtArrayOfCurrency = mvtAoCurrency,
@@ -267,6 +267,8 @@ type
     // initial array has capacity equal to count, current array is counted
     fListDelegate:    TCustomListObject;
     fCurrentCount:    Integer;
+    fUpdateCounter:   Integer;
+    fUpdated:         Boolean;
     fSortCompareArg:  Boolean;
     // getters, setters
     class Function GetArrayItemType: TMVArrayItemType; virtual; abstract;
@@ -281,6 +283,9 @@ type
     // init/final
     procedure Initialize; overload; override;
     procedure Finalize; override;
+    // event calls
+    procedure DoCurrentChange; override;
+    procedure DoEqualsChange; override;
     // compare methods
     class Function CompareBaseValuesCnt(const A,B; CntA,CntB: Integer; Arg: Boolean): Integer; virtual; abstract;
     class Function SameBaseValuesCnt(const A,B; CntA,CntB: Integer; Arg: Boolean): Boolean; virtual;
@@ -288,6 +293,9 @@ type
     class Function SameArrayItemValues(const A,B; Arg: Boolean): Boolean; virtual;
   public
     procedure BuildFrom; virtual;
+    // updating
+    procedure BeginUpdate; virtual;
+    procedure EndUpdate; virtual;
     // index methods
     Function LowIndex: Integer; virtual; abstract;                              
     Function HighIndex: Integer; virtual;
@@ -1065,6 +1073,8 @@ fListDelegate := TMVArrayListDelegate.Create(Self);
 inherited;
 fCurrentCount := 0;
 fSortCompareArg := True;
+fUpdateCounter := 0;
+fUpdated := False;
 end;
 
 //------------------------------------------------------------------------------
@@ -1074,6 +1084,24 @@ begin
 fCurrentCount := 0;
 inherited;
 FreeAndNil(fListDelegate);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.DoCurrentChange;
+begin
+If fUpdateCounter <= 0 then
+  inherited DoCurrentChange;
+fUpdated := True;
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.DoEqualsChange;
+begin
+If fUpdateCounter <= 0 then
+  inherited DoEqualsChange;
+fUpdated := True;
 end;
 
 //------------------------------------------------------------------------------
@@ -1097,6 +1125,32 @@ end;
 procedure TMVArrayManagedValue.BuildFrom;
 begin
 // do nothing
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.BeginUpdate;
+begin
+If fUpdateCounter <= 0 then
+  fUpdated := False;
+Inc(fUpdateCounter);
+end;
+
+//------------------------------------------------------------------------------
+
+procedure TMVArrayManagedValue.EndUpdate;
+begin
+Dec(fUpdateCounter);
+If fUpdateCounter <= 0 then
+  begin
+    fUpdateCounter := 0;
+    If fUpdated then
+      begin
+        CheckAndSetEquality;
+        DoCurrentChange;
+      end;
+    fUpdated := False;
+  end;
 end;
 
 //------------------------------------------------------------------------------

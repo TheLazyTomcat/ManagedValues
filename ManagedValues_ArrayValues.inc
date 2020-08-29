@@ -337,12 +337,16 @@ procedure TMVValueClass.CheckAndSetEquality;
 var
   IsEqual:  Boolean;
 begin
-IsEqual := SameBaseValuesCnt(fCurrentValue,fInitialValue,fCurrentCount,Length(fInitialValue),True);
-If IsEqual <> fEqualsToInitial then
+If fUpdateCounter <= 0 then
   begin
-    fEqualsToInitial := IsEqual;
-    DoEqualsChange;
+    IsEqual := SameBaseValuesCnt(fCurrentValue,fInitialValue,fCurrentCount,Length(fInitialValue),True);
+    If IsEqual <> fEqualsToInitial then
+      begin
+        fEqualsToInitial := IsEqual;
+        DoEqualsChange;
+      end;
   end;
+fUpdated := True;
 end;
 
 {-------------------------------------------------------------------------------
@@ -722,9 +726,12 @@ If fCurrentCount > 1 then
     try
       fSortCompareArg := {$IFDEF MV_ArrayItem_CaseSensitivity}CaseSensitive{$ELSE}True{$ENDIF};
       Sorter.Reversed := Reversed;
-      Sorter.Sort(LowIndex,HighIndex);
-      CheckAndSetEquality;
-      DoCurrentChange;
+      BeginUpdate;
+      try
+        Sorter.Sort(LowIndex,HighIndex);
+      finally
+        EndUpdate;
+      end;
     finally
       Sorter.Free;
     end;
