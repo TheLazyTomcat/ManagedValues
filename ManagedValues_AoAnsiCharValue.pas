@@ -11,9 +11,9 @@
 
     Array managed value of AnsiChar.
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 
@@ -105,20 +105,6 @@ const
     TMVAoAnsiCharValue - specific protected methods
 -------------------------------------------------------------------------------}
 
-class Function TMVValueClass.GetValueType: TMVManagedValueType;
-begin
-Result := mvtAoAnsiChar;
-end;
-
-//------------------------------------------------------------------------------
-
-class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
-begin
-Result := aitAnsiChar;
-end;
-
-//------------------------------------------------------------------------------
-
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := AnsiStringCompare(TMVValueArrayItemType(A),TMVValueArrayItemType(B),Arg);
@@ -156,6 +142,22 @@ If Length(Temp) > 0 then
   Result := Temp[1]
 else
   Result := MV_LOCAL_DEFAULT_ITEM_VALUE
+end;
+
+{-------------------------------------------------------------------------------
+    TMVAoAnsiCharValue - specific public methods
+-------------------------------------------------------------------------------}
+
+class Function TMVValueClass.ValueType: TMVManagedValueType;
+begin
+Result := mvtAoAnsiChar;
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.ArrayItemType: TMVArrayItemType;
+begin
+Result := aitAnsiChar;
 end;
 
 end.

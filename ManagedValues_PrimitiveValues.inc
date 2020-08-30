@@ -11,9 +11,9 @@
 
     Implementation template for primitive-type values.
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing 
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 
@@ -54,8 +54,6 @@
     procedure SetInitialValue({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType);
   protected
     Function GetCurrentValuePtr: Pointer; override;
-    // class info methods
-    class Function GetValueType: TMVManagedValueType; override;
     // init, final
     procedure Initialize; override;
     // compare methods
@@ -67,6 +65,8 @@
     // utility
     procedure CheckAndSetEquality; override;
   public
+    // class info
+    class Function ValueType: TMVManagedValueType; override;
     // costructors, destructors
     constructor CreateAndInit({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType); overload;
     constructor CreateAndInit(const Name: String; {$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType); overload;

@@ -11,9 +11,9 @@
 
     UTF8String managed value.
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing 
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 
@@ -102,13 +102,6 @@ const
     TMVUTF8StringValue - specific protected methods
 -------------------------------------------------------------------------------}
 
-class Function TMVValueClass.GetValueType: TMVManagedValueType;
-begin
-Result := mvtUTF8String;
-end;
-
-//------------------------------------------------------------------------------
-
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := UTF8StringCompare(TMVValueBaseType(A),TMVValueBaseType(B),Arg);
@@ -125,6 +118,13 @@ end;
 {-------------------------------------------------------------------------------
     TMVUTF8StringValue - specific public methods
 -------------------------------------------------------------------------------}
+
+class Function TMVValueClass.ValueType: TMVManagedValueType;
+begin
+Result := mvtUTF8String;
+end;
+
+//------------------------------------------------------------------------------
 
 Function TMVValueClass.StreamedSize: TMemSize;
 begin

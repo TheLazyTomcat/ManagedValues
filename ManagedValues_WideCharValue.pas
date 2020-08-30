@@ -11,9 +11,9 @@
 
     WideChar managed value.
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing 
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 
@@ -102,13 +102,6 @@ const
     TMVWideCharValue - specific protected methods
 -------------------------------------------------------------------------------}
 
-class Function TMVValueClass.GetValueType: TMVManagedValueType;
-begin
-Result := mvtWideChar;
-end;
-
-//------------------------------------------------------------------------------
-
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := WideStringCompare(TMVValueBaseType(A),TMVValueBaseType(B),Arg);
@@ -117,6 +110,13 @@ end;
 {-------------------------------------------------------------------------------
     TMVWideCharValue - specific public methods
 -------------------------------------------------------------------------------}
+
+class Function TMVValueClass.ValueType: TMVManagedValueType;
+begin
+Result := mvtWideChar;
+end;
+
+//------------------------------------------------------------------------------
 
 procedure TMVValueClass.SaveToStream(Stream: TStream);
 begin

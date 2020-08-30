@@ -11,9 +11,9 @@
 
     Array managed value of GUID.
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 
@@ -110,20 +110,6 @@ const
     TMVAoGUIDValue - specific protected methods
 -------------------------------------------------------------------------------}
 
-class Function TMVValueClass.GetValueType: TMVManagedValueType;
-begin
-Result := mvtAoGUID;
-end;
-
-//------------------------------------------------------------------------------
-
-class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
-begin
-Result := aitGUID;
-end;
-
-//------------------------------------------------------------------------------
-
 {$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 var
@@ -197,6 +183,22 @@ end;
 Function TMVValueClass.ArrayItemFromString(const Str: String): TMVValueArrayItemType;
 begin
 Result := StringToGUID(Str);
+end;
+
+{-------------------------------------------------------------------------------
+    TMVAoGUIDValue - specific public methods
+-------------------------------------------------------------------------------}
+
+class Function TMVValueClass.ValueType: TMVManagedValueType;
+begin
+Result := mvtAoGUID;
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.ArrayItemType: TMVArrayItemType;
+begin
+Result := aitGUID;
 end;
 
 end.

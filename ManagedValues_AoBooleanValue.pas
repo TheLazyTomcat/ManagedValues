@@ -11,9 +11,9 @@
 
     Array managed value of Boolean.
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 
@@ -110,20 +110,6 @@ const
     TMVAoBooleanValue - specific protected methods
 -------------------------------------------------------------------------------}
 
-class Function TMVValueClass.GetValueType: TMVManagedValueType;
-begin
-Result := mvtAoBoolean;
-end;
-
-//------------------------------------------------------------------------------
-
-class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
-begin
-Result := aitBoolean;
-end;
-
-//------------------------------------------------------------------------------
-
 {$IFDEF FPCDWM}{$PUSH}W5024{$ENDIF}
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
@@ -167,6 +153,20 @@ end;
 {-------------------------------------------------------------------------------
     TMVAoBooleanValue - specific public methods
 -------------------------------------------------------------------------------}
+
+class Function TMVValueClass.ValueType: TMVManagedValueType;
+begin
+Result := mvtAoBoolean;
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.ArrayItemType: TMVArrayItemType;
+begin
+Result := aitBoolean;
+end;
+
+//------------------------------------------------------------------------------
 
 Function TMVValueClass.StreamedSize: TMemSize;
 begin

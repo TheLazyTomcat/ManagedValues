@@ -11,9 +11,9 @@
 
     Array managed value of Object.
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 
@@ -112,20 +112,6 @@ const
     TMVAoObjectValue - specific protected methods
 -------------------------------------------------------------------------------}
 
-class Function TMVValueClass.GetValueType: TMVManagedValueType;
-begin
-Result := mvtAoObject;
-end;
-
-//------------------------------------------------------------------------------
-
-class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
-begin
-Result := aitObject;
-end;
-
-//------------------------------------------------------------------------------
-
 {$IFDEF FPCDWM}{$PUSH}W4055 W5024{$ENDIF}
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
@@ -171,5 +157,21 @@ begin
 Result := TMVValueArrayItemType(Pointer(StrToInt64(Str)));
 end;
 {$IFDEF FPCDWM}{$POP}{$ENDIF}
+
+{-------------------------------------------------------------------------------
+    TMVAoObjectValue - specific public methods
+-------------------------------------------------------------------------------}
+
+class Function TMVValueClass.ValueType: TMVManagedValueType;
+begin
+Result := mvtAoObject;
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.ArrayItemType: TMVArrayItemType;
+begin
+Result := aitObject;
+end;
 
 end.

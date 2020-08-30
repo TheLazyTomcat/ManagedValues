@@ -68,9 +68,9 @@
       array of WideString, array of UnicodeString, array of String,
       array of Poínter, array of TObject, array of TGUID
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 

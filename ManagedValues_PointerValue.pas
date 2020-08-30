@@ -11,9 +11,9 @@
 
     Pointer managed value.
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing 
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 
@@ -110,13 +110,6 @@ const
     TMVPointerValue - specific protected methods
 -------------------------------------------------------------------------------}
 
-class Function TMVValueClass.GetValueType: TMVManagedValueType;
-begin
-Result := mvtPointer;
-end;
-
-//------------------------------------------------------------------------------
-
 {$IFDEF FPCDWM}{$PUSH}W4055 W5024{$ENDIF}
 class Function TMVValueClass.CompareBaseValues(const A,B; Arg: Boolean): Integer;
 begin
@@ -132,6 +125,13 @@ end;
 {-------------------------------------------------------------------------------
     TMVPointerValue - specific public methods
 -------------------------------------------------------------------------------}
+
+class Function TMVValueClass.ValueType: TMVManagedValueType;
+begin
+Result := mvtPointer;
+end;
+
+//------------------------------------------------------------------------------
 
 {$IFDEF FPCDWM}{$PUSH}W4055 W4056{$ENDIF}
 procedure TMVValueClass.SaveToStream(Stream: TStream);

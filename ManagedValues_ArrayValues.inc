@@ -11,9 +11,9 @@
 
     Implementation template for dynamic array values.
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing 
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 
@@ -57,9 +57,6 @@
     procedure SetItem(Index: Integer;{$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType);
   protected
     Function GetCurrentValuePtr: Pointer; override;
-    // class info
-    class Function GetValueType: TMVManagedValueType; override;
-    class Function GetArrayItemType: TMVArrayItemType; override;
     // list management
     Function GetCapacity: Integer; override;
     procedure SetCapacity(Value: Integer); override;
@@ -88,6 +85,9 @@
     // utility
     procedure CheckAndSetEquality; override;  
   public
+    // class info
+    class Function ValueType: TMVManagedValueType; override;
+    class Function ArrayItemType: TMVArrayItemType; override;  
     // costructors, destructors
     constructor CreateAndInit(const Value: TMVValueArrayType); overload;
     constructor CreateAndInit(const Name: String; const Value: TMVValueArrayType); overload;

@@ -11,9 +11,9 @@
 
     Array managed value of WideChar.
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 
@@ -105,20 +105,6 @@ const
     TMVAoWideCharValue - specific protected methods
 -------------------------------------------------------------------------------}
 
-class Function TMVValueClass.GetValueType: TMVManagedValueType;
-begin
-Result := mvtAoWideChar;
-end;
-
-//------------------------------------------------------------------------------
-
-class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
-begin
-Result := aitWideChar;
-end;
-
-//------------------------------------------------------------------------------
-
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := WideStringCompare(TMVValueArrayItemType(A),TMVValueArrayItemType(B),Arg);
@@ -156,6 +142,22 @@ If Length(Temp) > 0 then
   Result := Temp[1]
 else
   Result := MV_LOCAL_DEFAULT_ITEM_VALUE
+end;
+
+{-------------------------------------------------------------------------------
+    TMVAoWideCharValue - specific public methods
+-------------------------------------------------------------------------------}
+
+class Function TMVValueClass.ValueType: TMVManagedValueType;
+begin
+Result := mvtAoWideChar;
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.ArrayItemType: TMVArrayItemType;
+begin
+Result := aitWideChar;
 end;
 
 end.

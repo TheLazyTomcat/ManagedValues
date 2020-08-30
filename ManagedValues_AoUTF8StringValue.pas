@@ -11,9 +11,9 @@
 
     Array managed value of UTF8String.
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 
@@ -105,20 +105,6 @@ const
     TMVAoUTF8StringValue - specific protected methods
 -------------------------------------------------------------------------------}
 
-class Function TMVValueClass.GetValueType: TMVManagedValueType;
-begin
-Result := mvtAoUTF8String;
-end;
-
-//------------------------------------------------------------------------------
-
-class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
-begin
-Result := aitUTF8String;
-end;
-
-//------------------------------------------------------------------------------
-
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := UTF8StringCompare(TMVValueArrayItemType(A),TMVValueArrayItemType(B),Arg);
@@ -162,7 +148,21 @@ end;
 
 {-------------------------------------------------------------------------------
     TMVAoUTF8StringValue - specific public methods
--------------------------------------------------------------------------------}  
+-------------------------------------------------------------------------------}
+
+class Function TMVValueClass.ValueType: TMVManagedValueType;
+begin
+Result := mvtAoUTF8String;
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.ArrayItemType: TMVArrayItemType;
+begin
+Result := aitUTF8String;
+end;
+
+//------------------------------------------------------------------------------
 
 Function TMVValueClass.StreamedSize: TMemSize;
 var

@@ -13,7 +13,7 @@
 
     Global values manager is also implemented and managed in this unit.
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing 
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
   Last changed 2020-08-30
 
@@ -210,7 +210,6 @@ type
     fOnEqualsChangeCallback:  TNotifyCallback;
     // getters, setters
     Function GetCurrentValuePtr: Pointer; virtual; abstract;
-    class Function GetValueType: TMVManagedValueType; virtual; abstract;
     Function GetGloballyManaged: Boolean; virtual;
     Function GetLocallyManaged: Boolean; virtual;
     // init/final
@@ -230,6 +229,8 @@ type
     property OnValueChangeInternal: TNotifyEvent read fOnValueChangeInternal write fOnValueChangeInternal;
     property OnEqualsChangeInternal: TNotifyEvent read fOnEqualsChangeInternal write fOnEqualsChangeInternal;
   public
+    // class info
+    class Function ValueType: TMVManagedValueType; virtual; abstract;
     // constructors, destructors
     constructor Create; overload;
     constructor Create(const Name: String); overload;
@@ -256,7 +257,6 @@ type
     Function AsString: String; virtual;
     procedure FromString(const Str: String); virtual;
     // properties
-    property ValueType: TMVManagedValueType read GetValueType;
     property GloballyManaged: Boolean read GetGloballyManaged;
     property LocallyManaged: Boolean read GetLocallyManaged;
     property Name: String read fName;
@@ -314,8 +314,6 @@ type
     fUpdateCounter:   Integer;
     fUpdated:         Boolean;
     fSortCompareArg:  Boolean;
-    // getters, setters
-    class Function GetArrayItemType: TMVArrayItemType; virtual; abstract;
     // list management (eg. growing)
     Function GetCapacity: Integer; virtual; abstract;
     procedure SetCapacity(Value: Integer); virtual; abstract;
@@ -336,6 +334,9 @@ type
     class Function CompareArrayItemValues(const A,B; Arg: Boolean): Integer; virtual; abstract;
     class Function SameArrayItemValues(const A,B; Arg: Boolean): Boolean; virtual;
   public
+    // class info
+    class Function ArrayItemType: TMVArrayItemType; virtual; abstract;
+    // array building
     procedure BuildFrom; virtual;
     // updating
     procedure BeginUpdate; virtual;
@@ -357,7 +358,6 @@ type
     procedure Clear; virtual; abstract;
     procedure Sort; virtual;
     // properties common to all arrays
-    property ArrayItemType: TMVArrayItemType read GetArrayItemType;
     property CurrentCapacity: Integer read GetCapacity write SetCapacity;
     property CurrentCount: Integer read GetCount write SetCount;
     property InitialCount: Integer read GetInitialCount;

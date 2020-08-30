@@ -11,9 +11,9 @@
 
     Array managed value of String.
 
-  Version 1.0 alpha (2020-08-29) - requires extensive testing
+  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-29
+  Last changed 2020-08-30
 
   ©2020 František Milt
 
@@ -105,20 +105,6 @@ const
     TMVAoStringValue - specific protected methods
 -------------------------------------------------------------------------------}
 
-class Function TMVValueClass.GetValueType: TMVManagedValueType;
-begin
-Result := mvtAoString;
-end;
-
-//------------------------------------------------------------------------------
-
-class Function TMVValueClass.GetArrayItemType: TMVArrayItemType;
-begin
-Result := aitString;
-end;
-
-//------------------------------------------------------------------------------
-
 class Function TMVValueClass.CompareArrayItemValues(const A,B; Arg: Boolean): Integer;
 begin
 Result := StringCompare(TMVValueArrayItemType(A),TMVValueArrayItemType(B),Arg);
@@ -162,7 +148,21 @@ end;
 
 {-------------------------------------------------------------------------------
     TMVAoStringValue - specific public methods
--------------------------------------------------------------------------------}  
+-------------------------------------------------------------------------------}
+
+class Function TMVValueClass.ValueType: TMVManagedValueType;
+begin
+Result := mvtAoString;
+end;
+
+//------------------------------------------------------------------------------
+
+class Function TMVValueClass.ArrayItemType: TMVArrayItemType;
+begin
+Result := aitString;
+end;
+
+//------------------------------------------------------------------------------
 
 Function TMVValueClass.StreamedSize: TMemSize;
 var
