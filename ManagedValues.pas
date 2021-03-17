@@ -22,7 +22,7 @@
     and free it using function FinalValue.
 
     If you want to track changes in multiple values automatically, pool them in
-    a local (user-created) values manger (class TValuesManager). You can then
+    a local (user-created) values manager (class TValuesManager). You can then
     use its method to track the entire list for changes.
     The manager can also be used to directly instantiate new values using
     its methods.
@@ -46,9 +46,9 @@
     add reference to this unit (ManagedValues.pas) to uses clause.
     Sometimes it might be necessary to add ManagedValues_Base, but it should
     not be necessary to add any of the specific implementation unit, as all the
-    classes are forwarded in ManagedValues.
+    classes are forwarded in here.
 
-    Currently, manged values for following basic types are implemented:
+    Currently, managed values for following basic types are implemented:
 
       Boolean, Int8 (SmallInt), UInt8 (Byte), Int16 (ShortInt), UInt16 (Word),
       Int32 (LongInt, Integer), UInt32 (LongWord, Cardinal), Int64, UInt64,
@@ -70,9 +70,9 @@
 
   Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2020-08-30
+  Last changed 2021-03-17
 
-  ©2020 František Milt
+  ©2020-2021 František Milt
 
   Contacts:
     František Milt: frantisek.milt@gmail.com
@@ -180,7 +180,7 @@ type
 
   TManagedValue = TMVManagedValueBase;
 
-  // in case someone base class only for array values with a nice name ;)
+  // in case someone wants a base class only for array values with a nice name ;)
   TArrayManagedValue = TMVArrayManagedValue;
 
   TManagedValueClass = class of TManagedValue;
