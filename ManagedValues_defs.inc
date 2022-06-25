@@ -29,8 +29,14 @@
   When defined, the implicit global manager is created and used.
 
   Defined by default.
+
+  To disable/undefine this symbol in a project without changing this library,
+  define project-wide symbol ManagedValues_MV_GlobalManager_Off.
 }
 {$DEFINE MV_GlobalManager}
+{$IFDEF ManagedValues_MV_GlobalManager_Off}
+  {$UNDEF MV_GlobalManager}
+{$ENDIF}
 
 // do NOT touch following --  --  --  --  --  --  --  --  --  --  --  --  --  --
 
