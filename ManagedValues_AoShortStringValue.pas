@@ -13,7 +13,7 @@
 
   Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2021-03-17
+  Last changed 2022-07-08
 
   ©2020-2021 František Milt
 
@@ -91,8 +91,12 @@ uses
 --------------------------------------------------------------------------------
 ===============================================================================}
 const
-  MV_LOCAL_DEFAULT_ITEM_VALUE = TMVValueArrayItemType('');
-  
+{$IFDEF FPC}
+  MV_LOCAL_DEFAULT_ITEM_VALUE = TMVValueArrayItemType('');  // this is crashing Delphi 7
+{$ELSE}
+  MV_LOCAL_DEFAULT_ITEM_VALUE: TMVValueArrayItemType = '';
+{$ENDIF}  
+
 {===============================================================================
     TMVAoShortStringValue - class implementation
 ===============================================================================}

@@ -157,7 +157,7 @@ uses
   ManagedValues_AoAnsiStringValue,
   ManagedValues_AoUTF8StringValue,
   ManagedValues_AoWideStringValue,
-  ManagedValues_AoUnicodeStringValue,  
+  ManagedValues_AoUnicodeStringValue,
   ManagedValues_AoStringValue,
   ManagedValues_AoPointerValue,
   ManagedValues_AoObjectValue,
