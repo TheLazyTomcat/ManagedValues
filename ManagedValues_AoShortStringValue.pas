@@ -13,9 +13,9 @@
 
   Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2022-07-08
+  Last changed 2022-09-14
 
-  ©2020-2021 František Milt
+  ©2020-2022 František Milt
 
   Contacts:
     František Milt: frantisek.milt@gmail.com
@@ -166,7 +166,7 @@ var
 begin
 Result := SizeOf(Int32);  // array length
 For i := LowIndex to HighIndex do
-  Inc(Result,TMemSize(1 + Length(fCurrentValue[i])));
+  Inc(Result,StreamedSize_ShortString(fCurrentValue[i]));
 end;
 
 end.

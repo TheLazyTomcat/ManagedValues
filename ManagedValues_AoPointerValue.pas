@@ -13,9 +13,9 @@
 
   Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2021-03-17
+  Last changed 2022-09-14
 
-  ©2020-2021 František Milt
+  ©2020-2022 František Milt
 
   Contacts:
     František Milt: frantisek.milt@gmail.com
@@ -64,7 +64,7 @@ type
 {$UNDEF MV_ArrayItem_ConstParams}
 {$DEFINE MV_ArrayItem_AssignIsThreadSafe}
 {$UNDEF MV_ArrayItem_CaseSensitivity}
-{$UNDEF MV_ArrayItem_ComplexStreamedSize}
+{$DEFINE MV_ArrayItem_ComplexStreamedSize}
 
 {===============================================================================
     TMVAoPointerValue - class declaration
@@ -172,6 +172,13 @@ end;
 class Function TMVValueClass.ArrayItemType: TMVArrayItemType;
 begin
 Result := aitPointer;
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.StreamedSize: TMemSize;
+begin
+Result := SizeOf(Int32){array length} + (TMemSize(fCurrentCount) * StreamedSize_UInt64);
 end;
 
 end.

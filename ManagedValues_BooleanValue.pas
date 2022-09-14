@@ -13,9 +13,9 @@
 
   Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2021-03-17
+  Last changed 2022-09-14
 
-  ©2020-2021 František Milt
+  ©2020-2022 František Milt
 
   Contacts:
     František Milt: frantisek.milt@gmail.com
@@ -133,7 +133,7 @@ end;
 
 Function TMVValueClass.StreamedSize: TMemSize;
 begin
-Result := 1;
+Result := StreamedSize_Bool;
 end;
 
 //------------------------------------------------------------------------------

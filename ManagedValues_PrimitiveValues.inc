@@ -13,9 +13,9 @@
 
   Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2021-03-17
+  Last changed 2022-09-14
 
-  ©2020-2021 František Milt
+  ©2020-2022 František Milt
 
   Contacts:
     František Milt: frantisek.milt@gmail.com
@@ -45,14 +45,13 @@
     TMVValueClass - class declaration
 ===============================================================================}
 {$IFDEF MV_ClassDeclaration}
-  private
+  protected
     fCurrentValue:  TMVValueBaseType;
     fInitialValue:  TMVValueBaseType;
     // getters, setters
-    Function GetCurrentValue: TMVValueBaseType;
-    procedure SetCurrentValue({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType);
-    procedure SetInitialValue({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType);
-  protected
+    Function GetCurrentValue: TMVValueBaseType; virtual;
+    procedure SetCurrentValue({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType); virtual;
+    procedure SetInitialValue({$IFDEF MV_Value_ConstParams}const{$ENDIF} Value: TMVValueBaseType); virtual;
     Function GetCurrentValuePtr: Pointer; override;
     // init, final
     procedure Initialize; override;
@@ -99,7 +98,7 @@
 ===============================================================================}
 {$IFDEF MV_ClassImplementation}
 {-------------------------------------------------------------------------------
-    TMVValueClass - private methods
+    TMVValueClass - protected methods
 -------------------------------------------------------------------------------}
 
 Function TMVValueClass.GetCurrentValue: TMVValueBaseType;
@@ -132,9 +131,7 @@ If not SameBaseValues(Value,fInitialValue,True) then
   end;
 end;
 
-{-------------------------------------------------------------------------------
-    TMVValueClass - protected methods
--------------------------------------------------------------------------------}
+//------------------------------------------------------------------------------
 
 Function TMVValueClass.GetCurrentValuePtr: Pointer;
 begin

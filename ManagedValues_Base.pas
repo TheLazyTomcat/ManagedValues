@@ -15,9 +15,9 @@
 
   Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2021-03-17
+  Last changed 2022-09-14
 
-  ©2020-2021 František Milt
+  ©2020-2022 František Milt
 
   Contacts:
     František Milt: frantisek.milt@gmail.com
@@ -270,6 +270,8 @@ type
     property OnEqualsToInitialChangeEvent: TNotifyEvent read fOnEqualsChangeEvent write fOnEqualsChangeEvent;
     property OnEqualsToInitialChangeCallback: TNotifyCallback read fOnEqualsChangeCallback write fOnEqualsChangeCallback;
     property OnEqualsToInitialChange: TNotifyEvent read fOnEqualsChangeEvent write fOnEqualsChangeEvent;
+    property OnChangeEvent: TNotifyEvent read fOnValueChangeEvent write fOnValueChangeEvent;
+    property OnChangeCallback: TNotifyCallback read fOnValueChangeCallback write fOnValueChangeCallback;
     property OnChange: TNotifyEvent read fOnValueChangeEvent write fOnValueChangeEvent;
   end;
 
@@ -859,8 +861,8 @@ begin
 If Assigned(fOnValueChangeInternal) then
   fOnValueChangeInternal(Self);
 If Assigned(fOnValueChangeEvent) then
-  fOnValueChangeEvent(Self);
-If Assigned(fOnValueChangeCallback) then
+  fOnValueChangeEvent(Self)
+else If Assigned(fOnValueChangeCallback) then
   fOnValueChangeCallback(Self);
 end;
 
@@ -871,8 +873,8 @@ begin
 If Assigned(fOnEqualsChangeInternal) then
   fOnEqualsChangeInternal(Self);
 If Assigned(fOnEqualsChangeEvent) then
-  fOnEqualsChangeEvent(Self);
-If Assigned(fOnEqualsChangeCallback) then
+  fOnEqualsChangeEvent(Self)
+else If Assigned(fOnEqualsChangeCallback) then
   fOnEqualsChangeCallback(Self);
 end;
 
@@ -1355,8 +1357,8 @@ Include(fUpdated,vmuValue);
 If fUpdateCounter <= 0 then
   begin
     If Assigned(fOnValueChangeEvent) then
-      fOnValueChangeEvent(Self,Sender);
-    If Assigned(fOnValueChangeCallback) then
+      fOnValueChangeEvent(Self,Sender)
+    else If Assigned(fOnValueChangeCallback) then
       fOnValueChangeCallback(Self,Sender);
   end;
 end;
@@ -1373,8 +1375,8 @@ If fUpdateCounter <= 0 then
     else
       fEqualsToInit := False;
     If Assigned(fOnEqualsChangeEvent) then
-      fOnEqualsChangeEvent(Self,Sender);
-    If Assigned(fOnEqualsChangeCallback) then
+      fOnEqualsChangeEvent(Self,Sender)
+    else If Assigned(fOnEqualsChangeCallback) then
       fOnEqualsChangeCallback(Self,Sender);
   end;
 end;
@@ -1387,8 +1389,8 @@ Include(fUpdated,vmuList);
 If fUpdateCounter <= 0 then
   begin
     If Assigned(fOnChangeEvent) then
-      fOnChangeEvent(Self);
-    If Assigned(fOnChangeCallback) then
+      fOnChangeEvent(Self)
+    else If Assigned(fOnChangeCallback) then
       fOnChangeCallback(Self);
   end;
 end;
@@ -1398,8 +1400,8 @@ end;
 procedure TMVValuesManagerBase.DoStreaming(Index: Integer; var CanStream: Boolean);
 begin
 If Assigned(fOnStreamingEvent) then
-  fOnStreamingEvent(Self,Index,CanStream);
-If Assigned(fOnStreamingCallback) then
+  fOnStreamingEvent(Self,Index,CanStream)
+else If Assigned(fOnStreamingCallback) then
   fOnStreamingCallback(Self,Index,CanStream);
 end;
 
@@ -1420,6 +1422,8 @@ fOnEqualsChangeEvent := nil;
 fOnEqualsChangeCallback := nil;
 fOnChangeEvent := nil;
 fOnChangeCallback := nil;
+fOnStreamingEvent := nil;
+fOnStreamingCallback := nil;
 end;
 
 //------------------------------------------------------------------------------

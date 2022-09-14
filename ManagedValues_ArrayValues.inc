@@ -13,9 +13,9 @@
 
   Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2021-03-17
+  Last changed 2022-09-14
 
-  ©2020-2021 František Milt
+  ©2020-2022 František Milt
 
   Contacts:
     František Milt: frantisek.milt@gmail.com
@@ -45,17 +45,16 @@
     TMVValueClass - class declaration
 ===============================================================================}
 {$IFDEF MV_ClassDeclaration}
-  private
+  protected
     fCurrentValue:  TMVValueArrayType;
     fInitialValue:  TMVValueArrayType;
     // getters, setters
-    Function GetCurrentValue: TMVValueArrayType;
-    procedure SetCurrentValue(const Value: TMVValueArrayType);
-    Function GetInitialValue: TMVValueArrayType;
-    procedure SetInitialValue(const Value: TMVValueArrayType);
-    Function GetItem(Index: Integer): TMVValueArrayItemType;
-    procedure SetItem(Index: Integer;{$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType);
-  protected
+    Function GetCurrentValue: TMVValueArrayType; virtual;
+    procedure SetCurrentValue(const Value: TMVValueArrayType); virtual;
+    Function GetInitialValue: TMVValueArrayType; virtual;
+    procedure SetInitialValue(const Value: TMVValueArrayType); virtual;
+    Function GetItem(Index: Integer): TMVValueArrayItemType; virtual;
+    procedure SetItem(Index: Integer;{$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType); virtual;
     Function GetCurrentValuePtr: Pointer; override;
     // list management
     Function GetCapacity: Integer; override;
@@ -136,7 +135,7 @@
 ===============================================================================}
 {$IFDEF MV_ClassImplementation}
 {-------------------------------------------------------------------------------
-    TMVValueClass - private methods
+    TMVValueClass - protected methods
 -------------------------------------------------------------------------------}
 
 Function TMVValueClass.GetCurrentValue: TMVValueArrayType;
@@ -208,9 +207,7 @@ If CheckIndex(Index) then
 else raise EMVIndexOutOfBounds.CreateFmt('%s.SetItem: Index (%d) out of bounds.',[Self.ClassName,Index]);
 end;
 
-{-------------------------------------------------------------------------------
-    TMVValueClass - protected methods
--------------------------------------------------------------------------------}
+//------------------------------------------------------------------------------
 
 Function TMVValueClass.GetCurrentValuePtr: Pointer;
 begin
