@@ -15,7 +15,7 @@
 
   Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2022-09-14
+  Last changed 2022-10-26
 
   ©2020-2022 František Milt
 
@@ -522,6 +522,7 @@ type
   TMVValuesManagerGlobal = class(TMVValuesManagerBase)
   protected
     fSynchronizer:  TRTLCriticalSection;
+    fLockReady:     Boolean;
     procedure ValueChangeHandler(Sender: TObject); override;
     procedure EqualsChangeHandler(Sender: TObject); override;
     procedure DoChange; override;
@@ -588,6 +589,7 @@ InitCriticalSection(fSynchronizer);
 {$ELSE}
 InitializeCriticalSection(fSynchronizer);
 {$IFEND}
+fLockReady := True;
 inherited;
 end;
 
@@ -596,10 +598,11 @@ end;
 procedure TMVValuesManagerGlobal.Finalize;
 begin
 inherited;
+If fLockReady then
 {$IF Defined(FPC) and not Defined(Windows)}
-DoneCriticalSection(fSynchronizer);
+  DoneCriticalSection(fSynchronizer);
 {$ELSE}
-DeleteCriticalSection(fSynchronizer);
+  DeleteCriticalSection(fSynchronizer);
 {$IFEND}
 end;
 
@@ -677,14 +680,16 @@ end;
 
 procedure TMVValuesManagerGlobal.Lock;
 begin
-EnterCriticalSection(fSynchronizer);
+If fLockReady then
+  EnterCriticalSection(fSynchronizer);
 end;
 
 //------------------------------------------------------------------------------
 
 procedure TMVValuesManagerGlobal.Unlock;
 begin
-LeaveCriticalSection(fSynchronizer);
+If fLockReady then
+  LeaveCriticalSection(fSynchronizer);
 end;
 
 //------------------------------------------------------------------------------
