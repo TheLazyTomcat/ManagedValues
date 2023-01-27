@@ -13,9 +13,9 @@
 
   Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2022-09-14
+  Last changed 2023-01-26
 
-  ©2020-2022 František Milt
+  ©2020-2023 František Milt
 
   Contacts:
     František Milt: frantisek.milt@gmail.com
@@ -32,12 +32,13 @@
       github.com/TheLazyTomcat/ManagedValues
 
   Dependencies:
-    AuxTypes        - github.com/TheLazyTomcat/Lib.AuxTypes
-    AuxClasses      - github.com/TheLazyTomcat/Lib.AuxClasses
-    BinaryStreaming - github.com/TheLazyTomcat/Lib.BinaryStreaming
-    StrRect         - github.com/TheLazyTomcat/Lib.StrRect
-    UInt64Utils     - github.com/TheLazyTomcat/Lib.UInt64Utils
-    ListSorters     - github.com/TheLazyTomcat/Lib.ListSorters
+    AuxClasses         - github.com/TheLazyTomcat/Lib.AuxClasses
+    AuxTypes           - github.com/TheLazyTomcat/Lib.AuxTypes    
+    BinaryStreaming    - github.com/TheLazyTomcat/Lib.BinaryStreaming
+    ListSorters        - github.com/TheLazyTomcat/Lib.ListSorters
+    StaticMemoryStream - github.com/TheLazyTomcat/Lib.StaticMemoryStream   
+    StrRect            - github.com/TheLazyTomcat/Lib.StrRect
+    UInt64Utils        - github.com/TheLazyTomcat/Lib.UInt64Utils   
 
 ===============================================================================}
 unit ManagedValues_AoUnicodeStringValue;
