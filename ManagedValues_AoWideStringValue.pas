@@ -13,7 +13,7 @@
 
   Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2023-01-26
+  Last changed 2023-09-04
 
   ©2020-2023 František Milt
 
@@ -32,13 +32,12 @@
       github.com/TheLazyTomcat/ManagedValues
 
   Dependencies:
-    AuxClasses         - github.com/TheLazyTomcat/Lib.AuxClasses
-    AuxTypes           - github.com/TheLazyTomcat/Lib.AuxTypes    
-    BinaryStreaming    - github.com/TheLazyTomcat/Lib.BinaryStreaming
-    ListSorters        - github.com/TheLazyTomcat/Lib.ListSorters
-    StaticMemoryStream - github.com/TheLazyTomcat/Lib.StaticMemoryStream   
-    StrRect            - github.com/TheLazyTomcat/Lib.StrRect
-    UInt64Utils        - github.com/TheLazyTomcat/Lib.UInt64Utils   
+    AuxClasses      - github.com/TheLazyTomcat/Lib.AuxClasses
+    AuxTypes        - github.com/TheLazyTomcat/Lib.AuxTypes    
+    BinaryStreaming - github.com/TheLazyTomcat/Lib.BinaryStreaming
+    ListSorters     - github.com/TheLazyTomcat/Lib.ListSorters
+    StrRect         - github.com/TheLazyTomcat/Lib.StrRect
+    UInt64Utils     - github.com/TheLazyTomcat/Lib.UInt64Utils   
 
 ===============================================================================}
 unit ManagedValues_AoWideStringValue;
@@ -130,7 +129,7 @@ end;
 
 class Function TMVValueClass.ArrayItemStreamRead(Stream: TStream): TMVValueArrayItemType;
 begin
-Result := Stream_ReadWideString(Stream);
+Result := Stream_GetWideString(Stream);
 end;
 
 //------------------------------------------------------------------------------
