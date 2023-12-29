@@ -13,7 +13,7 @@
 
   Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2023-09-04
+  Last changed 2023-12-29
 
   ©2020-2023 František Milt
 
@@ -358,6 +358,7 @@ begin
 {$IFDEF MV_ArrayItem_AssignIsThreadSafe}
 Result := Copy(Arr,Index,Count);
 {$ELSE}
+Result := nil;
 SetLength(Result,Count);
 For i := 0 to Pred(Count) do
   Result[i] := {$IFNDEF MV_ArrayItem_AssignIsThreadSafe}ArrayItemThreadSafeAssign{$ENDIF}(Arr[Index + i]);
@@ -469,6 +470,7 @@ procedure TMVValueClass.SwapInitialAndCurrent;
 var
   Temp: TMVValueArrayType;
 begin
+Temp := nil;
 SetLength(Temp,0);  // suppressing warnings
 If not fEqualsToInitial then
   begin
@@ -552,6 +554,7 @@ var
   i:    Integer;
 begin
 // load into temp
+Temp := nil;
 SetLength(Temp,Stream_GetInt32(Stream));
 For i := Low(Temp) to High(Temp) do
   Temp[i] := ArrayItemStreamRead(Stream);

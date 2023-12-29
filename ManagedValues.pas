@@ -70,7 +70,7 @@
 
   Version 1.0.1 alpha (2020-08-30) - requires extensive testing
 
-  Last changed 2023-09-04
+  Last changed 2023-12-29
 
   ©2020-2023 František Milt
 
@@ -2753,6 +2753,7 @@ var
   GlobalManager:  TValuesManagerBase;
   NewValue:       TManagedValue;
 begin
+Values := nil;
 SetLength(Values,0);
 GlobalManager := GetGlobalValuesManager;
 If Assigned(GlobalManager) then
