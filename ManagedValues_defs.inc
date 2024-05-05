@@ -11,9 +11,9 @@
 
     Defines common for all units within this framework.
 
-  Version 1.0.1 alpha (2020-08-30) - requires extensive testing
+  Version 1.0.1 alpha 2 (2024-05-05) - requires extensive testing
 
-  Last changed 2024-02-03
+  Last changed 2024-05-05
 
   ©2020-2024 František Milt
 
@@ -33,16 +33,40 @@
 
   Dependencies:
     AuxClasses          - github.com/TheLazyTomcat/Lib.AuxClasses
-    AuxTypes            - github.com/TheLazyTomcat/Lib.AuxTypes    
+  * AuxExceptions       - github.com/TheLazyTomcat/Lib.AuxExceptions
+    AuxTypes            - github.com/TheLazyTomcat/Lib.AuxTypes
   * BinaryStreamingLite - github.com/TheLazyTomcat/Lib.BinaryStreamingLite
     ListSorters         - github.com/TheLazyTomcat/Lib.ListSorters
     StrRect             - github.com/TheLazyTomcat/Lib.StrRect
-    UInt64Utils         - github.com/TheLazyTomcat/Lib.UInt64Utils 
-     
+    UInt64Utils         - github.com/TheLazyTomcat/Lib.UInt64Utils
+
+  Library AuxExceptions is required only when rebasing local exception classes
+  (see symbol ManagedValues_UseAuxExceptions for details).
+
   BinaryStreamingLite can be replaced by full BinaryStreaming.
+
+  Library AuxExceptions might also be required as an indirect dependency.
+
+  Indirect dependencies:
+    SimpleCPUID - github.com/TheLazyTomcat/Lib.SimpleCPUID
+    WinFileInfo - github.com/TheLazyTomcat/Lib.WinFileInfo
 
 ===============================================================================}
 {!tun_end!} // ignore this line
+
+{
+  ManagedValues_UseAuxExceptions
+
+  If you want library-specific exceptions to be based on more advanced classes
+  provided by AuxExceptions library instead of basic Exception class, and don't
+  want to or cannot change code in this unit, you can define global symbol
+  ManagedValues_UseAuxExceptions to achieve this.
+}
+{$IF Defined(ManagedValues_UseAuxExceptions)}
+  {$DEFINE UseAuxExceptions}
+{$IFEND}
+
+//------------------------------------------------------------------------------
 
 {$IF Defined(WINDOWS) or Defined(MSWINDOWS)}
   {$DEFINE Windows}
