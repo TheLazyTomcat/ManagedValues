@@ -13,7 +13,7 @@
 
   Version 1.0.1 alpha 2 (2024-05-05) - requires extensive testing
 
-  Last changed 2024-05-05
+  Last changed 2024-10-04
 
   ©2020-2024 František Milt
 
@@ -128,6 +128,7 @@
     Function First: TMVValueArrayItemType; reintroduce; virtual;
     Function Last: TMVValueArrayItemType; reintroduce; virtual;
     Function IndexOf({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean = False{$ENDIF}): Integer; reintroduce; virtual;
+    Function Find({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType; out Index: Integer{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean = False{$ENDIF}): Boolean; reintroduce; virtual;
     Function Add({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType): Integer; reintroduce; virtual;
     procedure Insert(Index: Integer; {$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType); reintroduce; virtual;
     procedure Exchange(Idx1,Idx2: Integer); override;
@@ -646,6 +647,14 @@ For i := LowIndex to HighIndex do
       Result := i;
       Break{For i};
     end;
+end;
+
+//------------------------------------------------------------------------------
+
+Function TMVValueClass.Find({$IFDEF MV_ArrayItem_ConstParams}const{$ENDIF} Value: TMVValueArrayItemType; out Index: Integer{$IFDEF MV_ArrayItem_CaseSensitivity}; CaseSensitive: Boolean = False{$ENDIF}): Boolean;
+begin
+Index := IndexOf(Value{$IFDEF MV_ArrayItem_CaseSensitivity},CaseSensitive{$ENDIF});
+Result := CheckIndex(Index);
 end;
 
 //------------------------------------------------------------------------------

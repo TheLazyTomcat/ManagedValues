@@ -13,7 +13,7 @@
 
   Version 1.0.1 alpha 2 (2024-05-05) - requires extensive testing
 
-  Last changed 2024-05-05
+  Last changed 2024-10-04
 
   ©2020-2024 František Milt
 

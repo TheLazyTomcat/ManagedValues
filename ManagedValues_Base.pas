@@ -15,7 +15,7 @@
 
   Version 1.0.1 alpha 2 (2024-05-05) - requires extensive testing
 
-  Last changed 2024-05-05
+  Last changed 2024-10-04
 
   ©2020-2024 František Milt
 
@@ -363,6 +363,7 @@ type
     procedure First; virtual;
     procedure Last; virtual;
     procedure IndexOf; virtual;
+    procedure Find; virtual;
     procedure Add; virtual;
     procedure Insert; virtual;
     procedure Exchange(Idx1,Idx2: Integer); virtual; abstract;
@@ -1253,6 +1254,13 @@ end;
 
 //------------------------------------------------------------------------------
 
+procedure TMVArrayManagedValue.Find;
+begin
+// do nothing
+end;
+
+//------------------------------------------------------------------------------
+
 procedure TMVArrayManagedValue.Add;
 begin
 // do nothing
@@ -1769,8 +1777,7 @@ var
 begin
 Lock;
 try
-  Result := IndexOf(Value);
-  If not CheckIndex(Result) then
+  If not Find(Value,Result) then
     begin
       // value must not be already locally managed elsewhere
       If not Value.LocallyManaged or (Self is TMVValuesManagerGlobal) then
@@ -1800,8 +1807,7 @@ var
 begin
 Lock;
 try
-  Idx := IndexOf(Value);
-  If not CheckIndex(Idx) then
+  If not Find(Value,Idx) then
     begin
       If not Value.LocallyManaged then
         begin
@@ -1890,8 +1896,7 @@ var
 begin
 Lock;
 try
-  Index := IndexOf(Name);
-  If CheckIndex(Index) then
+  If Find(Name,Index) then
     begin
       Result := fValues[Index];
       DeleteInternal(Index,False);
@@ -1910,8 +1915,7 @@ var
 begin
 Lock;
 try
-  Index := IndexOf(Value);
-  If CheckIndex(Index) then
+  If Find(Value,Index) then
     begin
       Result := fValues[Index];
       DeleteInternal(Index,False);
@@ -1928,8 +1932,7 @@ Function TMVValuesManagerBase.Remove(const Name: String): Integer;
 begin
 Lock;
 try
-  Result := IndexOf(Name);
-  If CheckIndex(Result) then
+  If Find(Name,Result) then
     Delete(Result);
 finally
   Unlock;
@@ -1942,8 +1945,7 @@ Function TMVValuesManagerBase.Remove(Value: TMVManagedValueBase): Integer;
 begin
 Lock;
 try
-  Result := IndexOf(Value);
-  If CheckIndex(Result) then
+  If Find(Value,Result) then
     Delete(Result);
 finally
   Unlock;
